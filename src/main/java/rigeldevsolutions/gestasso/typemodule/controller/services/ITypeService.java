@@ -40,4 +40,6 @@ public interface ITypeService
     boolean typeGroupIsValid(String typeGroup);
 
     boolean existsByUniqueCode(String uniqueCode, String oldUniqueCode);
+
+    List<SelectOption> getOptions(TypeGroup typeFrequence);
 }

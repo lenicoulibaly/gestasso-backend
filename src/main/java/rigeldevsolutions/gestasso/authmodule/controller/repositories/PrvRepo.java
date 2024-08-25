@@ -26,21 +26,21 @@ public interface PrvRepo extends JpaRepository<AppPrivilege, String>
     boolean existsByName(String name, String prvCode);
 
     @Query("SELECT prv FROM AppPrivilege prv WHERE " +
-            "locate(upper(coalesce(:searchKey, '')) , upper(CAST(FUNCTION('strip_accents', prv.privilegeCode) AS string )) ) > 0 OR " +
-            "locate(upper(coalesce(:searchKey, '')), upper(CAST(FUNCTION('strip_accents', prv.privilegeName) as string))) > 0" +
+            "locate(upper(coalesce(:searchKey, '')) , upper(CAST(FUNCTION('unaccent', prv.privilegeCode) AS string )) ) > 0 OR " +
+            "locate(upper(coalesce(:searchKey, '')), upper(CAST(FUNCTION('unaccent', prv.privilegeName) as string))) > 0" +
             "order by prv.updatedAt desc, prv.createdAt desc, prv.privilegeCode asc")
     Set<AppPrivilege> searchPrivileges(@Param("searchKey") String searchKey);
 
     @Query("SELECT prv FROM AppPrivilege prv WHERE " +
-            "locate(upper(coalesce(:searchKey, '') ) , upper(CAST(FUNCTION('strip_accents', prv.privilegeCode) AS string )) ) > 0 OR " +
-            "locate(upper(coalesce(:searchKey, '')), upper(CAST(FUNCTION('strip_accents', prv.privilegeName) as string))) > 0" +
+            "locate(upper(coalesce(:searchKey, '') ) , upper(CAST(FUNCTION('unaccent', prv.privilegeCode) AS string )) ) > 0 OR " +
+            "locate(upper(coalesce(:searchKey, '')), upper(CAST(FUNCTION('unaccent', prv.privilegeName) as string))) > 0" +
             "order by prv.updatedAt desc, prv.createdAt desc, prv.privilegeCode asc")
     Page<AppPrivilege> searchPrivileges(@Param("searchKey") String searchKey, Pageable pageable);
 
     @Query("""
             SELECT prv FROM AppPrivilege prv WHERE prv.prvType.uniqueCode in :typePrvUniqueCodes and
-            (locate(upper(coalesce(:searchKey, '') ) , upper(CAST(FUNCTION('strip_accents', prv.privilegeCode) AS string )) ) > 0 OR
-            locate(upper(coalesce(:searchKey, '')), upper(CAST(FUNCTION('strip_accents', prv.privilegeName) as string))) > 0)
+            (locate(upper(coalesce(:searchKey, '') ) , upper(CAST(FUNCTION('unaccent', prv.privilegeCode) AS string )) ) > 0 OR
+            locate(upper(coalesce(:searchKey, '')), upper(CAST(FUNCTION('unaccent', prv.privilegeName) as string))) > 0)
             """)
     Page<AppPrivilege> searchPrivileges(@Param("searchKey") String searchKey, @Param("typePrvUniqueCodes") List<String> typePrvUniqueCodes, Pageable pageable);
 

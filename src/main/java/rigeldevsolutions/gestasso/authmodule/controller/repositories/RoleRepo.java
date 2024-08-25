@@ -24,7 +24,7 @@ public interface RoleRepo extends JpaRepository<AppRole, String>
     @Query("select (count(a) > 0) from AppRole a where upper(a.roleName) = upper(?1) and a.roleCode <> ?2")
     boolean existsByName(String roleName, String roleCode);
 
-    @Query("select a from AppRole a where upper(CAST(function('strip_accents', a.roleCode) as string)) like upper(concat('%', coalesce(?1, ''), '%')) or upper(CAST(function('strip_accents', a.roleName) AS string)) like upper(concat('%', coalesce(?1, ''), '%')) order by a.roleName")
+    @Query("select a from AppRole a where upper(CAST(function('unaccent', a.roleCode) as string)) like upper(concat('%', coalesce(?1, ''), '%')) or upper(CAST(function('unaccent', a.roleName) AS string)) like upper(concat('%', coalesce(?1, ''), '%')) order by a.roleName")
     Page<AppRole> searchRoles(String searchKey, Pageable pageable);
     @Query("""
     select rtf.role from RoleToFncAss rtf where rtf.assStatus = 1 and rtf.function.id = ?1 and current_date between coalesce(rtf.startsAt, current_date) and coalesce(rtf.endsAt, current_date ) 

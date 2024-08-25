@@ -1,5 +1,6 @@
 package rigeldevsolutions.gestasso.typemodule.controller.repositories;
 
+import rigeldevsolutions.gestasso.sharedmodule.dtos.SelectOption;
 import rigeldevsolutions.gestasso.sharedmodule.enums.PersStatus;
 import rigeldevsolutions.gestasso.typemodule.model.dtos.ReadTypeDTO;
 import rigeldevsolutions.gestasso.typemodule.model.entities.Type;
@@ -110,4 +111,7 @@ public interface TypeRepo extends JpaRepository<Type, String>
 
     @Query("select (count(t.uniqueCode)>0) from Type t where t.uniqueCode = ?1 and exists (select t1 from Type t1 where t1.uniqueCode = ?1 and t1.uniqueCode <> ?2)")
     boolean existsByUniqueCode(String uniqueCode, String oldUniqueCode);
+
+    @Query("select new rigeldevsolutions.gestasso.sharedmodule.dtos.SelectOption(t.uniqueCode, t.name) from Type t where t.typeGroup = ?1 and t.status = 'ACTIVE'")
+    List<SelectOption> findOptionsByTypeGroup(TypeGroup typeGroup);
 }

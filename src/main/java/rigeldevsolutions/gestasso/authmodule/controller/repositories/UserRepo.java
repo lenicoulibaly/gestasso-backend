@@ -45,16 +45,15 @@ public interface UserRepo extends JpaRepository<AppUser, Long>
 
     @Query("""
         select new rigeldevsolutions.gestasso.authmodule.model.dtos.appuser.ReadUserDTO(
-        u.userId, u.firstName, u.lastName, u.email, u.tel, u.lieuNaissance,
-         u.civilite.uniqueCode, t.name, u.active, 
-        u.notBlocked, s.staLibelle) 
+        u.userId, u.firstName, u.lastName, u.email, u.tel, u.civilite.uniqueCode, 
+        t.name, u.active, u.notBlocked, s.staLibelle) 
         from AppUser u left join u.typeUtilisateur t left join u.statut s where 
         
-           (locate(upper(coalesce(:key, '')), upper(cast(function('strip_accents',  coalesce(u.firstName, '') ) as string))) >0 
-           or locate(upper(coalesce(:key, '') ), upper(cast(function('strip_accents',  coalesce(u.lastName, '') ) as string))) >0
-           or locate(upper(coalesce(:key, '') ), upper(cast(function('strip_accents',  coalesce(u.email, '') ) as string))) >0
-           or locate(upper(coalesce(:key, '') ), upper(cast(function('strip_accents',  coalesce(u.tel, '') ) as string))) >0
-           or locate(upper(coalesce(:key, '') ), upper(cast(function('strip_accents',  coalesce(u.lieuNaissance, '') ) as string) )) >0)
+           (locate(upper(coalesce(:key, '')), upper(cast(function('unaccent',  coalesce(u.firstName, '') ) as string))) >0 
+           or locate(upper(coalesce(:key, '') ), upper(cast(function('unaccent',  coalesce(u.lastName, '') ) as string))) >0
+           or locate(upper(coalesce(:key, '') ), upper(cast(function('unaccent',  coalesce(u.email, '') ) as string))) >0
+           or locate(upper(coalesce(:key, '') ), upper(cast(function('unaccent',  coalesce(u.tel, '') ) as string))) >0
+           or locate(upper(coalesce(:key, '') ), upper(cast(function('unaccent',  coalesce(u.lieuNaissance, '') ) as string) )) >0)
            and (s.staCode is null or s.staCode in :staCodes)
 """)
     Page<ReadUserDTO> searchUsers(@Param("key") String key,
@@ -63,7 +62,7 @@ public interface UserRepo extends JpaRepository<AppUser, Long>
 
     @Query("""
         select new rigeldevsolutions.gestasso.authmodule.model.dtos.appuser.ReadUserDTO(
-        u.userId, u.firstName, u.lastName, u.email, u.tel, u.lieuNaissance,
+        u.userId, u.firstName, u.lastName, u.email, u.tel,
          u.civilite.uniqueCode, t.name, u.active, 
         u.notBlocked, s.staLibelle) 
         from AppUser u left join u.typeUtilisateur t left join u.statut s where u.userId = ?1

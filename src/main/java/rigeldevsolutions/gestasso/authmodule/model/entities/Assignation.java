@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @Entity @DiscriminatorColumn(name = "ASS_TYPE") @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
 @Audited @EntityListeners(AuditingEntityListener.class)
-public class Assignation
+public class Assignation extends HistoDetails
 {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ASS_ID_GEN")

@@ -1,5 +1,9 @@
 package rigeldevsolutions.gestasso.authmodule.controller.services.impl;
 
+import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import rigeldevsolutions.gestasso.authmodule.controller.repositories.FunctionRepo;
 import rigeldevsolutions.gestasso.authmodule.controller.repositories.RoleToFunctionAssRepo;
 import rigeldevsolutions.gestasso.authmodule.controller.repositories.UserRepo;
@@ -15,10 +19,7 @@ import rigeldevsolutions.gestasso.authmodule.model.dtos.appuser.AuthResponseDTO;
 import rigeldevsolutions.gestasso.authmodule.model.dtos.asignation.AssMapper;
 import rigeldevsolutions.gestasso.authmodule.model.dtos.asignation.RoleAssSpliterDTO;
 import rigeldevsolutions.gestasso.authmodule.model.dtos.asignation.SetAuthoritiesToFunctionDTO;
-import rigeldevsolutions.gestasso.authmodule.model.entities.AppFunction;
-import rigeldevsolutions.gestasso.authmodule.model.entities.AppRole;
-import rigeldevsolutions.gestasso.authmodule.model.entities.AppUser;
-import rigeldevsolutions.gestasso.authmodule.model.entities.RoleToFncAss;
+import rigeldevsolutions.gestasso.authmodule.model.entities.*;
 import rigeldevsolutions.gestasso.modulelog.controller.service.ILogService;
 import rigeldevsolutions.gestasso.modulelog.model.entities.Log;
 import rigeldevsolutions.gestasso.sharedmodule.exceptions.AppException;
@@ -34,10 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.net.UnknownHostException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -59,7 +57,7 @@ public class FunctionService implements IFunctionService {
     @Override
     public Long getActiveCurrentFunctionId(Long userId)
     {
-        Set<Long> ids = functionRepo.getCurrentFncIds(userId);
+        List<Long> ids = functionRepo.getCurrentFncIds(userId);
         return ids == null ? null : ids.size() != 1 ? null : new ArrayList<>(ids).get(0);
     }
 
@@ -70,21 +68,20 @@ public class FunctionService implements IFunctionService {
     }
 
     @Override @Transactional(isolation = Isolation.READ_UNCOMMITTED)
-    public ReadFncDTO createFnc(CreateFncDTO dto) throws UnknownHostException
+    public ReadFncDTO createFnc(CreateFncDTO dto, ActionIdentifier ai)
     {
         AppFunction function = fncMapper.mapToFunction(dto);
         boolean userHasFunction = functionRepo.userHasAnyAppFunction(dto.getUserId());
         function = functionRepo.save(function);
-        Log mainLog = logger.logg(AuthActions.CREATE_FNC, null, function, AuthTables.FUNCTION, null);
+        BeanUtils.copyProperties(ai, function);
         Long fncId = function.getId();
         if(!userHasFunction)
         {
             function.setFncStatus(1);
             AppUser user = userRepo.findById(dto.getUserId()).orElseThrow(()->new AppException("Utilisateur introuvable"));
-            AppUser oldUser = userCopier.copy(user);
             user.setCurrentFunctionId(fncId);
             user = userRepo.save(user);
-            logger.logg(AuthActions.SET_USER_DEFAULT_FNC_ID, oldUser, user, AuthTables.USER_TABLE, mainLog.getId());
+            BeanUtils.copyProperties(ai, user);
         }
         Set<String> roleCodes = dto.getRoleCodes() == null ? new HashSet<>() : dto.getRoleCodes();
 
@@ -97,78 +94,66 @@ public class FunctionService implements IFunctionService {
             roleToFunctionAss.setRole(new AppRole(code));
             roleToFunctionAss.setFunction(new AppFunction(fncId));
             roleToFunctionAss = rtfRepo.save(roleToFunctionAss);
-            try {
-                logger.logg(AuthActions.ADD_ROLE_TO_FNC, null, roleToFunctionAss, AuthTables.ASS, mainLog.getId());
-            } catch (UnknownHostException e) {
-                e.printStackTrace();
-            }
+            BeanUtils.copyProperties(ai, roleToFunctionAss);
         });
 
         return fncMapper.mapToReadFncDto(function);
     }
 
     @Override @Transactional
-    public AuthResponseDTO setFunctionAsDefault(Long fncId) throws UnknownHostException
+    public AuthResponseDTO setFunctionAsDefault(Long fncId, ActionIdentifier ai)
     {
         AppFunction function  = functionRepo.findById(fncId).orElseThrow(()->new AppException("Fonction inconnue"));
         if(function.getUser() == null ||function.getUser().getUserId() == null) throw new AppException("Utilisateur introuvable pour cette fonction");
         AppUser user = userRepo.findById(function.getUser().getUserId()).orElseThrow(()->new AppException("Utilisateur introuvable pour cette fonction"));
         UserDetails userDetails = uds.loadUserByUsername(user.getEmail());
+        BeanUtils.copyProperties(ai, function);
+
         if(function.getFncStatus() == 1)
         {
             return jwtService.generateJwt(userDetails, jwtService.extractConnectionId());
         }
-        AppFunction oldFnc = functionCopier.copy(function);
+
         function.setFncStatus(1);
-        Log mainLog = logger.logg(AuthActions.SET_FNC_AS_DEFAULT, oldFnc, function, AuthTables.FUNCTION, null);
 
         functionRepo.findActiveByUser(function.getUser().getUserId()).forEach(fnc->
         {
             if(!fnc.getId().equals(fncId) && fnc.getFncStatus() == 1)
             {
-                AppFunction oldFnc1 = functionCopier.copy(fnc);
                 fnc.setFncStatus(2);
                 fnc = functionRepo.save(fnc);
-                try
-                {
-                    logger.logg(AuthActions.SET_FNC_AS_NONE_DEFAULT, oldFnc1, fnc, AuthTables.FUNCTION, mainLog.getId());
-                } catch (UnknownHostException e)
-                {
-                    e.printStackTrace();
-                }
+                BeanUtils.copyProperties(ai, fnc);
             }
         });
 
-        AppUser oldUser = userCopier.copy(user);
         user.setCurrentFunctionId(fncId);
         user = userRepo.save(user);
-        logger.logg(AuthActions.SET_USER_DEFAULT_FNC_ID, oldUser, user, AuthTables.USER_TABLE, mainLog.getId());
+        BeanUtils.copyProperties(ai, user);
         return jwtService.generateJwt(userDetails, UUID.randomUUID().toString());
     }
 
     @Override @Transactional
-    public void revokeFunction(Long fncId) throws UnknownHostException {
+    public void revokeFunction(Long fncId, ActionIdentifier ai)
+    {
         AppFunction function  = functionRepo.findById(fncId).orElse(null);
         if(function == null) return;
         if(function.getFncStatus() == 3) return;
-        AppFunction oldFnc = functionCopier.copy(function);
         function.setFncStatus(3); functionRepo.save(function);
-        logger.logg(AuthActions.REVOKE_FNC, oldFnc, function, AuthTables.FUNCTION, null);
+        BeanUtils.copyProperties(ai, function);
     }
 
     @Override @Transactional
-    public void restoreFunction(Long fncId) throws UnknownHostException
+    public void restoreFunction(Long fncId, ActionIdentifier ai)
     {
         AppFunction function  = functionRepo.findById(fncId).orElse(null);
         if(function == null) return;
         if(function.getFncStatus() == 1 || function.getFncStatus() == 2) return;
-        AppFunction oldFnc = functionCopier.copy(function);
         function.setFncStatus(2); functionRepo.save(function);
-        logger.logg(AuthActions.REVOKE_FNC, oldFnc, function, AuthTables.FUNCTION, null);
+        BeanUtils.copyProperties(ai, function);
     }
 
     //@Transactional
-    private ReadFncDTO setFunctionAuthorities(SetAuthoritiesToFunctionDTO dto)
+    private ReadFncDTO setFunctionAuthorities(SetAuthoritiesToFunctionDTO dto, ActionIdentifier ai)
     {
         AppFunction function  = functionRepo.findById(dto.getFncId()).orElse(null);
         if(function == null) return null;
@@ -176,21 +161,21 @@ public class FunctionService implements IFunctionService {
         Set<String> roleCodes = dto.getRoleCodes();
         LocalDate startsAt = dto.getStartsAt(); LocalDate endsAt = dto.getEndsAt();
         RoleAssSpliterDTO roleAssSpliterDTO = assMapper.mapToRoleAssSpliterDTO(roleCodes, fncId, startsAt, endsAt, true);
-        treatRolesAssignation(roleAssSpliterDTO, fncId, startsAt, endsAt);
+        treatRolesAssignation(roleAssSpliterDTO, fncId, startsAt, endsAt, ai);
 
         return fncMapper.mapToReadFncDto(function);
     }
 
     @Override @Transactional
-    public ReadFncDTO updateFunction(UpdateFncDTO dto) throws UnknownHostException {
+    public ReadFncDTO updateFunction(UpdateFncDTO dto, ActionIdentifier ai)
+    {
         AppFunction function  = functionRepo.findById(dto.getFncId()).orElse(null);
-        AppFunction oldFunction = functionCopier.copy(function);
         if(function == null) return null;
         function.setName(dto.getName());
         function.setStartsAt(dto.getStartsAt());
         function.setEndsAt(dto.getEndsAt());
-        logger.logg(AuthActions.UPDATE_FUNCTION, oldFunction, function, AuthTables.FUNCTION, null);
-        ReadFncDTO readFncDTO = this.setFunctionAuthorities(new SetAuthoritiesToFunctionDTO(dto.getFncId(),dto.getStartsAt(), dto.getEndsAt(), dto.getRoleCodes()));
+        BeanUtils.copyProperties(ai, function);
+        ReadFncDTO readFncDTO = this.setFunctionAuthorities(new SetAuthoritiesToFunctionDTO(dto.getFncId(),dto.getStartsAt(), dto.getEndsAt(), dto.getRoleCodes()), ai);
         return readFncDTO;
     }
 
@@ -212,19 +197,27 @@ public class FunctionService implements IFunctionService {
         return readFncDTO;
     }
 
-    private void treatRolesAssignation(RoleAssSpliterDTO roleAssSpliterDTO, Long fncId, LocalDate startsAt, LocalDate endsAt)
+    @Override
+    public Page<ReadFncDTO> search(Long userId, String key, int page, int size, boolean withRevoked)
+    {
+        int[] allStatus = {1, 2, 3};
+        int[] activeStatus = {1, 2};
+        if(userId == null) return Page.empty();
+        Page<AppFunction> functionsPage = functionRepo.findAllByUser(userId, key, withRevoked ? allStatus : activeStatus, PageRequest.of(page, size));
+        if(functionsPage == null) return Page.empty();
+        List<ReadFncDTO> functionsList = functionsPage.stream().map(fncMapper::mapToReadFncDto).toList();
+
+        return new PageImpl<>(functionsList, functionsPage.getPageable(), functionsPage.getTotalElements());
+    }
+
+    private void treatRolesAssignation(RoleAssSpliterDTO roleAssSpliterDTO, Long fncId, LocalDate startsAt, LocalDate endsAt, ActionIdentifier ai)
     {
         roleAssSpliterDTO.getRoleCodesToBeRemoved().forEach(code->
         {
             RoleToFncAss rtfAss = rtfRepo.findByFncAndRole(fncId, code);
-            RoleToFncAss oldRtfAss = rtfCopier.copy(rtfAss);
             rtfAss.setAssStatus(2);
             rtfAss = rtfRepo.save(rtfAss);
-            try {
-                logger.logg(AuthActions.REMOVE_ROLE_TO_FNC, oldRtfAss, rtfAss, AuthTables.ASS, null);
-            } catch (UnknownHostException e) {
-                e.printStackTrace();
-            }
+            BeanUtils.copyProperties(ai, rtfAss);
         });
 
         roleAssSpliterDTO.getRoleCodesToBeAddedAsNew().forEach(code->
@@ -236,23 +229,15 @@ public class FunctionService implements IFunctionService {
                 rtfAss.setAssStatus(1); rtfAss.setStartsAt(startsAt); rtfAss.setEndsAt(endsAt);
                 rtfAss.setRole(new AppRole(code));
                 rtfAss.setFunction(new AppFunction(fncId));
-                rtfRepo.save(rtfAss);
-                try {
-                    logger.logg(AuthActions.ADD_ROLE_TO_FNC, null, rtfAss, AuthTables.ASS, null);
-                } catch (UnknownHostException e) {
-                    e.printStackTrace();
-                }
+                rtfAss = rtfRepo.save(rtfAss);
+                BeanUtils.copyProperties(ai, rtfAss);
             }
             else
             {
                 RoleToFncAss oldRtfAss = rtfCopier.copy(rtfAss);
                 rtfAss.setAssStatus(1);
                 rtfRepo.save(rtfAss);
-                try {
-                    logger.logg(AuthActions.RESTORE_ROLE_TO_FNC, oldRtfAss, rtfAss, AuthTables.ASS, null);
-                } catch (UnknownHostException e) {
-                    e.printStackTrace();
-                }
+                BeanUtils.copyProperties(ai, rtfAss);
             }
         });
 

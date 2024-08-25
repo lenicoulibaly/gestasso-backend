@@ -104,6 +104,12 @@ public class TypeService implements ITypeService
         return typeRepo.existsByUniqueCode(uniqueCode, oldUniqueCode);
     }
 
+    @Override
+    public List<SelectOption> getOptions(TypeGroup typeGroup)
+    {
+        return typeRepo.findOptionsByTypeGroup(typeGroup);
+    }
+
     @Override @Transactional
     public void addSousType(TypeParamDTO dto) throws UnknownHostException {
         if(this.parentHasDistantSousType(dto.getChildCode(), dto.getParentCode())) return;

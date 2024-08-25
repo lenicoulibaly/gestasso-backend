@@ -10,13 +10,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
-@CoherentDates
+@CoherentDates @UniqueFunctionName
 public class UpdateFncDTO
 {
     @ExistingFncId
     private Long fncId;
-    @ExistingUserId
-    private Long userId;
     private Long assoId;
     private Long sectionId;
     private String typeCode;
@@ -27,9 +25,8 @@ public class UpdateFncDTO
     private LocalDate endsAt;
     private Set<String> roleCodes = new HashSet<>();
 
-    public UpdateFncDTO(Long fncId, Long userId, Long assoId, Long sectionId, String typeCode, String name, LocalDate startsAt, LocalDate endsAt) {
+    public UpdateFncDTO(Long fncId, Long assoId, Long sectionId, String typeCode, String name, LocalDate startsAt, LocalDate endsAt) {
         this.fncId = fncId;
-        this.userId = userId;
         this.assoId = assoId;
         this.sectionId = sectionId;
         this.typeCode = typeCode;

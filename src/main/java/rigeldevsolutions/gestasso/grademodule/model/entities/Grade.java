@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import rigeldevsolutions.gestasso.grademodule.model.enums.Categorie;
 import rigeldevsolutions.gestasso.sharedmodule.enums.PersStatus;
 
@@ -17,7 +16,7 @@ import rigeldevsolutions.gestasso.sharedmodule.enums.PersStatus;
 public class Grade 
 {
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long idGrade;
+	private Long gradeId;
 	private String nomGrade;
 	private int rang; //D = 1 , C = 2 ,  B = 3 , A = 4
 	@Enumerated(EnumType.STRING)
@@ -25,7 +24,7 @@ public class Grade
 	@Enumerated(EnumType.STRING)
 	private PersStatus status;
 
-	public Grade(Long idGrade) {
-		this.idGrade = idGrade;
+	public Grade(Long gradeId) {
+		this.gradeId = gradeId;
 	}
 }

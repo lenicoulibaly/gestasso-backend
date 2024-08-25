@@ -1,8 +1,10 @@
 package rigeldevsolutions.gestasso.authmodule.controller.services.impl;
 
+import org.springframework.beans.BeanUtils;
 import rigeldevsolutions.gestasso.authmodule.controller.repositories.AccountTokenRepo;
 import rigeldevsolutions.gestasso.authmodule.controller.services.spec.IAccountTokenService;
 import rigeldevsolutions.gestasso.authmodule.model.entities.AccountToken;
+import rigeldevsolutions.gestasso.authmodule.model.entities.ActionIdentifier;
 import rigeldevsolutions.gestasso.authmodule.model.entities.AppUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +21,7 @@ public class ActivationTokenService implements IAccountTokenService
 {
     private final AccountTokenRepo tokenDao;
     @Override
-    public AccountToken createAccountToken(AppUser appUser)
+    public AccountToken createAccountToken(AppUser appUser, ActionIdentifier ai)
     {
         AccountToken token = AccountToken.builder()
                                                    .token(UUID.randomUUID().toString())
@@ -29,13 +31,14 @@ public class ActivationTokenService implements IAccountTokenService
                                                    .user(appUser)
                                                    .password(generateInt(1000, 9999))
                                                    .build();
+        BeanUtils.copyProperties(ai, token);
         return tokenDao.save(token);
     }
 
     @Override
-    public AccountToken createAccountToken(Long agentId)
+    public AccountToken createAccountToken(Long agentId, ActionIdentifier ai)
     {
-        AccountToken token =  createAccountToken((AppUser) null);
+        AccountToken token =  createAccountToken((AppUser) null, ai);
         token.setAgentId(agentId);
         return token;
     }

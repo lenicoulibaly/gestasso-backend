@@ -42,7 +42,7 @@ public class JwtService implements IJwtService
         AppUser user = userRepo.findByEmail(userEmail).orElseThrow(()->new AppException("Utilisateur introuvable"));
         Long assoId = functionRepo.getCurrentFncAssoId(userDetails.getUsername());
         Long sectionId = functionRepo.getCurrentFncSectionId(userDetails.getUsername());
-        Set<Long> functionIds = functionRepo.getCurrentFncIds(user.getUserId());
+        List<Long> functionIds = functionRepo.getCurrentFncIds(user.getUserId().longValue());
         Long functionId = functionIds == null || functionIds.size() != 1 ? null : new ArrayList<>(functionIds).get(0);
         Map<String, Object> extraClaims = new HashMap<>(); //functionId = 1l;
 
@@ -65,13 +65,13 @@ public class JwtService implements IJwtService
         extraClaims.put("sectionId", sectionId );
         extraClaims.put("functionId", functionId);
         extraClaims.put("connectionId", connectionId);
-        extraClaims.put("assoName", function.getAssociation() == null ? null : function.getAssociation().getAssoName());
-        extraClaims.put("sectionName", function.getSection() == null ? null : function.getSection().getSectionName());
+        extraClaims.put("assoName", function == null || function.getAssociation() == null ? null : function.getAssociation().getAssoName());
+        extraClaims.put("sectionName", function == null || function.getSection() == null ? null : function.getSection().getSectionName());
 
-        extraClaims.put("strId", function.getSection() == null || function.getSection().getStrTutelle() == null ? null : function.getSection().getStrTutelle().getStrId());
-        extraClaims.put("strCode", function.getSection() == null || function.getSection().getStrTutelle() == null ? null : function.getSection().getStrTutelle().getStrCode());
-        extraClaims.put("strName", function.getSection() == null || function.getSection().getStrTutelle() == null ? null : function.getSection().getStrTutelle().getStrName());
-        extraClaims.put("strSigle", function.getSection() == null || function.getSection().getStrTutelle() == null ? null : function.getSection().getStrTutelle().getStrSigle());
+        extraClaims.put("strId", function == null || function.getSection() == null || function.getSection().getStrTutelle() == null ? null : function.getSection().getStrTutelle().getStrId());
+        extraClaims.put("strCode", function == null || function.getSection() == null || function.getSection().getStrTutelle() == null ? null : function.getSection().getStrTutelle().getStrCode());
+        extraClaims.put("strName", function == null || function.getSection() == null || function.getSection().getStrTutelle() == null ? null : function.getSection().getStrTutelle().getStrName());
+        extraClaims.put("strSigle", function == null || function.getSection() == null || function.getSection().getStrTutelle() == null ? null : function.getSection().getStrTutelle().getStrSigle());
 
         extraClaims.put("functionName", function == null ? null : function.getName());
 

@@ -1,6 +1,7 @@
 package rigeldevsolutions.gestasso.authmodule.model.entities;
 
 import jakarta.persistence.*;
+import rigeldevsolutions.gestasso.grademodule.model.entities.Grade;
 import rigeldevsolutions.gestasso.modulestatut.entities.Statut;
 import rigeldevsolutions.gestasso.typemodule.model.entities.Type;
 import lombok.AllArgsConstructor;
@@ -24,7 +25,7 @@ import java.util.Objects;
 @Entity
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
 @Audited @EntityListeners(AuditingEntityListener.class)
-public class AppUser
+public class AppUser extends HistoDetails
 {
     @Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "USER_ID_GEN")
     @SequenceGenerator(name = "USER_ID_GEN", sequenceName = "USER_ID_GEN", allocationSize = 10)
@@ -48,6 +49,9 @@ public class AppUser
     protected Nationalite nationalite;
     @ManyToOne @JoinColumn(name = "TYPE_PIECE_CODE")
     protected Type typePiece;
+    @ManyToOne @JoinColumn(name = "GRADE_ID")
+    private Grade grade;
+    private int indiceFonctionnaire;
     @Column(length = 50, unique = true)
     protected String numPiece;
     protected String nomPere;
@@ -62,26 +66,15 @@ public class AppUser
     @ManyToOne
     protected Statut statut;
 
-    @CreatedDate
-    @Column(name = "CreatedAt")
-    protected LocalDateTime createdAt;
-    @CreatedBy
-    @Column(name = "CreatedBy", length = 50)
-    protected String createdBy;
-    @LastModifiedDate
-    @Column(name = "UpdatedAt")
-    protected LocalDateTime updatedAt;
-    @LastModifiedBy
-    @Column(name = "UpdatedBy", length = 50)
-    protected String updatedBy;
-    @Column(name = "DeletedAt")
-    protected LocalDateTime deletedAt;
-    @Column(name = "DeletedBy", length = 50)
-    protected String deletedBy;
-    @Column(name = "isDeleted", length = 50)
-    protected Boolean isDeleted = false;
-    protected String action;
-    protected String connectionId;
+    public AppUser(String firstName, String lastName, String password, String email, String tel, boolean active, boolean notBlocked) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.password = password;
+        this.email = email;
+        this.tel = tel;
+        this.active = active;
+        this.notBlocked = notBlocked;
+    }
 
     public AppUser(Long userId, String firstName, String lastName, String password, String email, String tel, boolean active, boolean notBlocked, Long currentFunctionId, LocalDateTime changePasswordDate) {
         this.userId = userId;
@@ -115,14 +108,6 @@ public class AppUser
 
     @Override
     public String toString() {
-        return "AppUser{" +
-                "userId=" + userId +
-                ", password='" + password + '\'' +
-                ", email='" + email + '\'' +
-                ", tel='" + tel + '\'' +
-                ", active=" + active +
-                ", notBlocked=" + notBlocked +
-                ", currentFunctionId=" + currentFunctionId +
-                '}';
+        return userId + "_" + email + "_" + firstName + "_" + lastName;
     }
 }

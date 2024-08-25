@@ -6,6 +6,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import rigeldevsolutions.gestasso.authmodule.controller.repositories.UserRepo;
 import rigeldevsolutions.gestasso.authmodule.controller.services.spec.IJwtService;
+import rigeldevsolutions.gestasso.sharedmodule.dtos.SelectOption;
 import rigeldevsolutions.gestasso.structuremodule.controller.repositories.StrRepo;
 import rigeldevsolutions.gestasso.structuremodule.controller.service.IStrService;
 import rigeldevsolutions.gestasso.structuremodule.model.dtos.*;
@@ -48,33 +49,39 @@ public class StrController
         return strService.getStrByChildType(childTypeCode);
     }
 
-    @GetMapping(path = "/sigrh/structures/loadStrTreeView/{strId}") @ResponseBody @PreAuthorize("permitAll()")
+    @GetMapping(path = "/loadStrTreeView/{strId}") @ResponseBody @PreAuthorize("permitAll()")
     public List<StrTreeView> loadStrTreeView(@PathVariable Long strId)
     {
         return this.strService.loadStrTreeView(strId);
     }
 
-    @GetMapping(path = "/sigrh/structures/loadStrTreeView/{strId}/{critere}") @ResponseBody @PreAuthorize("permitAll()")
+    @GetMapping(path = "/loadStrTreeView/{strId}/{critere}") @ResponseBody @PreAuthorize("permitAll()")
     public List<StrTreeView> loadStrTreeView(@PathVariable Long strId, @PathVariable String critere)
     {
         return this.strService.loadStrTreeView(strId, critere);
     }
 
-    @GetMapping(path = "/sigrh/structures/countAllChildren/{strId}") @ResponseBody @PreAuthorize("permitAll()")
+    @GetMapping(path = "/countAllChildren/{strId}") @ResponseBody @PreAuthorize("permitAll()")
     public long countAllChildren(@PathVariable Long strId)
     {
         return this.strRepo.countAllChildren(strId);
     }
 
-    @GetMapping(path = "/sigrh/structures/getChildrenMaxLevel/{strId}") @ResponseBody @PreAuthorize("permitAll()")
+    @GetMapping(path = "/getChildrenMaxLevel/{strId}") @ResponseBody @PreAuthorize("permitAll()")
     public long getChildrenMaxLevel(@PathVariable long strId)
     {
         return this.strRepo.getChildrenMaxLevel(strRepo.getStrCode(strId));
     }
 
-    @GetMapping(path = "/sigrh/structures/getAllChildren/{strId}") @ResponseBody @PreAuthorize("permitAll()")
+    @GetMapping(path = "/getAllChildren/{strId}") @ResponseBody @PreAuthorize("permitAll()")
     public List<ReadStrDTO> getChildren(@PathVariable long strId)
     {
         return this.strRepo.findAllChildren(strId).stream().map(strMapper::mapToReadSimpleReadStrDto).collect(Collectors.toList());
+    }
+
+    @GetMapping(path="/all-options")
+    public List<SelectOption> getStrOptions()
+    {
+        return strService.getStrAllOptions();
     }
 }

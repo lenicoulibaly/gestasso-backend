@@ -37,7 +37,7 @@ public interface MenuRepo extends JpaRepository<Menu, Long>
     @Query("select prv.privilegeCode from AppPrivilege prv where prv.privilegeCode in ?1")
     Set<String> getMenuPrvIdsByMenuCodes(Set<String> menuCodes);
 
-    @Query("SELECT m FROM Menu m WHERE UPPER(cast(FUNCTION('strip_accents', m.name) AS string)) LIKE CONCAT('%', UPPER(?1) , '%')")
+    @Query("SELECT m FROM Menu m WHERE UPPER(cast(FUNCTION('unaccent', m.name) AS string)) LIKE CONCAT('%', UPPER(?1) , '%')")
     Page<Menu> searchMenu2(String key, Pageable pageable);
 
     @Query("""
@@ -47,7 +47,7 @@ locate(upper(cast(function('unaccent', ?1) as string)) , UPPER(cast(FUNCTION('un
 """)
     Page<Menu> searchMenu(String key, Pageable pageable);
 
-    /*@Query("SELECT m FROM Menu m WHERE UPPER(FUNCTION('strip_accents', m.name)) LIKE CONCAT('%', UPPER(CAST(?1 AS string)) , '%') OR FUNCTION('strip_accents', m.menuCode) LIKE CONCAT('%', UPPER(CAST(?1 AS string)) , '%')")
+    /*@Query("SELECT m FROM Menu m WHERE UPPER(FUNCTION('unaccent', m.name)) LIKE CONCAT('%', UPPER(CAST(?1 AS string)) , '%') OR FUNCTION('unaccent', m.menuCode) LIKE CONCAT('%', UPPER(CAST(?1 AS string)) , '%')")
     Page<Menu> searchMenu(String key, Pageable pageable);*/
 
 }

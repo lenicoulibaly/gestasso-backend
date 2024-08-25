@@ -133,4 +133,16 @@ public class TypeResource
     {
         return typeService.typeGroupIsValid(typeGroup);
     }
+
+    @GetMapping(path = "/frequences/all-options")
+    public List<SelectOption> getFrequenceOptions()
+    {
+        return typeService.getOptions(TypeGroup.TYPE_FREQUENCE);
+    }
+
+    @GetMapping(path = "/modes-prelevement/all-options")
+    public List<SelectOption> getModePrelevementOptions()
+    {
+        return typeService.getOptions(TypeGroup.MODE_PRELEVEMENT);
+    }
 }

@@ -14,7 +14,7 @@ public interface GradeRepo extends JpaRepository<Grade, Long>
 {
     @Query("select g from Grade g where g.status = 'ACTIVE'")
     List<Grade> getActiveGrades();
-    @Query("select g.idGrade from Grade g where g.status = 'ACTIVE'")
+    @Query("select g.gradeId from Grade g where g.status = 'ACTIVE'")
     List<Long> getActiveGradesIds();
 
     @Query("select g from Grade g where g.categorie = ?1 and g.status = 'ACTIVE'")
@@ -45,7 +45,7 @@ public interface GradeRepo extends JpaRepository<Grade, Long>
     @Query("select (count(g) > 0) from Grade g where g.rang = ?1 and g.categorie = ?2")
     boolean existsByRankAndCategory(int rang, Categorie categorie);
 
-    @Query("select (count(g) > 0) from Grade g where g.idGrade <> ?1 and g.rang = ?2 and g.categorie = ?3")
+    @Query("select (count(g) > 0) from Grade g where g.gradeId <> ?1 and g.rang = ?2 and g.categorie = ?3")
     boolean existsByRankAndCategory(Long idGrade, int rang, Categorie categorie);
 
 

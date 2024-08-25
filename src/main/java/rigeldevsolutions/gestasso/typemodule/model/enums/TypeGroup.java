@@ -17,7 +17,10 @@ public enum TypeGroup
     TYPE_CIVILITE("TYP_CIV", "Civilité"),
     TYPE_PIECE("TYP_PCE", "Type de pièce"),
     TYPE_FUNCTION("TYP_FNC", "Type de fonction"),
-    TYPE_USER("TYP_USER", "Type d'utilisateur"), STRUCTURE("TYP_STR", "Type de structure");
+    TYPE_USER("TYP_USER", "Type d'utilisateur"), TYPE_STR("TYP_STR", "Type de structure"),
+    TYPE_ECHEANCIER("TYPE_ECHEANCIER", "Type d'échéancier"),
+    TYPE_FREQUENCE("TYPE_FREQUENCE", "Type de fréquences"),
+    MODE_PRELEVEMENT("MODE_PRELEVEMENT", "mode de prélèvement");
     private String groupCode;
     private String groupName;
 

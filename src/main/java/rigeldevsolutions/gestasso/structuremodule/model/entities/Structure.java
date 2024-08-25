@@ -41,10 +41,6 @@ public class Structure
     @Transient
     private MultipartFile creationActFile;
 
-    public Structure(Long strId)
-    {
-        this.strId = strId;
-    }
 
     private String ficheTechPath;
     @Enumerated(EnumType.STRING)
@@ -52,6 +48,11 @@ public class Structure
 
     @Transient
     private List<AppUser> personnel;
+
+    public Structure(Long strId)
+    {
+        this.strId = strId;
+    }
 
     @Override
     public String toString()

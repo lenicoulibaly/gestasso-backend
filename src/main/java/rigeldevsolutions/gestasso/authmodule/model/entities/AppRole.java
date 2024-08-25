@@ -12,41 +12,21 @@ import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
 @Entity
-@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
-public class AppRole
+@Audited @EntityListeners(AuditingEntityListener.class)
+public class AppRole extends HistoDetails
 {
     @Id
     private String roleCode;
     @Column(unique = true)
     private String roleName;
     private String prvAuthorizedTypes;
-
-    @CreatedDate
-    @Column(name = "CreatedAt")
-    private LocalDateTime createdAt;
-    @CreatedBy
-    @Column(name = "CreatedBy", length = 50)
-    private String createdBy;
-    @LastModifiedDate
-    @Column(name = "UpdatedAt")
-    private LocalDateTime updatedAt;
-    @LastModifiedBy
-    @Column(name = "UpdatedBy", length = 50)
-    private String updatedBy;
-    @Column(name = "DeletedAt")
-    private LocalDateTime deletedAt;
-    @Column(name = "DeletedBy", length = 50)
-    private String deletedBy;
-    @Column(name = "isDeleted", length = 50)
-    private Boolean isDeleted = false;
-    private String action;
-    private String connectionId;
 
     public AppRole(String roleCode, String roleName) {
         this.roleCode = roleCode;
@@ -68,5 +48,10 @@ public class AppRole
     @Override
     public int hashCode() {
         return Objects.hash(roleCode, roleName);
+    }
+
+    @Override
+    public String toString() {
+        return roleCode + '_' +roleName;
     }
 }

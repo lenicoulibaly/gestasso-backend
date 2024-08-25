@@ -14,14 +14,14 @@ public class StringUtils
 	
 	public static String stripAccentsToUpperCase(String string)
 	{
-		if(string==null) return null;
-		return stripAccents(string).toUpperCase();
+		if(string==null) return "";
+		return stripAccents(string).toUpperCase().trim();
 	}
 	
 	public static String stripAccentsToLowerCase(String string)
 	{
-		if(string==null) return null;
-		return stripAccents(string).toLowerCase();
+		if(string==null) return "";
+		return stripAccents(string).toLowerCase().trim();
 	}
 
 	public static String blankToNull(String str)

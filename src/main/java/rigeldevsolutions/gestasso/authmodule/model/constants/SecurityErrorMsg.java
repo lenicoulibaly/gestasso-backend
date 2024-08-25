@@ -22,7 +22,7 @@ public class SecurityErrorMsg
     public static final String INVALID_USERNAME_ERROR_MSG = "Login invalide";
     public static final String LOCKED_ACCOUNT_ERROR_MSG = "Compte non activé";
     public static final String DISABLED_ACCOUNT_ERROR_MSG = "Compte non activé";
-    public static final String ALREADY_ACTIVATED_ACCOUNT_ERROR_MSG = "Votre compte est déjà activé. Vous pouvez essayer de vous connecter.";
+    public static final String ALREADY_ACTIVATED_ACCOUNT_ERROR_MSG = "Ce compte est déjà activé. L'utilisateur peut essayer de se connecter.";
     public static final String INVALID_FUNCTION_ID_ERROR_MSG = "L'identifiant de la fonction est incorrect";
     public static final String USER_ID_NOT_FOUND_ERROR_MSG = "Identifiant de l'utilisateur non valid";
     public static final String NOT_CONCORDANT_USER_ID_AND_USERNAME_ERROR_MSG = "Nom d'utilisateur et identifiant non concordant";

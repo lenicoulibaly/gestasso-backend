@@ -15,11 +15,11 @@ import java.util.Set;
 public class CreateInitialFncDTO
 {
     private String name;
-    private Long ecoleId;
-    private String classeIds;
+    private Long assoId;
+    private Long sectionId;
     //@ExistingUserId
     private Long userId;
-    //@ExistingTypeCode
+    @ExistingTypeCode
     private String typeCode;
     @JsonFormat(pattern = "yyyy-MM-dd")
     protected LocalDate startsAt;

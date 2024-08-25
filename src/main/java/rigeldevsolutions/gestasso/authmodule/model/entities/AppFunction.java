@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 @Entity
 @Audited @EntityListeners(AuditingEntityListener.class)
-public class AppFunction
+public class AppFunction extends HistoDetails
 {
     @Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "FNC_ID_GEN")
     @SequenceGenerator(name = "FNC_ID_GEN", sequenceName = "FNC_ID_GEN", allocationSize = 10)
@@ -28,7 +28,7 @@ public class AppFunction
     private String name;
     @ManyToOne @JoinColumn(name = "USER_ID")
     private AppUser user;
-    @ManyToOne @JoinColumn(name = "TYPE_ID")
+    @ManyToOne @JoinColumn(name = "TYPE_CODE")
     private Type type;
     @ManyToOne @JoinColumn(name = "SECTION_ID")
     private Section section;
@@ -38,40 +38,19 @@ public class AppFunction
     protected LocalDate startsAt;
     protected LocalDate endsAt;
 
-    public AppFunction(Long id, String name, AppUser user, Type type, Section section, Association association, int fncStatus, LocalDate startsAt, LocalDate endsAt) {
-        this.id = id;
+    public AppFunction(String name, AppUser user, int fncStatus, LocalDate startsAt, LocalDate endsAt) {
         this.name = name;
         this.user = user;
-        this.type = type;
-        this.section = section;
-        this.association = association;
         this.fncStatus = fncStatus;
         this.startsAt = startsAt;
         this.endsAt = endsAt;
     }
 
-    @CreatedDate
-    @Column(name = "CreatedAt")
-    private LocalDateTime createdAt;
-    @CreatedBy
-    @Column(name = "CreatedBy", length = 50)
-    private String createdBy;
-    @LastModifiedDate
-    @Column(name = "UpdatedAt")
-    private LocalDateTime updatedAt;
-    @LastModifiedBy
-    @Column(name = "UpdatedBy", length = 50)
-    private String updatedBy;
-    @Column(name = "DeletedAt")
-    private LocalDateTime deletedAt;
-    @Column(name = "DeletedBy", length = 50)
-    private String deletedBy;
-    @Column(name = "isDeleted", length = 50)
-    private Boolean isDeleted = false;
-    private String action;
-    private String connectionId;
-
     public AppFunction(Long fncId) {
         this.id = fncId;
+    }
+    @Override
+    public String toString() {
+        return id + "_" + name;
     }
 }

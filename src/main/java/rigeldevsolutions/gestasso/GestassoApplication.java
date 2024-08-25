@@ -13,12 +13,14 @@ import rigeldevsolutions.gestasso.modulelog.controller.service.AuditorAwareImpl;
 public class GestassoApplication
 {
     @Bean
-    public AuditorAware<String> auditorProvider(IJwtService jwtService) {
+    public AuditorAware<String> auditorProvider(IJwtService jwtService)
+    {
         return new AuditorAwareImpl(jwtService);
+
     }
 
     public static void main(String[] args) {
+
         SpringApplication.run(GestassoApplication.class, args);
     }
-
 }

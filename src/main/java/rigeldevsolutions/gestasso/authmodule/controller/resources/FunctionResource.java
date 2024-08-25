@@ -1,7 +1,11 @@
 package rigeldevsolutions.gestasso.authmodule.controller.resources;
 
+import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import rigeldevsolutions.gestasso.authmodule.controller.repositories.FunctionRepo;
+import rigeldevsolutions.gestasso.authmodule.controller.services.spec.IActionIdentifierService;
 import rigeldevsolutions.gestasso.authmodule.controller.services.spec.IFunctionService;
+import rigeldevsolutions.gestasso.authmodule.model.constants.AuthActions;
 import rigeldevsolutions.gestasso.authmodule.model.dtos.appfunction.CreateFncDTO;
 import rigeldevsolutions.gestasso.authmodule.model.dtos.appfunction.FncMapper;
 import rigeldevsolutions.gestasso.authmodule.model.dtos.appfunction.ReadFncDTO;
@@ -11,6 +15,7 @@ import rigeldevsolutions.gestasso.authmodule.model.dtos.asignation.SetAuthoritie
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import rigeldevsolutions.gestasso.authmodule.model.entities.ActionIdentifier;
 
 import java.net.UnknownHostException;
 import java.util.Comparator;
@@ -24,15 +29,18 @@ public class FunctionResource
     private final IFunctionService functionService;
     private final FunctionRepo functionRepo;
     private final FncMapper fncMapper;
+    private final IActionIdentifierService ais;
 
     @PostMapping(path = "/create")
-    public ReadFncDTO createFunction(@RequestBody CreateFncDTO dto) throws UnknownHostException {
-        return functionService.createFnc(dto);
+    public ReadFncDTO createFunction(@RequestBody @Valid CreateFncDTO dto) throws UnknownHostException {
+        ActionIdentifier ai = ais.getActionIdentifierFromSecurityContext(AuthActions.CREATE_FNC);
+        return functionService.createFnc(dto, ai);
     }
 
     @PutMapping(path = "/update")
-    public ReadFncDTO updateFunction(@RequestBody UpdateFncDTO dto) throws UnknownHostException {
-         return functionService.updateFunction(dto);
+    public ReadFncDTO updateFunction(@RequestBody @Valid  UpdateFncDTO dto) throws UnknownHostException {
+        ActionIdentifier ai = ais.getActionIdentifierFromSecurityContext(AuthActions.UPDATE_FUNCTION);
+        return functionService.updateFunction(dto, ai);
     }
 
     @GetMapping(path = "/infos/{foncId}")
@@ -54,19 +62,22 @@ public class FunctionResource
     }
 
     @PutMapping(path = "/set-fnc-as-default/{fncId}")
-    public AuthResponseDTO setFunctionAsDefault(@PathVariable Long fncId) throws UnknownHostException
+    public AuthResponseDTO setFunctionAsDefault(@PathVariable Long fncId)
     {
-        return functionService.setFunctionAsDefault(fncId);
+        ActionIdentifier ai = ais.getActionIdentifierFromSecurityContext(AuthActions.SET_FNC_AS_DEFAULT);
+        return functionService.setFunctionAsDefault(fncId, ai);
     }
     @PutMapping(path = "/revoke/{fncId}")
-    public void revokeFunction(@PathVariable Long fncId) throws UnknownHostException
+    public void revokeFunction(@PathVariable Long fncId)
     {
-        functionService.revokeFunction(fncId);
+        ActionIdentifier ai = ais.getActionIdentifierFromSecurityContext(AuthActions.REVOKE_FNC);
+        functionService.revokeFunction(fncId, ai);
     }
     @PutMapping(path = "/restore/{fncId}")
     public void restoreFunction(@PathVariable Long fncId) throws UnknownHostException
     {
-        functionService.restoreFunction(fncId);
+        ActionIdentifier ai = ais.getActionIdentifierFromSecurityContext(AuthActions.RESTORE_FNC);
+        functionService.restoreFunction(fncId, ai);
     }
 
     @GetMapping(path = "/active-fnc-for-user/{userId}")
@@ -79,5 +90,21 @@ public class FunctionResource
     public List<ReadFncDTO> getUsersAllFunctions(@PathVariable Long userId)
     {
         return functionRepo.findAllByUser(userId).stream().map(fncMapper::mapToReadFncDto).collect(Collectors.toList());
+    }
+
+    @GetMapping(path = "/search/{userId}")
+    public Page<ReadFncDTO> searchUsersFunctions(@PathVariable Long userId,
+                                                 @RequestParam(defaultValue = "", required = false) String key,
+                                                 @RequestParam(defaultValue = "0", required = false) int page,
+                                                 @RequestParam(defaultValue = "5", required = false) int size,
+                                                 @RequestParam(defaultValue = "false") boolean withRevoked)
+    {
+        return functionService.search(userId, key, page, size, withRevoked); //functionRepo.findAllByUser(userId).stream().map(fncMapper::mapToReadFncDto).collect(Collectors.toList());
+    }
+
+    @GetMapping(path = "/get-update-fnc-dto/{fncId}")
+    public UpdateFncDTO getUpdateFncDTO(@PathVariable Long fncId)
+    {
+        return functionRepo.getUpdateFncDTO(fncId);
     }
 }

@@ -1,0 +1,29 @@
+services:
+  postgres:
+    image: 'postgres:latest'
+    environment:
+      - 'POSTGRES_DB=gestasso_db'
+      - 'POSTGRES_PASSWORD=admin'
+      - 'POSTGRES_USER=postgres'
+    ports:
+      - '5433:5432'
+    volumes:
+      - type: volume
+        target: /var/lib/postgresql/data
+        source: gestasso_db
+    restart: unless-stopped
+  prometheus:
+    image: prom/prometheus
+    container_name: gestasso_prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./docker/prometheus/prometheus.yaml:/etc/prometheus/prometheus.yml
+  zipkin:
+    image: 'openzipkin/zipkin:latest'
+    ports:
+      - '9411'
+volumes:
+  gestasso_db:
+

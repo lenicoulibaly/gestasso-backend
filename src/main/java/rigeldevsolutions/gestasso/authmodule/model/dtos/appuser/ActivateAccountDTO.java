@@ -8,6 +8,8 @@ import org.hibernate.validator.constraints.Length;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.time.LocalDateTime;
+
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 @ValidToken @ConcordantPassword //@ConcordantUserIdAndEmail
 public class ActivateAccountDTO
@@ -24,6 +26,15 @@ public class ActivateAccountDTO
     private String confirmPassword;
     @ValidToken @NoneExpiredToken @NoneAlreadyUsedToken
     private String activationToken;
+
+
+    protected String civiliteCode;
+    protected String codePays;
+    protected String typePieceCode;
+    private Long gradeId;
+    private int indiceFonctionnaire;
+    protected String numPiece;
+    protected String typeUtilisateurCode;
 }
 /*
 git init

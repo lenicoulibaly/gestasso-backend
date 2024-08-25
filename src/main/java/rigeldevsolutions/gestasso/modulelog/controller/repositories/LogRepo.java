@@ -18,13 +18,13 @@ public interface LogRepo extends JpaRepository<Log, Long>
         l.userId, l.userEmail, u.firstName, u.lastName, l.action, l.actionDateTime, 
         l.ipAddress, l.hostName, l.connectionId, f.id, f.name, l.errorMessage, l.stackTrace)
         from Log l left join l.function f left join f.user u left join f.association a left join f.section s where 
-        (locate(upper(coalesce(:key, '')), upper(cast(function('strip_accents',  coalesce(l.userEmail, '') ) as string))) >0 
-        or locate(upper(coalesce(:key, '') ), upper(cast(function('strip_accents',  coalesce(u.firstName, '') ) as string))) >0
-        or locate(upper(coalesce(:key, '') ), upper(cast(function('strip_accents',  coalesce(u.lastName, '') ) as string))) >0
-        or locate(upper(coalesce(:key, '') ), upper(cast(function('strip_accents',  coalesce(l.action, '') ) as string))) >0
-        or locate(upper(coalesce(:key, '') ), upper(cast(function('strip_accents',  coalesce(f.name, '') ) as string))) >0
-        or locate(upper(coalesce(:key, '') ), upper(cast(function('strip_accents',  coalesce(l.ipAddress, '') ) as string))) >0
-        or locate(upper(coalesce(:key, '') ), upper(cast(function('strip_accents',  coalesce(l.hostName, '') ) as string))) >0
+        (locate(upper(coalesce(:key, '')), upper(cast(function('unaccent',  coalesce(l.userEmail, '') ) as string))) >0 
+        or locate(upper(coalesce(:key, '') ), upper(cast(function('unaccent',  coalesce(u.firstName, '') ) as string))) >0
+        or locate(upper(coalesce(:key, '') ), upper(cast(function('unaccent',  coalesce(u.lastName, '') ) as string))) >0
+        or locate(upper(coalesce(:key, '') ), upper(cast(function('unaccent',  coalesce(l.action, '') ) as string))) >0
+        or locate(upper(coalesce(:key, '') ), upper(cast(function('unaccent',  coalesce(f.name, '') ) as string))) >0
+        or locate(upper(coalesce(:key, '') ), upper(cast(function('unaccent',  coalesce(l.ipAddress, '') ) as string))) >0
+        or locate(upper(coalesce(:key, '') ), upper(cast(function('unaccent',  coalesce(l.hostName, '') ) as string))) >0
       
         )
         and l.action in :actions and (:connId is null or :connId = l.connectionId)

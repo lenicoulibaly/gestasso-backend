@@ -67,6 +67,7 @@ public class RoleService implements IRoleService
     @Override
     public Page<ReadRoleDTO> searchRoles(String searchKey, Pageable pageable)
     {
+        System.out.println("searching roles ...");
         Page<AppRole> rolePage = roleRepo.searchRoles(StringUtils.stripAccentsToUpperCase(searchKey), pageable);
         List<ReadRoleDTO> readRoleDTOS = rolePage.stream().map(roleMapper::mapToReadRoleDTO).peek(r->r.setPrivilegeOptions(this.getRolePrivileges(r.getRoleCode()))).collect(Collectors.toList());
         return new PageImpl<>(readRoleDTOS, pageable, rolePage.getTotalElements());
@@ -90,10 +91,13 @@ public class RoleService implements IRoleService
     }
 
     private ReadRoleDTO setRolePrivileges(PrvsToRoleDTO dto) {
+        if(dto == null) throw new AppException("Veuillez saisir les données à modifier");
         AppRole role = roleRepo.findById(dto.getRoleCode()).orElseThrow(()->new AppException("Role introuvable"));
         String roleCode = dto.getRoleCode(); Set<String> prvCodes = dto.getPrvCodes() == null ? new HashSet<>() : dto.getPrvCodes().size() == 0 ? new HashSet<>() : dto.getPrvCodes();
         LocalDate startsAt = dto.getStartsAt(); LocalDate endsAt =  dto.getEndsAt();
-        Set<String> prvCodesToBeRemoved = prvToRoleAssRepo.findPrvCodesForRoleNotIn(roleCode, prvCodes); //
+        Set<String> alreadyAvailablePrvCode = prvToRoleAssRepo.findActivePrvCodesForRole(dto.getRoleCode());
+        Set<String> prvCodesToBeRemoved = dto.getPrvCodes() == null || dto.getPrvCodes().isEmpty() ?
+                alreadyAvailablePrvCode : prvToRoleAssRepo.findPrvCodesForRoleNotIn(roleCode, prvCodes); //
         Set<String> prvCodesToBeAdded = prvToRoleAssRepo.findPrvCodesNotBelongingToRoleIn(roleCode, prvCodes);
         //Set<String> prvCodesToNotBeChanged = prvToRoleAssRepo.findActivePrvCodesForRoleIn_sameDates(roleCode, prvCodes, startsAt.toLocalDate(), endsAt.toLocalDate());
         Set<String> prvCodesToChangeTheDates = prvToRoleAssRepo.findActivePrvCodesForRoleIn_otherDates(roleCode, prvCodes, startsAt, endsAt);

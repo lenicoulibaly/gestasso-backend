@@ -10,7 +10,7 @@ import lombok.Setter;
 import java.util.List;
 
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
-public class CreateUserAndFunctionDTO
+public class CreateUserAndFunctionsDTO
 {
     @Valid
     private CreateUserDTO createUserDTO;

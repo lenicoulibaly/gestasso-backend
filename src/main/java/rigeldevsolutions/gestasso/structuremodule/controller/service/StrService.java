@@ -7,6 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import rigeldevsolutions.gestasso.authmodule.controller.services.spec.IJwtService;
+import rigeldevsolutions.gestasso.sharedmodule.dtos.SelectOption;
 import rigeldevsolutions.gestasso.sharedmodule.enums.PersStatus;
 import rigeldevsolutions.gestasso.sharedmodule.exceptions.AppException;
 import rigeldevsolutions.gestasso.sharedmodule.utilities.StringUtils;
@@ -122,7 +123,7 @@ public class StrService implements IStrService
 
     @Override
     public List<Type> getStrTypes() {
-        return typeRepo.findByTypeGroupAndStatus(TypeGroup.STRUCTURE, ACTIVE);
+        return typeRepo.findByTypeGroupAndStatus(TypeGroup.TYPE_STR, ACTIVE);
     }
 
     @Override
@@ -242,5 +243,15 @@ public class StrService implements IStrService
         return strs.stream().map(str->{ReadStrDTO dto = strMapper.mapToReadStrDTO(str);
             dto.setStrName(str.getStrName() + "(" +this.getParents(str.getStrId()).stream().map(Structure::getStrSigle).reduce("",(s1, s2)->s1+"/"+s2).substring(1) + ")");
             return dto;}).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<SelectOption> getStrAllOptions()
+    {
+        List<SelectOption> options = strRepo.getStrAllOptions();
+        SelectOption defaultOption = new SelectOption("", "");
+        if(options == null) return Collections.singletonList(defaultOption);
+        options.add(0, defaultOption);
+        return options;
     }
 }

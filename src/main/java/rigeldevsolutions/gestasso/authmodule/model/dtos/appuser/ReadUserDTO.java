@@ -43,7 +43,8 @@ public class ReadUserDTO
 
     public ReadUserDTO(Long userId, String firstName, String lastName,
                        String email, String tel, String civilite,
-                       String typeUtilisateur, boolean active, boolean notBlocked, String statut)
+                       String typeUtilisateur, boolean active,
+                       boolean notBlocked, String statut)
     {
         this.userId = userId;
         this.firstName = firstName;

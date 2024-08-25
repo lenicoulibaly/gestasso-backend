@@ -23,27 +23,6 @@ public class PrvToRoleAss extends Assignation
     @ManyToOne @JoinColumn(name = "ROLE_ID")
     private AppRole role;
 
-    @CreatedDate
-    @Column(name = "CreatedAt")
-    private LocalDateTime createdAt;
-    @CreatedBy
-    @Column(name = "CreatedBy", length = 50)
-    private String createdBy;
-    @LastModifiedDate
-    @Column(name = "UpdatedAt")
-    private LocalDateTime updatedAt;
-    @LastModifiedBy
-    @Column(name = "UpdatedBy", length = 50)
-    private String updatedBy;
-    @Column(name = "DeletedAt")
-    private LocalDateTime deletedAt;
-    @Column(name = "DeletedBy", length = 50)
-    private String deletedBy;
-    @Column(name = "isDeleted", length = 50)
-    private Boolean isDeleted = false;
-    private String action;
-    private String connectionId;
-
     public PrvToRoleAss(Long assId, int assStatus, LocalDate startsAt, LocalDate endsAt, AppPrivilege privilege, AppRole role) {
         super(assId, assStatus, startsAt, endsAt);
         this.privilege = privilege;

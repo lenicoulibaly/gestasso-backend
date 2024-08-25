@@ -16,7 +16,7 @@ import java.lang.annotation.*;
 @Documented
 public @interface ExistingTypeCode
 {
-    String message() default "Le code du type à modifier est inexistant";
+    String message() default "Le code du type est inexistant";
 
     Class<?>[] groups() default { };
 
@@ -29,6 +29,7 @@ public @interface ExistingTypeCode
         @Override
         public boolean isValid(String value, ConstraintValidatorContext context)
         {
+            if(value == null) return true;
             return typeRepo.existsById(value);
         }
     }

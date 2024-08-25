@@ -5,6 +5,8 @@ import io.jsonwebtoken.impl.crypto.DefaultJwtSignatureValidator;
 import io.jsonwebtoken.impl.crypto.DefaultSignatureValidatorFactory;
 import io.jsonwebtoken.impl.crypto.JwtSignatureValidator;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import rigeldevsolutions.gestasso.authmodule.filters.JwtAuthenticationFilter;
 import rigeldevsolutions.gestasso.authmodule.model.constants.SecurityConstants;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +30,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
+import java.util.List;
 
 @Configuration @EnableWebSecurity
 @RequiredArgsConstructor
@@ -35,24 +38,32 @@ public class SecurityConfig
 {
     private final JwtAuthenticationFilter authenticationFilter;
     private final UserDetailsService userDetailsService;
+    @Value("${corse.allowed.origins}")
+    private String allowedOrigins;
+
+    //@Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        List<String> corseAllowedOrigins = allowedOrigins == null ? Collections.emptyList() : Arrays.stream(allowedOrigins.split(",")).toList();
+        corseAllowedOrigins.forEach(System.out::println);
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(corseAllowedOrigins);
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception
+    {
         return httpSecurity
                 .csrf(csrf->csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .cors(cors -> {
-                    CorsConfigurationSource source = request -> {
-                        CorsConfiguration config = new CorsConfiguration();
-                        config.setAllowedOrigins(Arrays.asList("http://localhost:3000/","http://localhost:8000/","http://localhost/", "http://localhost:1000/",
-                                "http://164.160.41.153/","http://10.100.100.106/"
-                        ));
-                        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
-                        config.setAllowedHeaders(Collections.singletonList("*"));
-                        return config;
-                    };
-                    cors.configurationSource(source);
-                })
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(authorize -> {
                     authorize.requestMatchers("/*/open/**", "/reports/**", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                             .anyRequest().authenticated();

@@ -14,8 +14,8 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
-@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
-public class AccountToken
+@Audited(targetAuditMode = RelationTargetAuditMode.AUDITED)
+public class AccountToken extends HistoDetails
 {
     @Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TOKEN_ID_GEN")
     @SequenceGenerator(name = "TOKEN_ID_GEN", sequenceName = "TOKEN_ID_GEN", allocationSize = 10)
@@ -31,27 +31,6 @@ public class AccountToken
     private boolean emailSent;
     @ManyToOne
     private AppUser user;
-
-    @CreatedDate
-    @Column(name = "CreatedAt")
-    private LocalDateTime createdAt;
-    @CreatedBy
-    @Column(name = "CreatedBy", length = 50)
-    private String createdBy;
-    @LastModifiedDate
-    @Column(name = "UpdatedAt")
-    private LocalDateTime updatedAt;
-    @LastModifiedBy
-    @Column(name = "UpdatedBy", length = 50)
-    private String updatedBy;
-    @Column(name = "DeletedAt")
-    private LocalDateTime deletedAt;
-    @Column(name = "DeletedBy", length = 50)
-    private String deletedBy;
-    @Column(name = "isDeleted", length = 50)
-    private Boolean isDeleted = false;
-    private String action;
-    private String connectionId;
 
     public AccountToken(Long tokenId)
     {

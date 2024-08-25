@@ -86,7 +86,7 @@ public class LogService implements ILogService
     {
         InetAddress Ip=InetAddress.getLocalHost();
         Long userId = userRepo.getUserIdByEmail(actorEmail);
-        Set<Long> fncIds = functionRepo.getCurrentFncIds(userId);
+        List<Long> fncIds = functionRepo.getCurrentFncIds(userId);
 
         Log log = new Log();
         log.setMainActionId(mainActionId);
@@ -118,7 +118,7 @@ public class LogService implements ILogService
         log.setMacAddress(Ip.getAddress());
         log.setHostName(Ip.getHostName());
 
-        Set<Long> ids = functionRepo.getCurrentFncIds(user.getUserId());
+        List<Long> ids = functionRepo.getCurrentFncIds(user.getUserId());
         Long functionId = ids == null || ids.size() != 1 ? null : new ArrayList<>(ids).get(0);
         log.setFunction(functionId == null ? null : functionRepo.findById(functionId).orElse(null));
         return logRepo.save(log);

@@ -58,6 +58,6 @@ public interface RoleToFunctionAssRepo extends JpaRepository<RoleToFncAss, Long>
     @Query("select r from RoleToFncAss r where r.function.id = ?1 and r.assStatus = 1 and current_date between coalesce(r.startsAt, current_date) and coalesce(r.endsAt, current_date)")
     List<RoleToFncAss> findActiveByFnc(Long fncId);
 
-    @Query("select r from RoleToFncAss r where r.function.id = ?1 and locate(?2, cast(function('strip_accents', r.role.roleName) as string))>0 and r.assStatus = 1 and current_date between coalesce(r.startsAt, current_date) and coalesce(r.endsAt, current_date)")
+    @Query("select r from RoleToFncAss r where r.function.id = ?1 and locate(?2, cast(function('unaccent', r.role.roleName) as string))>0 and r.assStatus = 1 and current_date between coalesce(r.startsAt, current_date) and coalesce(r.endsAt, current_date)")
     Page<RoleToFncAss> searchActiveByFnc(Long fncId, String key, Pageable pageable);
 }

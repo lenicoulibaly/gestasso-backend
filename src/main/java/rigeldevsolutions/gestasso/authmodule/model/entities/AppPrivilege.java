@@ -1,5 +1,6 @@
 package rigeldevsolutions.gestasso.authmodule.model.entities;
 
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import rigeldevsolutions.gestasso.typemodule.model.entities.Type;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,8 +20,8 @@ import java.util.Objects;
 
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
 @Entity
-@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
-public class AppPrivilege
+@Audited @EntityListeners(AuditingEntityListener.class)
+public class AppPrivilege extends HistoDetails
 {
     @Id
     private String privilegeCode;
@@ -28,27 +29,6 @@ public class AppPrivilege
     private String privilegeName;
     @ManyToOne @JoinColumn
     private Type prvType;
-
-    @CreatedDate
-    @Column(name = "CreatedAt")
-    private LocalDateTime createdAt;
-    @CreatedBy
-    @Column(name = "CreatedBy", length = 50)
-    private String createdBy;
-    @LastModifiedDate
-    @Column(name = "UpdatedAt")
-    private LocalDateTime updatedAt;
-    @LastModifiedBy
-    @Column(name = "UpdatedBy", length = 50)
-    private String updatedBy;
-    @Column(name = "DeletedAt")
-    private LocalDateTime deletedAt;
-    @Column(name = "DeletedBy", length = 50)
-    private String deletedBy;
-    @Column(name = "isDeleted", length = 50)
-    private Boolean isDeleted = false;
-    private String action;
-    private String connectionId;
 
     public AppPrivilege(String privilegeCode)
     {
@@ -67,5 +47,9 @@ public class AppPrivilege
     @Override
     public int hashCode() {
         return Objects.hash(privilegeCode);
+    }
+    @Override
+    public String toString() {
+        return privilegeCode + "_" + privilegeName;
     }
 }

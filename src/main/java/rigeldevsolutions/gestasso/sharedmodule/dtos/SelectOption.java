@@ -19,6 +19,16 @@ public class SelectOption
         this.label = label;
     }
 
+    public SelectOption(Long id, String label) {
+        this.id = String.valueOf(id);
+        this.label = label;
+    }
+
+    public SelectOption(Long id, String label, String typeName) {
+        this(id, label);
+        this.typeName = typeName;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

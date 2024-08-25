@@ -31,6 +31,7 @@ public class AuthActions
     public static final String SET_FNC_AS_DEFAULT = "Définition d'une fonction en tant que fonction par défaut";
     public static final String SET_USER_DEFAULT_FNC_ID = "Changement de la fonction par défaut d'un utilisateur";
     public static final String REVOKE_FNC = "Révocation d'une fonction";
+    public static final String RESTORE_FNC = "Restauration d'une fonction";
     public static final String REMOVE_ROLE_TO_FNC = "Retrait d'un rôle à une fonction";
     public static final String RESTORE_ROLE_TO_FNC = "Restaurer le role d'une fonction";
     public static final String CHANGE_ROLE_TO_FNC_VALIDITY_PERIOD = "Changement de la période de validité d'une assignation de rôle à fonction";
@@ -48,4 +49,6 @@ public class AuthActions
     public static final String SET_TOKEN_AS_ALREADY_USED = "Marquage d'un token comme déjà utilisé";
     public static final String UPDATE_FUNCTION = "Mise à jour des informations d'une fonction";
     public static final String UPDATE_PRV = "Mise à jour d'un privilège";
+    public static final String CREATE_USER_AND_FUNCTIONS = "Création d'un utilisateur et ses fonctions";
+    public static final String UPDATE_USER_AND_FUNCTIONS = "Modification d'un utilidsateur et d'une fonction";
 }

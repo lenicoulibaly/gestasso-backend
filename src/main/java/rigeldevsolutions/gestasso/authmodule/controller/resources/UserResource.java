@@ -1,9 +1,12 @@
 package rigeldevsolutions.gestasso.authmodule.controller.resources;
 
 import jakarta.validation.Valid;
+import rigeldevsolutions.gestasso.authmodule.controller.services.spec.IActionIdentifierService;
 import rigeldevsolutions.gestasso.authmodule.controller.services.spec.IJwtService;
 import rigeldevsolutions.gestasso.authmodule.controller.services.spec.IUserService;
+import rigeldevsolutions.gestasso.authmodule.model.constants.AuthActions;
 import rigeldevsolutions.gestasso.authmodule.model.dtos.appuser.*;
+import rigeldevsolutions.gestasso.authmodule.model.entities.ActionIdentifier;
 import rigeldevsolutions.gestasso.modulelog.model.dtos.response.JwtInfos;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -20,6 +23,7 @@ public class UserResource
 {
     private final IUserService userService;
     private final IJwtService jwtService;
+    private final IActionIdentifierService ais;
 
     @GetMapping(path = "/infos/{userId}")
     public ReadUserDTO getUserInfos(@PathVariable Long userId) throws UnknownHostException {
@@ -43,17 +47,20 @@ public class UserResource
 
     @PostMapping(path = "/create")
     public ReadUserDTO createUser(@RequestBody @Valid CreateUserDTO dto) throws UnknownHostException, IllegalAccessException {
-        return userService.createUser(dto);
+        ActionIdentifier ai = ais.getActionIdentifierFromSecurityContext(AuthActions.CREATE_USER);
+        return userService.createUser(dto, ai);
     }
 
-    @PostMapping(path = "/create-user-and-function")
-    public ReadUserDTO createUserAndFunction(@RequestBody @Valid CreateUserAndFunctionDTO dto) throws UnknownHostException, IllegalAccessException {
-        return userService.createUserAndFunction(dto);
+    @PostMapping(path = "/create-user-and-functions")
+    public ReadUserDTO createUserAndFunction(@RequestBody @Valid CreateUserAndFunctionsDTO dto) throws UnknownHostException, IllegalAccessException {
+        ActionIdentifier ai = ais.getActionIdentifierFromSecurityContext(AuthActions.CREATE_USER_AND_FUNCTIONS);
+        return userService.createUserAndFunction(dto, ai);
     }
 
-    @PutMapping(path = "/update-user-and-function")
+    @PutMapping(path = "/update-user-and-functions")
     public ReadUserDTO updateUserAndFunction(@RequestBody @Valid UpdateUserAndFncDTO dto) throws UnknownHostException, IllegalAccessException {
-        return userService.updateUserAndFunction(dto);
+        ActionIdentifier ai = ais.getActionIdentifierFromSecurityContext(AuthActions.UPDATE_USER_AND_FUNCTIONS);
+        return userService.updateUserAndFunction(dto, ai);
     }
 
     @GetMapping(path = "/get-update-user-and-fncs-dto/{userId}")
@@ -70,51 +77,60 @@ public class UserResource
 
     @PutMapping(path = "/open/activate-account")
     public ReadUserDTO activateUserAccount(@RequestBody @Valid ActivateAccountDTO dto) throws UnknownHostException, IllegalAccessException {
-        return userService.activateAccount(dto);
+        ActionIdentifier ai = ais.getActionIdentifierFromSecurityContext(AuthActions.ACTIVATE_USER_ACCOUNT);
+        return userService.activateAccount(dto, ai);
     }
 
     @PutMapping(path = "/update")
     public ReadUserDTO updateUser(@RequestBody @Valid UpdateUserDTO dto) throws UnknownHostException, IllegalAccessException {
-        return userService.updateUser(dto);
+        ActionIdentifier ai = ais.getActionIdentifierFromSecurityContext(AuthActions.UPDATE_USER);
+        return userService.updateUser(dto, ai);
     }
 
     @PutMapping(path = "/change-password")
     public ReadUserDTO changePassword(@RequestBody @Valid ChangePasswordDTO dto) throws UnknownHostException, IllegalAccessException {
-        return userService.changePassword(dto);
+        ActionIdentifier ai = ais.getActionIdentifierFromSecurityContext(AuthActions.CHANGE_PASSWORD);
+        return userService.changePassword(dto, ai);
     }
 
     @PutMapping(path = "/block/{userId}")
     public boolean blockAccount(@PathVariable @Valid long userId ) throws UnknownHostException, IllegalAccessException {
-        userService.blockAccount(userId);
+        ActionIdentifier ai = ais.getActionIdentifierFromSecurityContext(AuthActions.LOCK_USER_ACCOUNT);
+        userService.blockAccount(userId, ai);
         return true;
     }
 
     @PutMapping(path = "/unblock/{userId}")
     public boolean unblockAccount(@PathVariable @Valid long userId ) throws UnknownHostException, IllegalAccessException {
-        userService.unBlockAccount(userId);
+        ActionIdentifier ai = ais.getActionIdentifierFromSecurityContext(AuthActions.UNLOCK_USER_ACCOUNT);
+        userService.unBlockAccount(userId, ai);
         return true;
     }
 
     @PutMapping(path = "/open/reinit-password")
     public ReadUserDTO reinitPassword(@RequestBody @Valid ReinitialisePasswordDTO dto ) throws UnknownHostException, IllegalAccessException {
-        return userService.reinitialisePassword(dto);
+        ActionIdentifier ai = ais.getActionIdentifierFromSecurityContext(AuthActions.REINIT_PASSWORD);
+        return userService.reinitialisePassword(dto, ai);
     }
 
     @PutMapping(path = "/open/send-reinit-password-email/{email}")
     public boolean sendReinitPasswordEmail(@PathVariable @Valid String email ) throws UnknownHostException, IllegalAccessException {
-        userService.sendReinitialisePasswordEmail(email);
+        ActionIdentifier ai = ais.getActionIdentifierFromSecurityContext(AuthActions.SEND_REINIT_PASSWORD_EMAIL);
+        userService.sendReinitialisePasswordEmail(email, ai);
         return true;
     }
 
-    @PutMapping(path = "/send-acitivation-email/{email}")
+    @PutMapping(path = "/send-activation-email/{email}")
     public boolean sendActivationEmail(@PathVariable @Valid String email ) throws UnknownHostException, IllegalAccessException {
-        userService.sendAccountActivationEmail(email);
+        ActionIdentifier ai = ais.getActionIdentifierFromSecurityContext(AuthActions.SEND_ACCOUNT_ACTIVATION_EMAIL);
+        userService.sendAccountActivationEmail(email, ai);
         return true;
     }
 
     @GetMapping(path = "/open/click-link/{token}")
     public boolean clickLink(@PathVariable @Valid String token ) throws UnknownHostException, IllegalAccessException {
-        userService.clickLink(token);
+        ActionIdentifier ai = ais.getActionIdentifierFromSecurityContext(AuthActions.CLICK_LINK);
+        userService.clickLink(token, ai);
         return true;
     }
 

@@ -1,6 +1,7 @@
 package rigeldevsolutions.gestasso.structuremodule.controller.service;
 
 import org.springframework.data.domain.Page;
+import rigeldevsolutions.gestasso.sharedmodule.dtos.SelectOption;
 import rigeldevsolutions.gestasso.structuremodule.model.dtos.*;
 import rigeldevsolutions.gestasso.structuremodule.model.entities.Structure;
 import rigeldevsolutions.gestasso.typemodule.model.entities.Type;
@@ -35,4 +36,5 @@ public interface IStrService extends IHierarchySiglesGenerator
     Page<ReadStrDTO> searchStrByParent(String key, Long parentId, int pageNum, int pageSize);
 
     List<ReadStrDTO> getStrByChildType(String childTypeCode);
+    List<SelectOption> getStrAllOptions();
 }
