@@ -29,42 +29,31 @@ public class AppUser extends HistoDetails
 {
     @Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "USER_ID_GEN")
     @SequenceGenerator(name = "USER_ID_GEN", sequenceName = "USER_ID_GEN", allocationSize = 10)
-    protected Long userId;
-    protected String firstName;
-    protected String lastName;
-    protected String password;
+    private Long userId;
+    private String firstName;
+    private String lastName;
+    private String password;
     @Column(unique = true)
-    protected String email;
+    private String email;
     @Column(unique = true)
-    protected String tel;
-    protected String lieuNaissance;
-    protected LocalDate dateNaissance;
-    @ManyToOne @JoinColumn(name = "SECTION_ID")
-    private Section section;
-    @ManyToOne @JoinColumn(name = "ASSOCIATION_ID")
-    private Association association;
+    private String tel;
+    private String lieuNaissance;
+    private LocalDate dateNaissance;
     @ManyToOne @JoinColumn(name = "GENRE_CODE")
-    protected Type civilite;
+    private Type civilite;
     @ManyToOne @JoinColumn(name = "nationalite_ID")
-    protected Nationalite nationalite;
-    @ManyToOne @JoinColumn(name = "TYPE_PIECE_CODE")
-    protected Type typePiece;
+    private Nationalite nationalite;
+    private String maticuleFonctionnaire;
     @ManyToOne @JoinColumn(name = "GRADE_ID")
     private Grade grade;
     private int indiceFonctionnaire;
-    @Column(length = 50, unique = true)
-    protected String numPiece;
-    protected String nomPere;
-    protected String nomMere;
+    private String nomPere;
+    private String nomMere;
 
-    @ManyToOne @JoinColumn(name = "TYPE_USER_CODE")
-    protected Type typeUtilisateur;
-    protected boolean active;
-    protected boolean notBlocked;
-    protected Long currentFunctionId;
-    protected LocalDateTime changePasswordDate;
-    @ManyToOne
-    protected Statut statut;
+    private boolean active;
+    private boolean notBlocked;
+    private Long currentFunctionId;
+    private LocalDateTime changePasswordDate;
 
     public AppUser(String firstName, String lastName, String password, String email, String tel, boolean active, boolean notBlocked) {
         this.firstName = firstName;

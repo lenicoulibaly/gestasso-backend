@@ -74,5 +74,9 @@ public class TypeIniter implements Initer
 
         Type fonctionDev = typeRepo.save(new Type("TYF_DEV", TypeGroup.TYPE_FUNCTION, "Développeur", PersStatus.ACTIVE, null, null));
 
+        Type membreAssociation = typeRepo.save(new Type("TYF_MBR_ASSO", TypeGroup.TYPE_FUNCTION, "Membre d'association", PersStatus.ACTIVE, null, null));
+
+        Type membreSection = typeRepo.save(new Type("TYF_MBR_SECT", TypeGroup.TYPE_FUNCTION, "Membre de section", PersStatus.ACTIVE, null, null));
+
     }
 }

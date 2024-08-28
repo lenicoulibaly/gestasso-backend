@@ -15,6 +15,7 @@ public interface IUserService
     AuthResponseDTO refreshToken() throws UnknownHostException;
     void logout() throws UnknownHostException;
     ReadUserDTO createUser(CreateUserDTO dto, ActionIdentifier ai) throws IllegalAccessException, UnknownHostException;
+    ReadUserDTO createAdherant(CreateAdherantDTO dto, ActionIdentifier ai);
     ReadUserDTO updateUser(UpdateUserDTO dto, ActionIdentifier ai) throws UnknownHostException;
     ReadUserDTO changePassword(ChangePasswordDTO dto, ActionIdentifier ai) throws UnknownHostException;
     void blockAccount(Long userId, ActionIdentifier ai) throws UnknownHostException;
@@ -40,7 +41,7 @@ public interface IUserService
 
     UserStatus getUserStatus(Long userId);
 
-    Page<ReadUserDTO> searchUsers(String key, List<String> userStaCode, Pageable pageable);
+    Page<ReadUserDTO> searchUsers(String key, Pageable pageable);
 
     ReadUserDTO createUserAndFunction(CreateUserAndFunctionsDTO dto, ActionIdentifier ai) throws UnknownHostException, IllegalAccessException;
     ReadUserDTO updateUserAndFunction(UpdateUserAndFncDTO dto, ActionIdentifier ai) throws UnknownHostException;

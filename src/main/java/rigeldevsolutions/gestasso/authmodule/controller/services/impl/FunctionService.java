@@ -4,6 +4,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.transaction.event.TransactionalEventListener;
 import rigeldevsolutions.gestasso.authmodule.controller.repositories.FunctionRepo;
 import rigeldevsolutions.gestasso.authmodule.controller.repositories.RoleToFunctionAssRepo;
 import rigeldevsolutions.gestasso.authmodule.controller.repositories.UserRepo;
@@ -16,10 +17,12 @@ import rigeldevsolutions.gestasso.authmodule.model.dtos.appfunction.FncMapper;
 import rigeldevsolutions.gestasso.authmodule.model.dtos.appfunction.ReadFncDTO;
 import rigeldevsolutions.gestasso.authmodule.model.dtos.appfunction.UpdateFncDTO;
 import rigeldevsolutions.gestasso.authmodule.model.dtos.appuser.AuthResponseDTO;
+import rigeldevsolutions.gestasso.authmodule.model.dtos.appuser.CreateAdherantDTO;
 import rigeldevsolutions.gestasso.authmodule.model.dtos.asignation.AssMapper;
 import rigeldevsolutions.gestasso.authmodule.model.dtos.asignation.RoleAssSpliterDTO;
 import rigeldevsolutions.gestasso.authmodule.model.dtos.asignation.SetAuthoritiesToFunctionDTO;
 import rigeldevsolutions.gestasso.authmodule.model.entities.*;
+import rigeldevsolutions.gestasso.authmodule.model.events.AdherantCreatedEvent;
 import rigeldevsolutions.gestasso.modulelog.controller.service.ILogService;
 import rigeldevsolutions.gestasso.modulelog.model.entities.Log;
 import rigeldevsolutions.gestasso.sharedmodule.exceptions.AppException;
@@ -208,6 +211,24 @@ public class FunctionService implements IFunctionService {
         List<ReadFncDTO> functionsList = functionsPage.stream().map(fncMapper::mapToReadFncDto).toList();
 
         return new PageImpl<>(functionsList, functionsPage.getPageable(), functionsPage.getTotalElements());
+    }
+
+    @Override @TransactionalEventListener
+    public void onAdherantCreatedEvent(AdherantCreatedEvent event)
+    {
+        AppUser user = event.getUser();
+        ActionIdentifier ai = event.getAi();
+        CreateAdherantDTO createAdherantDTO = event.getDto();
+        String tyfCode = createAdherantDTO.getSectionId() == null ? "TYF_MBR_ASSO" : "TYF_MBR_SECT";
+        CreateFncDTO dto = new CreateFncDTO();
+        dto.setName("Membre");
+        dto.setTypeCode(tyfCode);
+        dto.setAssoId(createAdherantDTO.getAssoId());
+        dto.setUserId(user.getUserId());
+        dto.setSectionId(dto.getSectionId());
+        dto.setStartsAt(LocalDate.now());
+        dto.setRoleCodes(new HashSet<String>(Arrays.asList("ROL-MBR")));
+        this.createFnc(dto, ai);
     }
 
     private void treatRolesAssignation(RoleAssSpliterDTO roleAssSpliterDTO, Long fncId, LocalDate startsAt, LocalDate endsAt, ActionIdentifier ai)

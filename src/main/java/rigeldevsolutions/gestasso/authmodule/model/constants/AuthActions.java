@@ -8,6 +8,7 @@ public class AuthActions
     public static final String UPDATE_MENU = "Modification d'un menu";
     public static final String RMV_PRV_TO_MENU = "Suppression de privilège(s) à un menu";
     public static final String CREATE_USER = "Cr&ation d'un utilisateur";
+    public static final String CREATE_MEMBER = "Ajout d'un nouveau membre à une association";
     public static final String LOGIN = "Login";
     public static final String LOGOUT = "Logout";
     public static final String REFRESH_TOKEN = "Refresh token";

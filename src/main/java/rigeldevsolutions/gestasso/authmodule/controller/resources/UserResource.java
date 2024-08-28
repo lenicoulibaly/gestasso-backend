@@ -51,6 +51,15 @@ public class UserResource
         return userService.createUser(dto, ai);
     }
 
+    @PostMapping(path = "/create-member")
+    public ReadUserDTO createMember(@RequestBody @Valid CreateAdherantDTO dto)
+    {
+        ActionIdentifier ai = ais.getActionIdentifierFromSecurityContext(AuthActions.CREATE_MEMBER);
+        return userService.createAdherant(dto, ai);
+    }
+
+
+
     @PostMapping(path = "/create-user-and-functions")
     public ReadUserDTO createUserAndFunction(@RequestBody @Valid CreateUserAndFunctionsDTO dto) throws UnknownHostException, IllegalAccessException {
         ActionIdentifier ai = ais.getActionIdentifierFromSecurityContext(AuthActions.CREATE_USER_AND_FUNCTIONS);
@@ -72,7 +81,7 @@ public class UserResource
     public Page<ReadUserDTO> searchUser(@RequestParam(defaultValue = "") String key,
                                         @RequestParam(defaultValue = "0") int page,
                                         @RequestParam(defaultValue = "10") int size) throws UnknownHostException, IllegalAccessException {
-        return userService.searchUsers(key, new ArrayList<>(), PageRequest.of(page, size));
+        return userService.searchUsers(key, PageRequest.of(page, size));
     }
 
     @PutMapping(path = "/open/activate-account")

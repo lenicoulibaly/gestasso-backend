@@ -45,7 +45,7 @@ public @interface UniqueGrade
         public boolean isValid(UpdateGradeDTO dto, ConstraintValidatorContext context)
         {
             if(dto==null) return false;
-            return !gradeRepo.existsByRankAndCategory(dto.getIdGrade(), dto.getRang(), EnumUtils.getEnum(Categorie.class, dto.getCategorie()));
+            return !gradeRepo.existsByRankAndCategory(dto.getGradeCode(), dto.getRang(), EnumUtils.getEnum(Categorie.class, dto.getCategorie()));
         }
     }
 }

@@ -1,5 +1,6 @@
 package rigeldevsolutions.gestasso.authmodule.controller.services.impl;
 
+import org.springframework.context.ApplicationEventPublisher;
 import rigeldevsolutions.gestasso.authmodule.controller.repositories.AccountTokenRepo;
 import rigeldevsolutions.gestasso.authmodule.controller.repositories.FunctionRepo;
 import rigeldevsolutions.gestasso.authmodule.controller.repositories.RoleToFunctionAssRepo;
@@ -18,6 +19,7 @@ import rigeldevsolutions.gestasso.authmodule.model.entities.AccountToken;
 import rigeldevsolutions.gestasso.authmodule.model.entities.ActionIdentifier;
 import rigeldevsolutions.gestasso.authmodule.model.entities.AppUser;
 import rigeldevsolutions.gestasso.authmodule.model.enums.UserStatus;
+import rigeldevsolutions.gestasso.authmodule.model.events.AdherantCreatedEvent;
 import rigeldevsolutions.gestasso.modulelog.controller.service.ILogService;
 import rigeldevsolutions.gestasso.modulelog.model.entities.Log;
 import rigeldevsolutions.gestasso.modulestatut.entities.Statut;
@@ -69,11 +71,11 @@ public class UserService implements IUserService
     private final AuthenticationManager authenticationManager;
     private final UserDetailsService uds;
     private final ObjectCopier<AppUser> userCopier;
-    private final ObjectCopier<AccountToken> tokenCopier;
     private final StatutRepository staRepo;
     private final FunctionRepo fncRepo;
     private final IFunctionService functionService;
     private final RoleToFunctionAssRepo rtfRepo;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override @Transactional
     public AuthResponseDTO login(LoginDTO dto) throws UnknownHostException {
@@ -110,6 +112,7 @@ public class UserService implements IUserService
 
         EmailNotification emailNotification = new EmailNotification(user, SecurityConstants.ACCOUNT_ACTIVATION_REQUEST_OBJECT, accountToken.getToken(), actorUserId);
         emailSenderService.sendAccountActivationEmail(user.getEmail(), user.getFirstName(), emailServiceConfig.getActivateAccountLink() + "/" + accountToken.getToken());
+
         emailNotification.setSent(true);
         emailNotification = emailRepo.save(emailNotification);
         BeanUtils.copyProperties(ai, emailNotification);
@@ -117,6 +120,17 @@ public class UserService implements IUserService
 
         return userMapper.mapToReadUserDTO(user);
     }
+
+    @Override
+    public ReadUserDTO createAdherant(CreateAdherantDTO dto, ActionIdentifier ai)
+    {
+        AppUser user = userMapper.mapToAdherant(dto);
+        BeanUtils.copyProperties(ai, user);
+        user = userRepo.save(user);
+        eventPublisher.publishEvent(new AdherantCreatedEvent(this, user, dto, ai)); //
+        return userMapper.mapToReadUserDTO(user);
+    }
+
     @Override @Transactional
     public ReadUserDTO activateAccount(ActivateAccountDTO dto, ActionIdentifier ai) throws UnknownHostException
     {
@@ -174,7 +188,6 @@ public class UserService implements IUserService
         token.setAlreadyUsed(true);
         logger.loggOffConnection(AuthActions.SET_TOKEN_AS_ALREADY_USED, dto.getEmail(),oldToken, token, AuthTables.ACCOUNT_TOKEN, mainLog.getId());
         ReadUserDTO readUserDTO = userMapper.mapToReadUserDTO(user);
-        readUserDTO.setStatus(this.getUserStatus(user.getUserId()));
         return readUserDTO;
     }
 
@@ -285,11 +298,10 @@ public class UserService implements IUserService
     }
 
     @Override
-    public Page<ReadUserDTO> searchUsers(String key, List<String> userStaCodes, Pageable pageable)
+    public Page<ReadUserDTO> searchUsers(String key, Pageable pageable)
     {
-        userStaCodes = userStaCodes == null || userStaCodes.isEmpty() ? staRepo.getStaCodesByTypeStatut(TypeStatut.USER) : userStaCodes;
         key = key == null ? "" : StringUtils.stripAccentsToUpperCase(key);
-        return userRepo.searchUsers(key,userStaCodes, pageable);
+        return userRepo.searchUsers(key, pageable);
     }
 
     @Override @Transactional
@@ -302,8 +314,6 @@ public class UserService implements IUserService
 
         ReadFncDTO readFncDTO = createInitialFncDTOs.stream().map(createInitialFncDTO ->
                 this.createUserInitialFonction(user, createInitialFncDTO, ai)).filter(isCurrentFunction).collect(Collectors.toList()).stream().findFirst().get();
-
-        user.setStatus(this.getUserStatus(user.getUserId()));
         user.setCurrentFnc(readFncDTO);
         return user;
     }
@@ -345,7 +355,6 @@ public class UserService implements IUserService
     public ReadUserDTO getUserInfos(Long userId)
     {
         ReadUserDTO user = userRepo.findReadUserDto(userId);
-        user.setStatus(this.getUserStatus(userId));
         user.setCurrentFnc(functionService.getActiveCurrentFunction(userId));
         return user;
     }

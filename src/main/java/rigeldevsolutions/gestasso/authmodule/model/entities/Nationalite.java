@@ -22,4 +22,8 @@ public class Nationalite
     private String nationalite;
     @Column(unique = true)
     private String nomPays;
+
+    public Nationalite(String codePays) {
+        this.codePays = codePays;
+    }
 }

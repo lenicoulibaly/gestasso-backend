@@ -7,6 +7,7 @@ import rigeldevsolutions.gestasso.authmodule.model.dtos.appfunction.UpdateFncDTO
 import rigeldevsolutions.gestasso.authmodule.model.dtos.appuser.AuthResponseDTO;
 import rigeldevsolutions.gestasso.authmodule.model.dtos.asignation.SetAuthoritiesToFunctionDTO;
 import rigeldevsolutions.gestasso.authmodule.model.entities.ActionIdentifier;
+import rigeldevsolutions.gestasso.authmodule.model.events.AdherantCreatedEvent;
 
 import java.net.UnknownHostException;
 
@@ -26,4 +27,6 @@ public interface IFunctionService
     ReadFncDTO getFunctioninfos(Long foncId);
 
     Page<ReadFncDTO> search(Long userId, String key, int page, int size, boolean withRevoked);
+
+    void onAdherantCreatedEvent(AdherantCreatedEvent event);
 }

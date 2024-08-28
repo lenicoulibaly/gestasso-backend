@@ -14,8 +14,8 @@ import java.lang.annotation.*;
 @Target({ElementType.FIELD})
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = {ExistingGradeId.ExistingGradeIdValidator.class})
-public @interface ExistingGradeId
+@Constraint(validatedBy = {ExistingGradeCode.ExistingCodeGradeValidator.class})
+public @interface ExistingGradeCode
 {
     String message() default "Ce grade n'existe pas";
     Class<?>[] groups() default {};
@@ -23,11 +23,11 @@ public @interface ExistingGradeId
 
     @Component
     @RequiredArgsConstructor
-    class ExistingGradeIdValidator implements ConstraintValidator<ExistingGradeId, Long>
+    class ExistingCodeGradeValidator implements ConstraintValidator<ExistingGradeCode, String>
     {
         private final GradeRepo gradeRepo;
         @Override
-        public boolean isValid(Long value, ConstraintValidatorContext context)
+        public boolean isValid(String value, ConstraintValidatorContext context)
         {
             if(value==null) return false;
             return gradeRepo.existsById(value);

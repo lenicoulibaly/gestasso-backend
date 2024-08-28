@@ -10,43 +10,20 @@ import rigeldevsolutions.gestasso.sharedmodule.enums.PersStatus;
 
 import java.util.List;
 
-public interface GradeRepo extends JpaRepository<Grade, Long>
+public interface GradeRepo extends JpaRepository<Grade, String>
 {
-    @Query("select g from Grade g where g.status = 'ACTIVE'")
-    List<Grade> getActiveGrades();
-    @Query("select g.gradeId from Grade g where g.status = 'ACTIVE'")
-    List<Long> getActiveGradesIds();
 
-    @Query("select g from Grade g where g.categorie = ?1 and g.status = 'ACTIVE'")
-    List<Grade> findByCategorieAndStatus(String categorie);
+    @Query("select g from Grade g where g.categorie = ?1")
+    List<Grade> findByCategorie(Categorie categorie);
 
-    @Query("select g from Grade g where upper(g.nomGrade) like upper(concat('%', ?1, '%')) and g.status = 'ACTIVE'")
+    @Query("select g from Grade g where upper(g.nomGrade) like upper(concat('%', ?1, '%'))")
     Page<Grade> searchPageOfGrades(String nomGrade, Pageable pageable);
-
-    @Query("select count(distinct g) from Grade g where upper(g.nomGrade) like upper(concat('%', ?1, '%')) and g.status = 'ACTIVE'")
-    long countByGradeNameKey(String nomGrade);
-
-    @Query("select count(g) from Grade g where g.status = 'ACTIVE'")
-    long countActiveGrades();
-
-    @Query("select count(g) from Grade g where g.status = 'DELETED'")
-    long countDeletedGrades();
-
-
-
-
-
-    @Query("select g from Grade g where upper(g.nomGrade) like upper(concat('%', ?1, '%')) and g.status = 'DELETED'")
-    Page<Grade> searchPageOfDeletedGrades(String nomGrade, Pageable pageable);
-
-    @Query("select g from Grade g where g.status = ?1")
-    List<Grade> findByStatus(PersStatus status);
 
     @Query("select (count(g) > 0) from Grade g where g.rang = ?1 and g.categorie = ?2")
     boolean existsByRankAndCategory(int rang, Categorie categorie);
 
-    @Query("select (count(g) > 0) from Grade g where g.gradeId <> ?1 and g.rang = ?2 and g.categorie = ?3")
-    boolean existsByRankAndCategory(Long idGrade, int rang, Categorie categorie);
+    @Query("select (count(g) > 0) from Grade g where g.gradeCode <> ?1 and g.rang = ?2 and g.categorie = ?3")
+    boolean existsByRankAndCategory(String codeGrade, int rang, Categorie categorie);
 
 
 

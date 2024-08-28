@@ -6,14 +6,22 @@ import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.util.ByteArrayDataSource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.event.TransactionalEventListener;
+import rigeldevsolutions.gestasso.authmodule.controller.repositories.AccountTokenRepo;
 import rigeldevsolutions.gestasso.authmodule.controller.services.spec.IJwtService;
 import rigeldevsolutions.gestasso.authmodule.model.constants.SecurityConstants;
+import rigeldevsolutions.gestasso.authmodule.model.entities.AccountToken;
+import rigeldevsolutions.gestasso.authmodule.model.entities.AppUser;
+import rigeldevsolutions.gestasso.authmodule.model.events.AccountActivationTokenCreatedEvent;
+import rigeldevsolutions.gestasso.notificationmodule.controller.dao.EmailNotificationRepo;
 import rigeldevsolutions.gestasso.notificationmodule.model.dto.EmailAttachment;
+import rigeldevsolutions.gestasso.notificationmodule.model.entities.EmailNotification;
 import rigeldevsolutions.gestasso.reportmodule.service.IServiceReport;
 
 import java.util.List;
@@ -35,6 +43,8 @@ public class EmailSenderServiceImpl implements EmailSenderService
     private String frontAddress;
     private final EmailBodyBuilder emailBodyBuilder;
     private final IJwtService jwtService;
+    private final EmailNotificationRepo emailRepo;
+    private final AccountTokenRepo tokenRepo;
 
     @Override @Async
     public void sendEmailWithAttachments(String senderMail, String receiverMail, String mailObject, String message, List<EmailAttachment> attachments) throws IllegalAccessException {
@@ -64,7 +74,8 @@ public class EmailSenderServiceImpl implements EmailSenderService
 
     @Override
     @Async
-    public void sendEmail(String senderMail, String receiverMail, String mailObject, String message) throws IllegalAccessException {
+    public void sendEmail(String senderMail, String receiverMail, String mailObject, String message) throws IllegalAccessException
+    {
         try
         {
             MimeMessage  mimeMessage = javaMailSender.createMimeMessage();
@@ -92,5 +103,18 @@ public class EmailSenderServiceImpl implements EmailSenderService
     public void sendAccountActivationEmail(String receiverMail, String recipientUsername, String activationLink) throws IllegalAccessException
     {
         this.sendEmail(emailServiceConfig.getSenderEmail(), receiverMail, SecurityConstants.ACCOUNT_ACTIVATION_REQUEST_OBJECT, htmlEmailBuilder.buildAccountActivationHTMLEmail(recipientUsername, frontAddress + activationLink));
+    }
+
+    @Override @TransactionalEventListener
+    public void onAccountActivationTokenCreated(AccountActivationTokenCreatedEvent event) throws IllegalAccessException
+    {
+        AppUser user = event.getUser(); AccountToken accountToken = event.getAccountToken();
+        this.sendAccountActivationEmail(user.getEmail(), user.getFirstName(), frontAddress + emailServiceConfig.getActivateAccountLink() + "/" + accountToken.getToken());
+        EmailNotification emailNotification = new EmailNotification(user, SecurityConstants.ACCOUNT_ACTIVATION_REQUEST_OBJECT, accountToken.getToken(), jwtService.getConnectedUserId());
+        emailNotification.setSent(true);
+        emailNotification = emailRepo.save(emailNotification);
+        BeanUtils.copyProperties(event.getAi(), emailNotification);
+        accountToken.setEmailSent(true);
+        tokenRepo.save(accountToken);
     }
 }

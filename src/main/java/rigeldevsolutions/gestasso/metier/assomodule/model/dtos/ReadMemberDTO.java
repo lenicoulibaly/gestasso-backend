@@ -20,20 +20,7 @@ public class ReadMemberDTO
     private String civilite;
     private String paysCode;
     private String nationalite;
-    private String codeTypePiece;
-    private String typePiece;
-    private String numPiece;
     private String nomPere;
     private String nomMere;
-
-    private Long adhesionId;
-    private Long assoId;
-    private String assoName;
-    private String assoSigle;
-    private Long sectionId;
-    private String sectionName;
-    private String sectionSigle;
-    private String strName;
-    private String strSigle;
     private boolean active;
 }

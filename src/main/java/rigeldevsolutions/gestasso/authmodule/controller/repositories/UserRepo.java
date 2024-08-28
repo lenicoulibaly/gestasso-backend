@@ -1,6 +1,5 @@
 package rigeldevsolutions.gestasso.authmodule.controller.repositories;
 
-import rigeldevsolutions.gestasso.authmodule.model.dtos.appuser.ListUserDTO;
 import rigeldevsolutions.gestasso.authmodule.model.dtos.appuser.ReadUserDTO;
 import rigeldevsolutions.gestasso.authmodule.model.dtos.appuser.UpdateUserDTO;
 import rigeldevsolutions.gestasso.authmodule.model.entities.AppUser;
@@ -46,26 +45,22 @@ public interface UserRepo extends JpaRepository<AppUser, Long>
     @Query("""
         select new rigeldevsolutions.gestasso.authmodule.model.dtos.appuser.ReadUserDTO(
         u.userId, u.firstName, u.lastName, u.email, u.tel, u.civilite.uniqueCode, 
-        t.name, u.active, u.notBlocked, s.staLibelle) 
-        from AppUser u left join u.typeUtilisateur t left join u.statut s where 
+        u.active, u.notBlocked) 
+        from AppUser u  where 
         
            (locate(upper(coalesce(:key, '')), upper(cast(function('unaccent',  coalesce(u.firstName, '') ) as string))) >0 
            or locate(upper(coalesce(:key, '') ), upper(cast(function('unaccent',  coalesce(u.lastName, '') ) as string))) >0
            or locate(upper(coalesce(:key, '') ), upper(cast(function('unaccent',  coalesce(u.email, '') ) as string))) >0
            or locate(upper(coalesce(:key, '') ), upper(cast(function('unaccent',  coalesce(u.tel, '') ) as string))) >0
            or locate(upper(coalesce(:key, '') ), upper(cast(function('unaccent',  coalesce(u.lieuNaissance, '') ) as string) )) >0)
-           and (s.staCode is null or s.staCode in :staCodes)
 """)
-    Page<ReadUserDTO> searchUsers(@Param("key") String key,
-                                  @Param("staCodes") List<String> staCode,
-                                  Pageable pageable);
+    Page<ReadUserDTO> searchUsers(@Param("key") String key, Pageable pageable);
 
     @Query("""
         select new rigeldevsolutions.gestasso.authmodule.model.dtos.appuser.ReadUserDTO(
         u.userId, u.firstName, u.lastName, u.email, u.tel,
-         u.civilite.uniqueCode, t.name, u.active, 
-        u.notBlocked, s.staLibelle) 
-        from AppUser u left join u.typeUtilisateur t left join u.statut s where u.userId = ?1
+         u.civilite.uniqueCode,u.active, u.notBlocked) 
+        from AppUser u where u.userId = ?1
     """)
     ReadUserDTO findReadUserDto(Long userId);
 

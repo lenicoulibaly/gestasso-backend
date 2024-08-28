@@ -12,12 +12,10 @@ public interface AdhesionRepo extends JpaRepository<Adhesion, Long>
 {
     @Query("""
         select new rigeldevsolutions.gestasso.metier.assomodule.model.dtos.ReadMemberDTO(
-        u.userId, u.firstName, u.lastName, u.email, u.tel, u.lieuNaissance, u.dateNaissance, u.civilite.uniqueCode, n.codePays, n.nationalite, tp.uniqueCode, 
-        tp.name, u.numPiece, u.nomPere, u.nomMere, a.adhesionId, sectAsso.assoId, sectAsso.assoName, sectAsso.sigle, 
-        sect.sectionId, sect.sectionName, sect.sigle, str.strName, str.strSigle, a.active) 
-        from Adhesion a left join a.member u left join u.section sect left join sect.association sectAsso 
-        left join a.association asso left join sect.strTutelle str left join u.statut s 
-        left join u.nationalite n left join u.typePiece tp left join u.typeUtilisateur tu
+        u.userId, u.firstName, u.lastName, u.email, u.tel, u.lieuNaissance, u.dateNaissance, u.civilite.uniqueCode, n.codePays, n.nationalite, u.nomPere, u.nomMere, a.active) 
+        from Adhesion a left join a.member u left join a.section sect left join sect.association sectAsso 
+        left join a.association asso left join sect.strTutelle str
+        left join u.nationalite n
         where (locate(upper(coalesce(:key, '')), upper(cast(function('unaccent',  coalesce(u.firstName, '') ) as string))) >0 
         or locate(upper(coalesce(:key, '') ), upper(cast(function('unaccent',  coalesce(u.lastName, '') ) as string))) >0
         or locate(upper(coalesce(:key, '') ), upper(cast(function('unaccent',  coalesce(u.email, '') ) as string))) >0

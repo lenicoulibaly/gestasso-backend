@@ -6,7 +6,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.event.TransactionalEventListener;
 import rigeldevsolutions.gestasso.authmodule.model.entities.ActionIdentifier;
+import rigeldevsolutions.gestasso.authmodule.model.events.AdherantCreatedEvent;
 import rigeldevsolutions.gestasso.metier.assomodule.controller.repositories.AdhesionRepo;
 import rigeldevsolutions.gestasso.metier.assomodule.model.dtos.ReadMemberDTO;
 import rigeldevsolutions.gestasso.metier.assomodule.model.mappers.AdhesionMapper;
@@ -40,5 +42,15 @@ public class AdhesionService implements IAdhesionService
     public Page<ReadMemberDTO> searchMembers(String key, Long assoId, Long sectionId, Pageable pageable) {
         key = StringUtils.stripAccentsToUpperCase(key);
         return adhesionRepo.searchMembers(key, assoId, sectionId, pageable);
+    }
+
+    @Override @TransactionalEventListener
+    public void onAdherantCreatedEvent(AdherantCreatedEvent event)
+    {
+        CreateAdhesionDTO dto = new CreateAdhesionDTO();
+        dto.setAssoId(event.getDto().getAssoId());
+        dto.setSectionId(event.getDto().getSectionId());
+        dto.setUserId(event.getUser().getUserId());
+        this.createAdhesion(dto, event.getAi());
     }
 }

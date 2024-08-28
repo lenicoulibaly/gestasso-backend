@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data @NoArgsConstructor @AllArgsConstructor @Builder
 public class ReadGradeDTO
 {
-    private Long gradeId;
+    private String gradeCode;
     private String nomGrade;
     private int rang; //D = 1 , C = 2 ,  B = 3 , A = 4
     private String categorie;

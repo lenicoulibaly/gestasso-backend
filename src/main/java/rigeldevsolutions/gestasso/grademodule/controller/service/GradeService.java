@@ -1,5 +1,6 @@
 package rigeldevsolutions.gestasso.grademodule.controller.service;
 
+import org.springframework.context.annotation.Profile;
 import rigeldevsolutions.gestasso.grademodule.controller.repositories.GradeRepo;
 import rigeldevsolutions.gestasso.grademodule.model.dtos.CreateGradeDTO;
 import rigeldevsolutions.gestasso.grademodule.model.dtos.GrageMapper;
@@ -19,7 +20,7 @@ import rigeldevsolutions.gestasso.sharedmodule.enums.PersStatus;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service("gradeService") //@Profile("prod")
+@Service("gradeService") @Profile({"deprecated"}) //@Profile("prod")
 @RequiredArgsConstructor
 public class GradeService implements IGradeService
 {
@@ -27,50 +28,43 @@ public class GradeService implements IGradeService
     private final GrageMapper grageMapper;
     @Override
     public List<ReadGradeDTO> getAllGrades() {
-        return gradeRepo.getActiveGrades().stream().map(grageMapper::mapToReadGradeDTO).collect(Collectors.toList());
+        return gradeRepo.findAll().stream().map(grageMapper::mapToReadGradeDTO).collect(Collectors.toList());
     }
 
     @Override
-    public ReadGradeDTO getGradesById(Long grdId)
+    public ReadGradeDTO getGradeByGradeCode(String gradeCode)
     {
-        Grade grade = gradeRepo.findById(grdId).orElse(null);
+        Grade grade = gradeRepo.findById(gradeCode).orElse(null);
         return grade == null ? null : grageMapper.mapToReadGradeDTO(grade);
     }
 
     @Override
     public List<ReadGradeDTO> getGradesByCategoryName(String catName)
     {
-        return gradeRepo.findByCategorieAndStatus(catName).stream().map(grageMapper::mapToReadGradeDTO).collect(Collectors.toList());
+        Categorie categorie = EnumUtils.getEnum(Categorie.class, catName);
+        return gradeRepo.findByCategorie(categorie).stream().map(grageMapper::mapToReadGradeDTO).collect(Collectors.toList());
     }
 
     //========================================================================================
 
-    @Override
+    //@Override
     public Page<ReadGradeDTO> searchPageOfGrades(String key, int pageNum, int pageSize)
     {
         Page<Grade> grades = gradeRepo.searchPageOfGrades(key, PageRequest.of(pageNum, pageSize));
         List<ReadGradeDTO> gradeDTOS = grades.stream().map(grageMapper::mapToReadGradeDTO).collect(Collectors.toList());
-        return new PageImpl<>(gradeDTOS, PageRequest.of(pageNum, pageSize), gradeRepo.countByGradeNameKey(key));
+        return new PageImpl<>(gradeDTOS, PageRequest.of(pageNum, pageSize), grades.getTotalElements());
     }
 
-    @Override
-    public Page<ReadGradeDTO> searchPageOfDeletedGrades(String key, int pageNum, int pageSize)
-    {
-        Page<Grade> grades = gradeRepo.searchPageOfDeletedGrades(key, PageRequest.of(pageNum, pageSize));
-        List<ReadGradeDTO> gradeDTOS = grades.stream().map(grageMapper::mapToReadGradeDTO).collect(Collectors.toList());
-        return new PageImpl<>(gradeDTOS, PageRequest.of(pageNum, pageSize), gradeRepo.countDeletedGrades());
-    }
-
-    @Override @Transactional
+    //@Override @Transactional
     public ReadGradeDTO createGrade(CreateGradeDTO dto)
     {
         Grade grade = gradeRepo.save(grageMapper.mapToGrade(dto));
         return grageMapper.mapToReadGradeDTO(grade);
     }
 
-    @Override @Transactional
+    //@Override @Transactional
     public ReadGradeDTO updateGrade(UpdateGradeDTO dto) {
-        Grade grade = gradeRepo.findById(dto.getIdGrade()).orElse(null);
+        Grade grade = gradeRepo.findById(dto.getGradeCode()).orElse(null);
         if (grade == null) return null;
         grade.setNomGrade(dto.getCategorie() + dto.getRang());
         grade.setCategorie(EnumUtils.getEnum(Categorie.class, dto.getCategorie()));

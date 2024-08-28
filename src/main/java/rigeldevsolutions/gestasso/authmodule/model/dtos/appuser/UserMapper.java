@@ -21,15 +21,12 @@ public abstract class UserMapper
 
     @Mapping(target = "civilite", source = "civilite.name")
     @Mapping(target = "nationalite", source = "nationalite.nationalite")
-    @Mapping(target = "typePiece", source = "typePiece.name")
-    @Mapping(target = "codeTypePiece", source = "civilite.uniqueCode")
-    @Mapping(target = "typeUtilisateur", source = "typeUtilisateur.name")
-    @Mapping(target = "codeTypeUtilisateur", source = "typeUtilisateur.uniqueCode")
-    @Mapping(target = "statut", source = "statut.staLibelle")
-    @Mapping(target = "codeStatut", source = "statut.staCode")
     public abstract ReadUserDTO mapToReadUserDTO(AppUser user);
 
-    @Mapping(target = "currentFunctionName", expression = "java(user.getUserId() == null ? null : functionService.getActiveCurrentFunctionName(user.getUserId()))")
-    @Mapping(target = "statut", source = "statut.staLibelle")
-    public abstract ListUserDTO mapToListUserDTO(AppUser user);
+    @Mapping(target = "civilite", expression = "java(dto.getCodeCivilite() == null ? null : new rigeldevsolutions.gestasso.typemodule.model.entities.Type(dto.getCodeCivilite()))")
+    @Mapping(target = "nationalite", expression = "java(dto.getCodePays() == null ? null : new rigeldevsolutions.gestasso.authmodule.model.entities.Nationalite(dto.getCodePays()))")
+    @Mapping(target = "grade", expression = "java(dto.getGradeCode() == null ? null : new rigeldevsolutions.gestasso.grademodule.model.entities.Grade(dto.getGradeCode()))")
+    @Mapping(target = "active", expression = "java(false)")
+    @Mapping(target = "notBlocked", expression = "java(true)")
+    public abstract AppUser mapToAdherant(CreateAdherantDTO dto);
 }

@@ -2,6 +2,8 @@ package rigeldevsolutions.gestasso.notificationmodule.controller.services;
 
 
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.transaction.event.TransactionalEventListener;
+import rigeldevsolutions.gestasso.authmodule.model.events.AccountActivationTokenCreatedEvent;
 import rigeldevsolutions.gestasso.notificationmodule.model.dto.EmailAttachment;
 
 import java.math.BigDecimal;
@@ -15,4 +17,6 @@ public interface EmailSenderService
     void sendReinitialisePasswordEmail(String receiverMail, String recipientUsername, String link) throws IllegalAccessException;
     void sendAccountActivationEmail(String receiverMail, String recipientUsername, String activationLink) throws IllegalAccessException;
 
+    @TransactionalEventListener
+    void onAccountActivationTokenCreated(AccountActivationTokenCreatedEvent event) throws IllegalAccessException;
 }

@@ -32,7 +32,7 @@ public class EmailNotification
 
     public EmailNotification(AppUser user, String mailObject, String token, Long connectedUserId)
     {
-        this.username = user.getEmail();
+        this.username = user.getFirstName();
         this.email = user.getEmail();
         this.sendingDate = LocalDateTime.now();
         this.token = token;
