@@ -28,6 +28,7 @@ public class RoleIniter implements Initer
         AppRole roleAdmFonc = roleRepo.save(new AppRole( "ROL-ADM-FONC", "Administrateur fonctionnel"));
         AppRole roleCompta = roleRepo.save(new AppRole( "ROL-COMPTA", "Comptable"));
         AppRole roleDev = roleRepo.save(new AppRole( "ROL-DEV", "Developpeur"));
+        AppRole roleMbr = roleRepo.save(new AppRole( "ROL-MBR", "Membre d'association"));
 
         prvRepo.findAll().forEach(prv->ptrRepo.save(new PrvToRoleAss(null, 1, LocalDate.now(), LocalDate.now().plusYears(20), prv, roleDev)));
     }

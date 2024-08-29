@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 import rigeldevsolutions.gestasso.authmodule.model.entities.ActionIdentifier;
 import rigeldevsolutions.gestasso.authmodule.model.events.AdherantCreatedEvent;
@@ -44,7 +45,7 @@ public class AdhesionService implements IAdhesionService
         return adhesionRepo.searchMembers(key, assoId, sectionId, pageable);
     }
 
-    @Override @TransactionalEventListener
+    @Override @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     public void onAdherantCreatedEvent(AdherantCreatedEvent event)
     {
         CreateAdhesionDTO dto = new CreateAdhesionDTO();

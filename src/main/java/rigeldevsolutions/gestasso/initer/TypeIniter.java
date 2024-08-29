@@ -73,10 +73,12 @@ public class TypeIniter implements Initer
         Type fonctionAdminTech = typeRepo.save(new Type("TYF_ADM_TECH", TypeGroup.TYPE_FUNCTION, "Administrateur technique", PersStatus.ACTIVE, null, null));
 
         Type fonctionDev = typeRepo.save(new Type("TYF_DEV", TypeGroup.TYPE_FUNCTION, "Développeur", PersStatus.ACTIVE, null, null));
-
         Type membreAssociation = typeRepo.save(new Type("TYF_MBR_ASSO", TypeGroup.TYPE_FUNCTION, "Membre d'association", PersStatus.ACTIVE, null, null));
-
         Type membreSection = typeRepo.save(new Type("TYF_MBR_SECT", TypeGroup.TYPE_FUNCTION, "Membre de section", PersStatus.ACTIVE, null, null));
+
+        Type monsieur = typeRepo.save(new Type("M.", TypeGroup.TYPE_CIVILITE, "Monsieur", PersStatus.ACTIVE, null, null));
+        Type mme = typeRepo.save(new Type("MME", TypeGroup.TYPE_CIVILITE, "Madame", PersStatus.ACTIVE, null, null));
+        Type mlle = typeRepo.save(new Type("MLLE", TypeGroup.TYPE_CIVILITE, "Mademoiselle", PersStatus.ACTIVE, null, null));
 
     }
 }

@@ -121,7 +121,7 @@ public class UserService implements IUserService
         return userMapper.mapToReadUserDTO(user);
     }
 
-    @Override
+    @Override @Transactional
     public ReadUserDTO createAdherant(CreateAdherantDTO dto, ActionIdentifier ai)
     {
         AppUser user = userMapper.mapToAdherant(dto);

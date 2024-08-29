@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service("gradeService") //@Profile({"flash"})
+@Service("gradeService") @Profile({"deprecated"}) //@Profile({"flash"})
 public class GradeServiceFlash implements IGradeService
 {
     @Override

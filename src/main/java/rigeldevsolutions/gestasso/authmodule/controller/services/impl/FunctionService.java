@@ -4,6 +4,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 import rigeldevsolutions.gestasso.authmodule.controller.repositories.FunctionRepo;
 import rigeldevsolutions.gestasso.authmodule.controller.repositories.RoleToFunctionAssRepo;
@@ -213,7 +214,7 @@ public class FunctionService implements IFunctionService {
         return new PageImpl<>(functionsList, functionsPage.getPageable(), functionsPage.getTotalElements());
     }
 
-    @Override @TransactionalEventListener
+    @Override @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     public void onAdherantCreatedEvent(AdherantCreatedEvent event)
     {
         AppUser user = event.getUser();

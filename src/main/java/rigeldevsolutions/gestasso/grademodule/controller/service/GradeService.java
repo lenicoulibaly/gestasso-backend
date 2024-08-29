@@ -20,7 +20,7 @@ import rigeldevsolutions.gestasso.sharedmodule.enums.PersStatus;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service("gradeService") @Profile({"deprecated"}) //@Profile("prod")
+@Service("gradeService")
 @RequiredArgsConstructor
 public class GradeService implements IGradeService
 {

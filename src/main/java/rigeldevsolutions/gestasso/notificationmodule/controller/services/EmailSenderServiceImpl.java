@@ -12,6 +12,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 import rigeldevsolutions.gestasso.authmodule.controller.repositories.AccountTokenRepo;
 import rigeldevsolutions.gestasso.authmodule.controller.services.spec.IJwtService;
@@ -105,9 +106,10 @@ public class EmailSenderServiceImpl implements EmailSenderService
         this.sendEmail(emailServiceConfig.getSenderEmail(), receiverMail, SecurityConstants.ACCOUNT_ACTIVATION_REQUEST_OBJECT, htmlEmailBuilder.buildAccountActivationHTMLEmail(recipientUsername, frontAddress + activationLink));
     }
 
-    @Override @TransactionalEventListener
+    @Override @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void onAccountActivationTokenCreated(AccountActivationTokenCreatedEvent event) throws IllegalAccessException
     {
+        System.out.println("Processing account activation token for user: " + event.getUser().getEmail());
         AppUser user = event.getUser(); AccountToken accountToken = event.getAccountToken();
         this.sendAccountActivationEmail(user.getEmail(), user.getFirstName(), frontAddress + emailServiceConfig.getActivateAccountLink() + "/" + accountToken.getToken());
         EmailNotification emailNotification = new EmailNotification(user, SecurityConstants.ACCOUNT_ACTIVATION_REQUEST_OBJECT, accountToken.getToken(), jwtService.getConnectedUserId());

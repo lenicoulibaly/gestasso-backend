@@ -2,6 +2,7 @@ package rigeldevsolutions.gestasso.authmodule.controller.services.impl;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 import rigeldevsolutions.gestasso.authmodule.controller.repositories.AccountTokenRepo;
 import rigeldevsolutions.gestasso.authmodule.controller.services.spec.IAccountTokenService;
@@ -55,7 +56,7 @@ public class ActivationTokenService implements IAccountTokenService
         return String.valueOf(nb);
     }
 
-    @Override @TransactionalEventListener
+    @Override @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     public void onAdherantCreatedEvent(AdherantCreatedEvent event)
     {
         AccountToken token = this.createAccountToken(event.getUser(), event.getAi());
