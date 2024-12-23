@@ -2,8 +2,12 @@ package rigeldevsolutions.gestasso.sharedmodule.utilities;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.IsoFields;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class DateParser {
@@ -74,5 +78,55 @@ public class DateParser {
                 }
             }
         }
+    }
+
+    public static String getMonthAndYear(LocalDate date) {
+        if (date == null) {
+            throw new IllegalArgumentException("La date ne peut pas être nulle");
+        }
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM yyyy", Locale.FRENCH);
+
+        return date.format(formatter);
+    }
+
+    public static String getSemester(LocalDate date) {
+        if (date == null) {
+            throw new IllegalArgumentException("La date ne peut pas être nulle");
+        }
+        int month = date.getMonthValue();
+        int year = date.getYear();
+        String semester = month <= 6 ? "1er semestre" : "2nd semestre";
+
+        return semester + " " + year;
+    }
+
+    public static String getTrimester(LocalDate date)
+    {
+        if (date == null) throw new IllegalArgumentException("La date ne peut pas être nulle");
+
+        int month = date.getMonthValue();
+        int year = date.getYear();
+        String trimester = month <= 3 ? "1er trimestre" :
+                           month <= 6 ? "2nd trimestre" :
+                           month <= 9 ? "3ème trimestre" : "4ème trimestre";
+
+        return trimester + " " + year;
+    }
+
+    public static String getWeekOfYear(LocalDate date)
+    {
+        if (date == null) {
+            throw new IllegalArgumentException("La date ne peut pas être nulle");
+        }
+        int weekOfYear = date.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
+        int year = date.getYear();
+        String suffix = getOrdinalSuffix(weekOfYear);
+        return weekOfYear + suffix + " semaine " + year;
+    }
+
+    private static String getOrdinalSuffix(int number)
+    {
+        return number == 1 ? "ère" : (number == 2 ? "nde" : "ème");
     }
 }

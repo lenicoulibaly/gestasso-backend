@@ -7,12 +7,13 @@ import jakarta.validation.Payload;
 import rigeldevsolutions.gestasso.authmodule.controller.repositories.UserRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import rigeldevsolutions.gestasso.metier.assomodule.model.dtos.CreateMembreDTO;
 
 import java.lang.annotation.*;
 
 @Target({ElementType.FIELD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = {UniqueTel.NoneExistingTelValidatorOnCreate.class, UniqueTel.NoneExistingTelValidatorOnUpdate.class})
+@Constraint(validatedBy = {UniqueTel.NoneExistingTelValidatorOnCreate.class, UniqueTel.NoneExistingTelValidatorOnUpdateUser.class, UniqueTel.NoneExistingTelValidatorOnUpdateMembre.class})
 @Documented
 public @interface UniqueTel
 {
@@ -33,11 +34,27 @@ public @interface UniqueTel
     }
 
     @Component @RequiredArgsConstructor
-    class NoneExistingTelValidatorOnUpdate implements ConstraintValidator<UniqueTel, UpdateUserDTO>
+    class NoneExistingTelValidatorOnUpdateUser implements ConstraintValidator<UniqueTel, UpdateUserDTO>
     {
         private final UserRepo userRepo;
         @Override
-        public boolean isValid(UpdateUserDTO dto, ConstraintValidatorContext context) {
+        public boolean isValid(UpdateUserDTO dto, ConstraintValidatorContext context)
+        {
+            if(dto.getTel() == null) return true;
+            if(dto.getUserId() == null) return !userRepo.alreadyExistsByTel(dto.getTel());
+            return !userRepo.alreadyExistsByTel(dto.getTel(), dto.getUserId());
+        }
+    }
+
+    @Component @RequiredArgsConstructor
+    class NoneExistingTelValidatorOnUpdateMembre implements ConstraintValidator<UniqueTel, CreateMembreDTO>
+    {
+        private final UserRepo userRepo;
+        @Override
+        public boolean isValid(CreateMembreDTO dto, ConstraintValidatorContext context)
+        {
+            if(dto.getTel() == null) return true;
+            if(dto.getUserId() == null) return !userRepo.alreadyExistsByTel(dto.getTel());
             return !userRepo.alreadyExistsByTel(dto.getTel(), dto.getUserId());
         }
     }

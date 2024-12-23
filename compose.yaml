@@ -22,6 +22,7 @@ services:
       - ./docker/prometheus/prometheus.yaml:/etc/prometheus/prometheus.yml
   zipkin:
     image: 'openzipkin/zipkin:latest'
+    restart: unless-stopped
     ports:
       - '9411'
 volumes:

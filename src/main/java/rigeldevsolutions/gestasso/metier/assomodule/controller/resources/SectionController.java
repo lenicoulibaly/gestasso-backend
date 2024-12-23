@@ -13,6 +13,8 @@ import rigeldevsolutions.gestasso.metier.assomodule.model.dtos.ReadSectionDTO;
 import rigeldevsolutions.gestasso.metier.assomodule.model.dtos.UpdateSectionDTO;
 import rigeldevsolutions.gestasso.sharedmodule.constants.Requests;
 
+import java.util.List;
+
 @RestController @RequiredArgsConstructor @RequestMapping(path = "/sections")
 public class SectionController
 {
@@ -33,7 +35,7 @@ public class SectionController
         return sectionService.updateSection(dto, ai);
     }
 
-    @PutMapping(path = "/search")
+    @GetMapping(path = "/search")
     Page<ReadSectionDTO> searchSections(@RequestParam(defaultValue = "", required = false) String key,
                                         @RequestParam(required = false) Long assoId,
                                         @RequestParam(required = false) Long strId,
@@ -41,5 +43,11 @@ public class SectionController
                                         @RequestParam(defaultValue = Requests.PAGE_SIZE, required = false) int size)
     {
         return sectionService.searchSections(key, assoId, strId, PageRequest.of(page, size));
+    }
+
+    @GetMapping(path = "/find-by-asso/{assoId}")
+    List<ReadSectionDTO> getAssociationSections(@PathVariable Long assoId)
+    {
+        return sectionService.getAssociationSections(assoId);
     }
 }

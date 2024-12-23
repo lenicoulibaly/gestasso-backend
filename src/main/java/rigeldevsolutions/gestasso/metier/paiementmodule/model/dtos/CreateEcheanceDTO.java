@@ -15,11 +15,13 @@ public class CreateEcheanceDTO
     private LocalDate dateButtoire;
     private BigDecimal montantEcheance;
     private BigDecimal tauxEcheance;
+    private String frequenceUniqueCode;
     @ExistingEcheancierId
     private Long echeancierId;
 
-    public CreateEcheanceDTO(LocalDate dateEcheance, Long echeancierId) {
+    public CreateEcheanceDTO(LocalDate dateEcheance, Long echeancierId, String frequenceUniqueCode) {
         this.dateEcheance = dateEcheance;
         this.echeancierId = echeancierId;
+        this.frequenceUniqueCode = frequenceUniqueCode;
     }
 }

@@ -2,12 +2,15 @@ package rigeldevsolutions.gestasso.metier.cotisationmodule.model.dtos;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.*;
 import rigeldevsolutions.gestasso.authmodule.model.dtos.asignation.CoherentDates;
 import rigeldevsolutions.gestasso.metier.assomodule.model.validators.ExistingAssoId;
 import rigeldevsolutions.gestasso.metier.assomodule.model.validators.ExistingSectionId;
 import rigeldevsolutions.gestasso.metier.cotisationmodule.model.validators.AssoIdAndSectionIdNotNullTogether;
 import rigeldevsolutions.gestasso.metier.cotisationmodule.model.validators.UniqueCotisationName;
+import rigeldevsolutions.gestasso.metier.cotisationmodule.model.validators.ValidFrequenceCotisation;
+import rigeldevsolutions.gestasso.metier.cotisationmodule.model.validators.ValidModePrelevement;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -22,14 +25,17 @@ public class CreateCotisationDTO
     @NotBlank(message = "Veuillez nommer la cotisation")
     private String nomCotisation;
     @NotNull(message = "Le montant de la cotisation ne peut être nul")
-    @NotBlank(message = "Le montant de la cotisation ne peut être nul")
+    @Positive(message = "Le montant de la cotisation doit être supérieur à 0")
     private BigDecimal montantCotisation;
+    private String motif;
     @NotNull(message = "La fréquence de cotisation ne peut être nulle")
     @NotBlank(message = "La fréquence de cotisation ne peut être nulle")
-    private String frequenceCotisation;
+    @ValidFrequenceCotisation
+    private String frequenceCotisationCode;
     @NotNull(message = "Le mode de prélèvement ne peut être nul")
     @NotBlank(message = "Le mode de prélèvement ne peut être nul")
-    private String modePrelevement;
+    @ValidModePrelevement
+    private String modePrelevementCode;
     @NotNull(message = "La date de début de la cotisation est obligatoire")
     private LocalDate dateDebutCotisation;
     private LocalDate dateFinCotisation;
@@ -38,4 +44,5 @@ public class CreateCotisationDTO
     private Long assoId;
     @ExistingSectionId
     private Long sectionId;
+
 }

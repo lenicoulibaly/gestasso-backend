@@ -19,7 +19,8 @@ public abstract class EcheanceMapper
     @Mapping(target = "echeancierId", source = "echeancier.echeancierId")
     @Mapping(target = "echeancierTypeCode", source = "echeancier.typeEcheancier.uniqueCode")
     @Mapping(target = "echeancierTypeName", source = "echeancier.typeEcheancier.name")
-    @Mapping(target = "echeancierFrequence", expression = "java(e.getEcheancier() == null || e.getEcheancier().getEcheancierId() == null ? null : echeancierRepo.findById(e.getEcheancier().getEcheancierId()).orElseThrow(()->new rigeldevsolutions.gestasso.sharedmodule.exceptions.AppException(\"Echéancier introuvable\")).getFrequence().name())")
+    @Mapping(target = "echeancierFrequenceCode", source = "echeancier.frequence.uniqueCode")
+    @Mapping(target = "echeancierFrequenceName", source = "echeancier.frequence.name")
     @Mapping(target = "echeancierName", source = "echeancier.name")
     @Mapping(target = "exeCode", source = "echeancier.exercice.exeCode")
     public abstract ReadEcheanceDTO mapToReadEcheanceDTO(Echeance e);

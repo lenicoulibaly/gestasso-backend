@@ -9,6 +9,8 @@ import rigeldevsolutions.gestasso.metier.assomodule.model.dtos.ReadSectionDTO;
 import rigeldevsolutions.gestasso.metier.assomodule.model.entities.Association;
 import rigeldevsolutions.gestasso.metier.assomodule.model.entities.Section;
 
+import java.util.List;
+
 public interface SectionRepo extends JpaRepository<Section, Long>
 {
     @Query("""
@@ -31,4 +33,10 @@ public interface SectionRepo extends JpaRepository<Section, Long>
 
     @Query("select (count(s.sectionId)>0) from Section s where trim(upper(s.sectionName)) = trim(upper(?1)) and s.association.assoId = ?2")
     boolean existsByNameAndAssoId(String sectionName, Long assoId);
+
+    @Query("""
+    select new rigeldevsolutions.gestasso.metier.assomodule.model.dtos.ReadSectionDTO(s.sectionId, s.sectionName, s.situationGeo, s.sigle, s.association.assoId, s.association.assoName)
+    from Section s where s.association.assoId = ?1
+""")
+    List<ReadSectionDTO> findbyAssoId(Long assoId);
 }

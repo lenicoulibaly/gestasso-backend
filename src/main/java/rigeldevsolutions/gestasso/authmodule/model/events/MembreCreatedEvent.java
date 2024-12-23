@@ -2,18 +2,18 @@ package rigeldevsolutions.gestasso.authmodule.model.events;
 
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
-import rigeldevsolutions.gestasso.authmodule.model.dtos.appuser.CreateAdherantDTO;
 import rigeldevsolutions.gestasso.authmodule.model.entities.ActionIdentifier;
 import rigeldevsolutions.gestasso.authmodule.model.entities.AppUser;
+import rigeldevsolutions.gestasso.metier.assomodule.model.dtos.CreateMembreDTO;
 
 @Getter
-public class AdherantCreatedEvent extends ApplicationEvent
+public class MembreCreatedEvent extends ApplicationEvent
 {
     private AppUser user;
-    private CreateAdherantDTO dto;
+    private CreateMembreDTO dto;
     private ActionIdentifier ai;
 
-    public AdherantCreatedEvent(Object source, AppUser user, CreateAdherantDTO dto, ActionIdentifier ai) {
+    public MembreCreatedEvent(Object source, AppUser user, CreateMembreDTO dto, ActionIdentifier ai) {
         super(source);
         this.user = user;
         this.dto = dto;

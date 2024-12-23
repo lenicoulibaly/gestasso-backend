@@ -16,6 +16,6 @@ public class MembreDocUploader extends AbstractDocumentService {
 
 	@Override
 	protected Document mapToDocument(UploadDocReq dto) {
-		return docMapper.mapToSectionDoc(dto);
+		return docMapper.mapToMembreDoc(dto);
 	}
 }

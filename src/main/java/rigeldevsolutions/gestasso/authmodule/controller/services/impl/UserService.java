@@ -1,11 +1,27 @@
 package rigeldevsolutions.gestasso.authmodule.controller.services.impl;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import rigeldevsolutions.gestasso.authmodule.controller.repositories.AccountTokenRepo;
 import rigeldevsolutions.gestasso.authmodule.controller.repositories.FunctionRepo;
 import rigeldevsolutions.gestasso.authmodule.controller.repositories.RoleToFunctionAssRepo;
 import rigeldevsolutions.gestasso.authmodule.controller.repositories.UserRepo;
-import rigeldevsolutions.gestasso.authmodule.controller.services.spec.*;
+import rigeldevsolutions.gestasso.authmodule.controller.services.spec.IAccountTokenService;
+import rigeldevsolutions.gestasso.authmodule.controller.services.spec.IFunctionService;
+import rigeldevsolutions.gestasso.authmodule.controller.services.spec.IJwtService;
+import rigeldevsolutions.gestasso.authmodule.controller.services.spec.IUserService;
 import rigeldevsolutions.gestasso.authmodule.model.constants.AuthActions;
 import rigeldevsolutions.gestasso.authmodule.model.constants.AuthTables;
 import rigeldevsolutions.gestasso.authmodule.model.constants.SecurityConstants;
@@ -19,32 +35,17 @@ import rigeldevsolutions.gestasso.authmodule.model.entities.AccountToken;
 import rigeldevsolutions.gestasso.authmodule.model.entities.ActionIdentifier;
 import rigeldevsolutions.gestasso.authmodule.model.entities.AppUser;
 import rigeldevsolutions.gestasso.authmodule.model.enums.UserStatus;
-import rigeldevsolutions.gestasso.authmodule.model.events.AdherantCreatedEvent;
+import rigeldevsolutions.gestasso.metier.assomodule.model.dtos.CreateMembreDTO;
 import rigeldevsolutions.gestasso.modulelog.controller.service.ILogService;
 import rigeldevsolutions.gestasso.modulelog.model.entities.Log;
-import rigeldevsolutions.gestasso.modulestatut.entities.Statut;
 import rigeldevsolutions.gestasso.modulestatut.repositories.StatutRepository;
 import rigeldevsolutions.gestasso.notificationmodule.controller.dao.EmailNotificationRepo;
 import rigeldevsolutions.gestasso.notificationmodule.controller.services.EmailSenderService;
 import rigeldevsolutions.gestasso.notificationmodule.controller.services.EmailServiceConfig;
 import rigeldevsolutions.gestasso.notificationmodule.model.entities.EmailNotification;
-import rigeldevsolutions.gestasso.sharedmodule.enums.TypeStatut;
 import rigeldevsolutions.gestasso.sharedmodule.exceptions.AppException;
 import rigeldevsolutions.gestasso.sharedmodule.utilities.ObjectCopier;
 import rigeldevsolutions.gestasso.sharedmodule.utilities.StringUtils;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.net.UnknownHostException;
 import java.time.LocalDateTime;
@@ -122,12 +123,13 @@ public class UserService implements IUserService
     }
 
     @Override @Transactional
-    public ReadUserDTO createAdherant(CreateAdherantDTO dto, ActionIdentifier ai)
+    public ReadUserDTO createAdherant(CreateMembreDTO dto, ActionIdentifier ai)
     {
         AppUser user = userMapper.mapToAdherant(dto);
         BeanUtils.copyProperties(ai, user);
         user = userRepo.save(user);
-        eventPublisher.publishEvent(new AdherantCreatedEvent(this, user, dto, ai)); //
+        accountTokenService.createAccountToken(user, ai);
+        functionService.createMembreFunction(user.getUserId(), dto, ai);
         return userMapper.mapToReadUserDTO(user);
     }
 

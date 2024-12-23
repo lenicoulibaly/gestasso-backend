@@ -5,17 +5,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import rigeldevsolutions.gestasso.TestDatabaseConfig;
-import rigeldevsolutions.gestasso.authmodule.controller.services.spec.IJwtService;
 import rigeldevsolutions.gestasso.metier.assomodule.controller.repositories.AssoRepo;
 import rigeldevsolutions.gestasso.metier.assomodule.model.dtos.ReadAssociationDTO;
 import rigeldevsolutions.gestasso.metier.assomodule.model.entities.Association;
-import rigeldevsolutions.gestasso.metier.paiementmodule.model.enums.Frequence;
 import rigeldevsolutions.gestasso.sharedmodule.enums.PersStatus;
 import rigeldevsolutions.gestasso.sharedmodule.utilities.StringUtils;
 import rigeldevsolutions.gestasso.structuremodule.controller.repositories.StrRepo;
@@ -38,9 +34,9 @@ public class AssoRepoTest
     @Test
     void test_searchAssociations()
     {
-        Type MIN = typeRepo.save(new Type("MIN", TypeGroup.TYPE_STR, "Ministère", PersStatus.ACTIVE, null, null));
-        Type DG = typeRepo.save(new Type("DG", TypeGroup.TYPE_STR, "Direction Générale", PersStatus.ACTIVE, null, null));
-        Type DC = typeRepo.save(new Type("DC", TypeGroup.TYPE_STR, "Direction Centrale", PersStatus.ACTIVE, null, null));
+        Type MIN = typeRepo.save(new Type("MIN", TypeGroup.TYPE_STR, "Ministère", 0, PersStatus.ACTIVE, null, null));
+        Type DG = typeRepo.save(new Type("DG", TypeGroup.TYPE_STR, "Direction Générale", 0, PersStatus.ACTIVE, null, null));
+        Type DC = typeRepo.save(new Type("DC", TypeGroup.TYPE_STR, "Direction Centrale", 0, PersStatus.ACTIVE, null, null));
 
         Structure mfb = strRepo.save(new Structure(null, "MFB", "Ministère des Finances et du Budget", 1l, "MFB", null, MIN, "", "", "", "", null, null, null, PersStatus.ACTIVE, null));
         Structure mpe = strRepo.save(new Structure(null, "MPE", "Ministère du Patrimoine et de l'Economie", 1l, "MPE", null, MIN, "", "", "", "", null, null, null, PersStatus.ACTIVE, null));

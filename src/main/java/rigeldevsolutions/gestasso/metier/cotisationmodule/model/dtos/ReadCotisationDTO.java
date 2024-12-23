@@ -12,7 +12,8 @@ import java.time.LocalDate;
 public class ReadCotisationDTO {
     private Long cotisationId;
     private String nomCotisation;
-    private String montantCotisation;
+    private BigDecimal montantCotisation;
+    private String motif;
     private String frequenceCotisation;
     private String frequenceCotisationCode;
     private String modePrelevement;
@@ -28,7 +29,9 @@ public class ReadCotisationDTO {
     private String sectionSigle;
     private Long sectionId;
 
-    private BigDecimal motantAttendu;
+    private int nbrEcheances;
+    private BigDecimal montantAttenduParMembre;
+    private BigDecimal motantTotalAttendu;
     private BigDecimal montantEncaisse;
     private BigDecimal montantRestantAEncaisser;
     private BigDecimal montantEnRetardDeRecouvrement;
@@ -36,7 +39,7 @@ public class ReadCotisationDTO {
     private BigDecimal tauxDeRecouvrementPeriodique;
 
     public ReadCotisationDTO(Long cotisationId, String nomCotisation,
-                             String montantCotisation,
+                             BigDecimal montantCotisation, String motif,
                              String frequenceCotisation,
                              String frequenceCotisationCode,
                              String modePrelevement,
@@ -50,6 +53,7 @@ public class ReadCotisationDTO {
         this.cotisationId = cotisationId;
         this.nomCotisation = nomCotisation;
         this.montantCotisation = montantCotisation;
+        this.motif = motif;
         this.frequenceCotisation = frequenceCotisation;
         this.frequenceCotisationCode = frequenceCotisationCode;
         this.modePrelevement = modePrelevement;

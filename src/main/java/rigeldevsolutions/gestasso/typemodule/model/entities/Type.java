@@ -23,6 +23,8 @@ public class Type
     private TypeGroup typeGroup;
     @Column(nullable = false)
     private String name;
+    @Column(nullable = false)
+    private int ordre;
     @Enumerated(EnumType.STRING)
     private PersStatus status;
     @Transient

@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import java.math.BigDecimal;
 
 @Configuration
-public class ConvertMontant {
+public class MontantConverter {
 
     private static String Unite(long nombre) {
         String unite = "";
@@ -129,6 +129,7 @@ public class ConvertMontant {
         int decimalIndex = decimalString.indexOf(".");
         if(decimalIndex<0 || decimalString.equals("0")) return partieEntiereLettre;
         long partieDecimal = Integer.parseInt(decimalString.substring(decimalIndex + 1));
+        if(partieDecimal == 0) return partieEntiereLettre;
         String partieDecimaleLettre = numberToLetter(partieDecimal);
         String nombreLettre = partieEntiereLettre + " virgule " + partieDecimaleLettre;
         return nombreLettre;

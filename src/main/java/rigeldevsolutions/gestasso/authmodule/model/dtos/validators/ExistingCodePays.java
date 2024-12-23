@@ -7,7 +7,6 @@ import jakarta.validation.Payload;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import rigeldevsolutions.gestasso.authmodule.controller.repositories.NatRepo;
-import rigeldevsolutions.gestasso.authmodule.controller.repositories.UserRepo;
 
 import java.lang.annotation.*;
 
@@ -27,6 +26,7 @@ public @interface ExistingCodePays
         private final NatRepo natRepo;
         @Override
         public boolean isValid(String codePays, ConstraintValidatorContext context) {
+            if(codePays == null) return true;
             return natRepo.existsById(codePays);
         }
     }

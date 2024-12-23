@@ -1,4 +1,4 @@
-package rigeldevsolutions.gestasso.authmodule.model.dtos.appuser;
+package rigeldevsolutions.gestasso.metier.assomodule.model.dtos;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import rigeldevsolutions.gestasso.authmodule.model.dtos.appuser.UniqueEmail;
+import rigeldevsolutions.gestasso.authmodule.model.dtos.appuser.UniqueTel;
 import rigeldevsolutions.gestasso.authmodule.model.dtos.validators.ExistingCodePays;
 import rigeldevsolutions.gestasso.authmodule.model.dtos.validators.ValidCodeCivilite;
 import rigeldevsolutions.gestasso.grademodule.model.dtos.ExistingGradeCode;
@@ -16,9 +18,23 @@ import rigeldevsolutions.gestasso.metier.assomodule.model.validators.ExistingSec
 
 import java.time.LocalDate;
 
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor
-public class CreateAdherantDTO
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor @UniqueEmail @UniqueTel
+public class CreateMembreDTO
 {
+    private Long userId;
+    @ExistingSectionId
+    private Long sectionId;
+    @ExistingAssoId @NotNull(message = "Veuillez selectionner l'association")
+    private Long assoId;
+
+    private String matriculeFonctionnaire;
+    private String nomCivilite;
+    @ExistingCodePays
+    private String codePays;
+    @ExistingGradeCode
+    private String gradeCode;
+    private int indiceFonctionnaire;
+
     @NotNull(message = "Veuillez saisir le nom")
     @NotBlank(message = "Veuillez saisir le nom")
     private String firstName;
@@ -35,16 +51,17 @@ public class CreateAdherantDTO
     private LocalDate dateNaissance;
     @ValidCodeCivilite
     private String codeCivilite;
-    @ExistingCodePays
-    private String codePays;
-    private String maticuleFonctionnaire;
-    @ExistingGradeCode
-    private String gradeCode;
-    private int indiceFonctionnaire;
-    private String nomPere;
-    private String nomMere;
-    @ExistingSectionId
-    private Long sectionId;
-    @ExistingAssoId
-    private Long assoId;
+
+    public CreateMembreDTO(Long userId, String matriculeFonctionnaire, String email, String tel, String firstName, String lastName, String lieuNaissance, LocalDate dateNaissance, String codeCivilite, String nomCivilite) {
+        this.userId = userId;
+        this.matriculeFonctionnaire = matriculeFonctionnaire;
+        this.email = email;
+        this.tel = tel;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.lieuNaissance = lieuNaissance;
+        this.dateNaissance = dateNaissance;
+        this.codeCivilite = codeCivilite;
+        this.nomCivilite = nomCivilite;
+    }
 }

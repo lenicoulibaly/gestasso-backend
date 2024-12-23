@@ -8,7 +8,7 @@ import java.util.List;
 public class CreateEcheancierDTO
 {
     private String typeEcheancierCode;
-    private String frequence;
+    private String frequenceTypeCode;
     private String name;
     private Long exeCode;
     List<CreateEcheanceDTO> echeances;

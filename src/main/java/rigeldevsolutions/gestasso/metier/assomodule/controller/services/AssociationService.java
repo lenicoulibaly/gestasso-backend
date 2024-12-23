@@ -57,4 +57,11 @@ public class AssociationService implements IAssociationService
         key = StringUtils.stripAccentsToUpperCase(key);
         return assoRepo.searchAssociations(key, pageable);
     }
+
+    @Override
+    public Association findById(Long assoId)
+    {
+        if(assoId == null) throw new AppException("L'ID de l'association ne peut être nul");
+        return assoRepo.findById(assoId).orElseThrow(()->new AppException("Association introuvable " + assoId));
+    }
 }

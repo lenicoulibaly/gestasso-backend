@@ -9,6 +9,8 @@ import rigeldevsolutions.gestasso.metier.assomodule.model.dtos.ReadAssociationDT
 import rigeldevsolutions.gestasso.metier.cotisationmodule.model.dtos.ReadCotisationDTO;
 import rigeldevsolutions.gestasso.metier.cotisationmodule.model.entities.Cotisation;
 
+import java.math.BigDecimal;
+
 public interface CotisationRepo extends JpaRepository<Cotisation, Long> {
     @Query("select (count(c.cotisationId)>0) from Cotisation c where trim(upper(c.nomCotisation)) = trim(upper(?1)) and c.section.sectionId = ?2")
     boolean existsByNameAndSectionId(String nomCotisation, Long sectionId);
@@ -27,7 +29,7 @@ select (count(c.cotisationId)>0) from Cotisation  c left join c.association a le
 
     @Query("""
     select new rigeldevsolutions.gestasso.metier.cotisationmodule.model.dtos.ReadCotisationDTO(
-    c.cotisationId, c.nomCotisation, c.montantCotisation, c.frequenceCotisation.name, c.frequenceCotisation.uniqueCode,
+    c.cotisationId, c.nomCotisation, c.montantCotisation, c.motif, c.frequenceCotisation.name, c.frequenceCotisation.uniqueCode,
      c.modePrelevement.name, c.modePrelevement.uniqueCode, c.dateDebutCotisation, c.dateFinCotisation,c.delaiDeRigueurEnJours,
      a.assoName, a.sigle, a.assoId, s.sectionName, s.sigle, s.sectionId) 
     from Cotisation c left join c.association a left join c.section s where
@@ -51,4 +53,7 @@ select (count(c.cotisationId)>0) from Cotisation  c left join c.association a le
            
 """)
     Page<ReadCotisationDTO> searchCotisations(@Param("key")String key, @Param("assoId")Long assoId, @Param("sectionId")Long sectionId, @Param("actuel") boolean actuel, Pageable pageable);
+
+    @Query("select c.montantCotisation from Cotisation c where c.cotisationId = ?1")
+    BigDecimal getMotantCotisation(Long cotisationId);
 }

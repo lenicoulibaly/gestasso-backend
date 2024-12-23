@@ -29,7 +29,7 @@ public @interface ExistingGradeCode
         @Override
         public boolean isValid(String value, ConstraintValidatorContext context)
         {
-            if(value==null) return false;
+            if(value==null || value.trim().equals("")) return true;
             return gradeRepo.existsById(value);
         }
     }

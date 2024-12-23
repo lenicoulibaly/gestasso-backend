@@ -9,6 +9,8 @@ import rigeldevsolutions.gestasso.metier.assomodule.model.dtos.UpdateSectionDTO;
 import rigeldevsolutions.gestasso.metier.assomodule.model.entities.Association;
 import rigeldevsolutions.gestasso.metier.assomodule.model.entities.Section;
 
+import java.util.List;
+
 public interface ISectionService {
     ReadSectionDTO createSection(CreateSectionDTO dto, ActionIdentifier ai);
 
@@ -17,4 +19,6 @@ public interface ISectionService {
     Page<ReadSectionDTO> searchSections(String key, Long assoId, Long strId, Pageable pageable);
 
     Section createSectionDeBase(Association association, ActionIdentifier ai);
+
+    List<ReadSectionDTO> getAssociationSections(Long assoId);
 }

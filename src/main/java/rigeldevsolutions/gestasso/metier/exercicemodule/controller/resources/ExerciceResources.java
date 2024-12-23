@@ -17,7 +17,8 @@ import java.util.List;
 @RestController @ResponseStatus(HttpStatus.OK)
 @RequestMapping("/exercices")
 @RequiredArgsConstructor
-public class ExerciceResources {
+public class ExerciceResources
+{
     private final IExercieService exoService;
     private final IActionIdentifierService ais;
 

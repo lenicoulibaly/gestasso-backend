@@ -5,9 +5,7 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import jakarta.validation.Payload;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.EnumUtils;
 import org.springframework.stereotype.Component;
-import rigeldevsolutions.gestasso.authmodule.controller.repositories.NatRepo;
 import rigeldevsolutions.gestasso.typemodule.controller.repositories.TypeRepo;
 import rigeldevsolutions.gestasso.typemodule.model.enums.TypeGroup;
 
@@ -15,7 +13,7 @@ import java.lang.annotation.*;
 
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = {ValidCodeCivilite.ExistingEmailValidator.class})
+@Constraint(validatedBy = {ValidCodeCivilite.ValidCodeCiviliteValidator.class})
 @Documented
 public @interface ValidCodeCivilite
 {
@@ -24,7 +22,7 @@ public @interface ValidCodeCivilite
     Class<? extends Payload>[] payload() default {};
 
     @Component @RequiredArgsConstructor
-    class ExistingEmailValidator implements ConstraintValidator<ValidCodeCivilite, String>
+    class ValidCodeCiviliteValidator implements ConstraintValidator<ValidCodeCivilite, String>
     {
         private final TypeRepo typeRepo;
         @Override

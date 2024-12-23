@@ -13,4 +13,6 @@ public interface IAssociationService
     Association createAssociation(CreateAssociationDTO dto, ActionIdentifier ai);
     Association updateAssociation(UpdateAssociationDTO dto, ActionIdentifier ai);
     Page<ReadAssociationDTO> searchAssociations(String key, Pageable pageable);
+
+    Association findById(Long assoId);
 }

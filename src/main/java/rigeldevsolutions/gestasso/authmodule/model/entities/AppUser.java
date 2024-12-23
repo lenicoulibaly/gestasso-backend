@@ -1,21 +1,13 @@
 package rigeldevsolutions.gestasso.authmodule.model.entities;
 
 import jakarta.persistence.*;
-import rigeldevsolutions.gestasso.grademodule.model.entities.Grade;
-import rigeldevsolutions.gestasso.modulestatut.entities.Statut;
-import rigeldevsolutions.gestasso.typemodule.model.entities.Type;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import rigeldevsolutions.gestasso.metier.assomodule.model.entities.Association;
-import rigeldevsolutions.gestasso.metier.assomodule.model.entities.Section;
+import rigeldevsolutions.gestasso.grademodule.model.entities.Grade;
 import rigeldevsolutions.gestasso.typemodule.model.entities.Type;
 
 import java.time.LocalDate;
@@ -43,7 +35,7 @@ public class AppUser extends HistoDetails
     private Type civilite;
     @ManyToOne @JoinColumn(name = "nationalite_ID")
     private Nationalite nationalite;
-    private String maticuleFonctionnaire;
+    private String matriculeFonctionnaire;
     @ManyToOne @JoinColumn(name = "GRADE_ID")
     private Grade grade;
     private int indiceFonctionnaire;

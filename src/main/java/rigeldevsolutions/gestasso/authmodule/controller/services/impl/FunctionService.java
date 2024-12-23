@@ -1,11 +1,17 @@
 package rigeldevsolutions.gestasso.authmodule.controller.services.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.transaction.event.TransactionPhase;
-import org.springframework.transaction.event.TransactionalEventListener;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 import rigeldevsolutions.gestasso.authmodule.controller.repositories.FunctionRepo;
 import rigeldevsolutions.gestasso.authmodule.controller.repositories.RoleToFunctionAssRepo;
 import rigeldevsolutions.gestasso.authmodule.controller.repositories.UserRepo;
@@ -18,24 +24,14 @@ import rigeldevsolutions.gestasso.authmodule.model.dtos.appfunction.FncMapper;
 import rigeldevsolutions.gestasso.authmodule.model.dtos.appfunction.ReadFncDTO;
 import rigeldevsolutions.gestasso.authmodule.model.dtos.appfunction.UpdateFncDTO;
 import rigeldevsolutions.gestasso.authmodule.model.dtos.appuser.AuthResponseDTO;
-import rigeldevsolutions.gestasso.authmodule.model.dtos.appuser.CreateAdherantDTO;
 import rigeldevsolutions.gestasso.authmodule.model.dtos.asignation.AssMapper;
 import rigeldevsolutions.gestasso.authmodule.model.dtos.asignation.RoleAssSpliterDTO;
 import rigeldevsolutions.gestasso.authmodule.model.dtos.asignation.SetAuthoritiesToFunctionDTO;
 import rigeldevsolutions.gestasso.authmodule.model.entities.*;
-import rigeldevsolutions.gestasso.authmodule.model.events.AdherantCreatedEvent;
+import rigeldevsolutions.gestasso.metier.assomodule.model.dtos.CreateMembreDTO;
 import rigeldevsolutions.gestasso.modulelog.controller.service.ILogService;
-import rigeldevsolutions.gestasso.modulelog.model.entities.Log;
 import rigeldevsolutions.gestasso.sharedmodule.exceptions.AppException;
 import rigeldevsolutions.gestasso.sharedmodule.utilities.ObjectCopier;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.net.UnknownHostException;
 import java.time.LocalDate;
@@ -53,8 +49,6 @@ public class FunctionService implements IFunctionService {
     private final FncMapper fncMapper;
     private final AssMapper assMapper;
     private final ILogService logger;
-    private final ObjectCopier<AppFunction> functionCopier;
-    private final ObjectCopier<AppUser> userCopier;
     private final ObjectCopier<RoleToFncAss> rtfCopier;
     private final IJwtService jwtService;
 
@@ -214,18 +208,15 @@ public class FunctionService implements IFunctionService {
         return new PageImpl<>(functionsList, functionsPage.getPageable(), functionsPage.getTotalElements());
     }
 
-    @Override @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
-    public void onAdherantCreatedEvent(AdherantCreatedEvent event)
+    @Override @Transactional
+    public void createMembreFunction(Long userId, CreateMembreDTO membreDTO, ActionIdentifier ai)
     {
-        AppUser user = event.getUser();
-        ActionIdentifier ai = event.getAi();
-        CreateAdherantDTO createAdherantDTO = event.getDto();
-        String tyfCode = createAdherantDTO.getSectionId() == null ? "TYF_MBR_ASSO" : "TYF_MBR_SECT";
+        String tyfCode = membreDTO.getSectionId() == null ? "TYF-MBR-ASSO" : "TYF-MBR-SECT";
         CreateFncDTO dto = new CreateFncDTO();
         dto.setName("Membre");
         dto.setTypeCode(tyfCode);
-        dto.setAssoId(createAdherantDTO.getAssoId());
-        dto.setUserId(user.getUserId());
+        dto.setAssoId(membreDTO.getAssoId());
+        dto.setUserId(userId);
         dto.setSectionId(dto.getSectionId());
         dto.setStartsAt(LocalDate.now());
         dto.setRoleCodes(new HashSet<String>(Arrays.asList("ROL-MBR")));

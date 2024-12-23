@@ -7,7 +7,6 @@ import jakarta.validation.Payload;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import rigeldevsolutions.gestasso.metier.assomodule.controller.repositories.SectionRepo;
-import rigeldevsolutions.gestasso.metier.cotisationmodule.model.dtos.CreateCotisationDTO;
 
 import java.lang.annotation.*;
 
@@ -17,7 +16,7 @@ import java.lang.annotation.*;
 @Documented
 public @interface ExistingSectionId
 {
-    String message() default "L'ID de l'association est introuvable";
+    String message() default "L'ID de la section est introuvable";
     Class<?> [] groups() default {};
     Class<? extends Payload> [] payload() default {};
 

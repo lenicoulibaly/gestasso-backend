@@ -1,11 +1,14 @@
 package rigeldevsolutions.gestasso.metier.assomodule.model.entities;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.envers.Audited;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import rigeldevsolutions.gestasso.authmodule.model.entities.HistoDetails;
 import rigeldevsolutions.gestasso.authmodule.model.entities.AppUser;
+import rigeldevsolutions.gestasso.authmodule.model.entities.HistoDetails;
 
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor //@Builder
 @Audited @EntityListeners(AuditingEntityListener.class)
@@ -22,4 +25,9 @@ public class Adhesion extends HistoDetails
     private boolean active;
     @ManyToOne @JoinColumn(name = "MEMBER_ID")
     private AppUser member;
+
+    public Adhesion(Long adhesionId)
+    {
+        this.adhesionId = adhesionId;
+    }
 }

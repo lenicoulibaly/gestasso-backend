@@ -17,6 +17,7 @@ import rigeldevsolutions.gestasso.metier.assomodule.model.mappers.SectionMapper;
 import rigeldevsolutions.gestasso.sharedmodule.exceptions.AppException;
 import rigeldevsolutions.gestasso.structuremodule.model.entities.Structure;
 
+import java.util.List;
 import java.util.Objects;
 
 @Service @RequiredArgsConstructor
@@ -63,5 +64,11 @@ public class SectionService implements ISectionService
         sectionMere = sectionRepo.save(sectionMere);
         BeanUtils.copyProperties(ai, sectionMere);
         return sectionMere;
+    }
+
+    @Override
+    public List<ReadSectionDTO> getAssociationSections(Long assoId)
+    {
+        return sectionRepo.findbyAssoId(assoId);
     }
 }

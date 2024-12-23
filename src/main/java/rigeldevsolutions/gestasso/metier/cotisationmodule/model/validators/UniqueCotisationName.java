@@ -6,8 +6,6 @@ import jakarta.validation.ConstraintValidatorContext;
 import jakarta.validation.Payload;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import rigeldevsolutions.gestasso.metier.assomodule.controller.repositories.SectionRepo;
-import rigeldevsolutions.gestasso.metier.assomodule.model.dtos.CreateSectionDTO;
 import rigeldevsolutions.gestasso.metier.cotisationmodule.controller.repositories.CotisationRepo;
 import rigeldevsolutions.gestasso.metier.cotisationmodule.model.dtos.CreateCotisationDTO;
 import rigeldevsolutions.gestasso.metier.cotisationmodule.model.dtos.UpdateCotisationDTO;
@@ -16,7 +14,7 @@ import java.lang.annotation.*;
 
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = {UniqueCotisationName.UniqueCotisationNameNameValidator.class})
+@Constraint(validatedBy = {UniqueCotisationName.UniqueCotisationNameValidator.class, UniqueCotisationName.UniqueCotisationNameValidatorOnUpdate.class})
 @Documented
 public @interface UniqueCotisationName
 {
@@ -26,7 +24,7 @@ public @interface UniqueCotisationName
 
     @Component
     @RequiredArgsConstructor
-    class UniqueCotisationNameNameValidator implements ConstraintValidator<UniqueCotisationName, CreateCotisationDTO>
+    class UniqueCotisationNameValidator implements ConstraintValidator<UniqueCotisationName, CreateCotisationDTO>
     {
         private final CotisationRepo cotisationRepo;
 
@@ -42,7 +40,7 @@ public @interface UniqueCotisationName
 
     @Component
     @RequiredArgsConstructor
-    class UniqueCotisationNameNameValidatorOnUpdate implements ConstraintValidator<UniqueCotisationName, UpdateCotisationDTO>
+    class UniqueCotisationNameValidatorOnUpdate implements ConstraintValidator<UniqueCotisationName, UpdateCotisationDTO>
     {
         private final CotisationRepo cotisationRepo;
 

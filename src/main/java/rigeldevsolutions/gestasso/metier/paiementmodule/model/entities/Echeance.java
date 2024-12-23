@@ -21,6 +21,7 @@ public class Echeance
     private LocalDate dateButtoire;
     private BigDecimal montantEcheance;
     private BigDecimal tauxEcheance;
+    private String nomEcheance;
     @ManyToOne @JoinColumn(name = "ECHEANCIER_ID")
     private Echeancier echeancier;
 

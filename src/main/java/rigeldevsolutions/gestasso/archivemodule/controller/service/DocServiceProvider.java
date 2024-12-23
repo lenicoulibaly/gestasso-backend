@@ -13,6 +13,7 @@ public class DocServiceProvider
     private final AssociationDocUploader assDocUploader;
     private final SectionDocUploader sectionDocUploader;
     private final MembreDocUploader membreDocUploader;
+    private final PhotoDocUploader photoDocUploader;
     private final TypeRepo typeRepo;
 
     public AbstractDocumentService getDocUploader(String typeDocUniqueCode)
@@ -23,6 +24,7 @@ public class DocServiceProvider
 
         return switch (typeDoc.getUniqueCode())
                 {
+                    case "PHT"->photoDocUploader;
                     case "DOC_MBR"->membreDocUploader;
                     case "DOC_ASS"->assDocUploader;
                     case "DOC_SEC"->sectionDocUploader;

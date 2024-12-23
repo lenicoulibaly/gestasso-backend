@@ -1,19 +1,15 @@
 package rigeldevsolutions.gestasso.authmodule.controller.services.impl;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.transaction.event.TransactionPhase;
-import org.springframework.transaction.event.TransactionalEventListener;
+import org.springframework.stereotype.Service;
 import rigeldevsolutions.gestasso.authmodule.controller.repositories.AccountTokenRepo;
 import rigeldevsolutions.gestasso.authmodule.controller.services.spec.IAccountTokenService;
 import rigeldevsolutions.gestasso.authmodule.model.entities.AccountToken;
 import rigeldevsolutions.gestasso.authmodule.model.entities.ActionIdentifier;
 import rigeldevsolutions.gestasso.authmodule.model.entities.AppUser;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import rigeldevsolutions.gestasso.authmodule.model.events.AccountActivationTokenCreatedEvent;
-import rigeldevsolutions.gestasso.authmodule.model.events.AdherantCreatedEvent;
 
 import java.time.LocalDateTime;
 import java.util.Random;
@@ -54,12 +50,5 @@ public class ActivationTokenService implements IAccountTokenService
         int nb;
         nb = borneInf+random.nextInt(borneSup-borneInf);
         return String.valueOf(nb);
-    }
-
-    @Override @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
-    public void onAdherantCreatedEvent(AdherantCreatedEvent event)
-    {
-        AccountToken token = this.createAccountToken(event.getUser(), event.getAi());
-        eventPublisher.publishEvent(new AccountActivationTokenCreatedEvent(this, token, event.getUser(), event.getAi()));
     }
 }

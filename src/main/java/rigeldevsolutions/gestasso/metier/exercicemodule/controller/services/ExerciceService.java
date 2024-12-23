@@ -1,7 +1,6 @@
 package rigeldevsolutions.gestasso.metier.exercicemodule.controller.services;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.EnumUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,9 +13,11 @@ import rigeldevsolutions.gestasso.metier.exercicemodule.model.entities.Exercice;
 import rigeldevsolutions.gestasso.metier.exercicemodule.model.mappers.ExerciceMapper;
 import rigeldevsolutions.gestasso.metier.paiementmodule.controller.services.IEcheancierService;
 import rigeldevsolutions.gestasso.metier.paiementmodule.model.dtos.CreateEcheancierDTO;
-import rigeldevsolutions.gestasso.metier.paiementmodule.model.enums.Frequence;
 import rigeldevsolutions.gestasso.sharedmodule.exceptions.AppException;
 import rigeldevsolutions.gestasso.sharedmodule.utilities.StringUtils;
+import rigeldevsolutions.gestasso.typemodule.controller.repositories.TypeRepo;
+import rigeldevsolutions.gestasso.typemodule.model.dtos.ReadTypeDTO;
+import rigeldevsolutions.gestasso.typemodule.model.enums.TypeGroup;
 
 import java.util.List;
 import java.util.Objects;
@@ -29,6 +30,7 @@ public class ExerciceService implements IExercieService {
     private final ExerciceRepo exoRepo;
     private final ExerciceMapper exoMapper;
     private final IEcheancierService echeancierService;
+    private final TypeRepo typeRepo;
 
     @Override @Transactional
     public ReadExerciceDTO createExercice(CreateExerciceDTO dto, ActionIdentifier ai)
@@ -38,8 +40,9 @@ public class ExerciceService implements IExercieService {
         exercice=exoRepo.save(exercice);
         BeanUtils.copyProperties(ai, exercice);
         exercice=exoRepo.save(exercice);
-        EnumUtils.getEnumList(Frequence.class).stream()
-                .map(f->CreateEcheancierDTO.builder().typeEcheancierCode("ECH_NAT").frequence(f.name()).exeCode(dto.getExeCode()).build())
+        List<ReadTypeDTO> typeFrequences = typeRepo.findByTypeGroup(TypeGroup.TYPE_FREQUENCE);
+        typeFrequences.stream()
+                .map(f->CreateEcheancierDTO.builder().typeEcheancierCode("ECH-NAT").frequenceTypeCode(f.getUniqueCode()).exeCode(dto.getExeCode()).build())
                 .forEach(cedto->echeancierService.createEcheancierNaturel(cedto, ai));
         exercice=exoRepo.save(exercice);
         return exoMapper.mapToReadExerciceDTO(exercice);

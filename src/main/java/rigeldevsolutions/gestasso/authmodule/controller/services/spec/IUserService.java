@@ -5,9 +5,9 @@ import rigeldevsolutions.gestasso.authmodule.model.entities.ActionIdentifier;
 import rigeldevsolutions.gestasso.authmodule.model.enums.UserStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import rigeldevsolutions.gestasso.metier.assomodule.model.dtos.CreateMembreDTO;
 
 import java.net.UnknownHostException;
-import java.util.List;
 
 public interface IUserService
 {
@@ -15,7 +15,7 @@ public interface IUserService
     AuthResponseDTO refreshToken() throws UnknownHostException;
     void logout() throws UnknownHostException;
     ReadUserDTO createUser(CreateUserDTO dto, ActionIdentifier ai) throws IllegalAccessException, UnknownHostException;
-    ReadUserDTO createAdherant(CreateAdherantDTO dto, ActionIdentifier ai);
+    ReadUserDTO createAdherant(CreateMembreDTO dto, ActionIdentifier ai);
     ReadUserDTO updateUser(UpdateUserDTO dto, ActionIdentifier ai) throws UnknownHostException;
     ReadUserDTO changePassword(ChangePasswordDTO dto, ActionIdentifier ai) throws UnknownHostException;
     void blockAccount(Long userId, ActionIdentifier ai) throws UnknownHostException;

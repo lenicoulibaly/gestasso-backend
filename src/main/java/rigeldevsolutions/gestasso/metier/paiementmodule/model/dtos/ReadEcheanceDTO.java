@@ -1,15 +1,9 @@
 package rigeldevsolutions.gestasso.metier.paiementmodule.model.dtos;
 
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import rigeldevsolutions.gestasso.metier.exercicemodule.model.entities.Exercice;
-import rigeldevsolutions.gestasso.metier.paiementmodule.model.enums.Frequence;
-import rigeldevsolutions.gestasso.metier.paiementmodule.model.validators.ExistingEcheancierId;
-import rigeldevsolutions.gestasso.typemodule.model.entities.Type;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -19,13 +13,40 @@ public class ReadEcheanceDTO
 {
     private Long echeanceId;
     private LocalDate dateEcheance;
+    private String nomEcheance;
     private LocalDate dateButtoire;
     private BigDecimal montantEcheance;
     private BigDecimal tauxEcheance;
     private Long echeancierId;
     private String echeancierTypeCode;
     private String echeancierTypeName;
-    private String echeancierFrequence;
+    private String echeancierFrequenceCode;
+    private String echeancierFrequenceName;
     private String echeancierName;
     private Long exeCode;
+    private boolean echeanceEchue;
+
+    public ReadEcheanceDTO(Long echeanceId, LocalDate dateEcheance, Long echeancierId, boolean echeanceEchue)
+    {
+        this.echeanceId = echeanceId;
+        this.dateEcheance = dateEcheance;
+        this.echeancierId = echeancierId;
+        this.echeanceEchue =echeanceEchue;
+    }
+    public ReadEcheanceDTO(Long echeanceId, LocalDate dateEcheance, String nomEcheance, Long echeancierId)
+    {
+        this.echeanceId = echeanceId;
+        this.dateEcheance = dateEcheance;
+        this.nomEcheance = nomEcheance;
+        this.echeancierId = echeancierId;
+    }
+
+    public ReadEcheanceDTO(Long echeanceId, LocalDate dateEcheance, String nomEcheance, Long echeancierId, boolean echeanceEchue)
+    {
+        this.echeanceId = echeanceId;
+        this.dateEcheance = dateEcheance;
+        this.nomEcheance = nomEcheance;
+        this.echeancierId = echeancierId;
+        this.echeanceEchue =echeanceEchue;
+    }
 }

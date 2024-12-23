@@ -10,13 +10,13 @@ import rigeldevsolutions.gestasso.metier.cotisationmodule.model.entities.Cotisat
 @Mapper(componentModel = "spring")
 public interface CotisationMapper
 {
-    @Mapping(target = "frequenceCotisation", expression = """
-            java(dto.getFrequenceCotisation() == null ? null : 
-            new rigeldevsolutions.gestasso.typemodule.model.entities.Type(dto.getFrequenceCotisation()))
-            """)
     @Mapping(target = "modePrelevement", expression = """
-            java(dto.getModePrelevement() == null ? null : 
-            new rigeldevsolutions.gestasso.typemodule.model.entities.Type(dto.getModePrelevement()))
+            java(dto.getModePrelevementCode() == null ? null : 
+            new rigeldevsolutions.gestasso.typemodule.model.entities.Type(dto.getModePrelevementCode()))
+            """)
+    @Mapping(target = "frequenceCotisation", expression = """
+            java(dto.getFrequenceCotisationCode() == null ? null : 
+            new rigeldevsolutions.gestasso.typemodule.model.entities.Type(dto.getFrequenceCotisationCode()))
             """)
     @Mapping(target = "association", expression = """
             java(dto.getAssoId() == null ? null : 
@@ -42,5 +42,4 @@ public interface CotisationMapper
     @Mapping(target = "sectionId", source = "section.sectionId")
     ReadCotisationDTO mapToReadCotisationDTO(Cotisation cotisation);
     //TODO Ne pas oublier le mapping des champ de montant lorsque le module paiement sera prêt
-
 }

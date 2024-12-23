@@ -7,6 +7,7 @@ import rigeldevsolutions.gestasso.authmodule.controller.services.spec.IUserServi
 import rigeldevsolutions.gestasso.authmodule.model.constants.AuthActions;
 import rigeldevsolutions.gestasso.authmodule.model.dtos.appuser.*;
 import rigeldevsolutions.gestasso.authmodule.model.entities.ActionIdentifier;
+import rigeldevsolutions.gestasso.metier.assomodule.model.dtos.CreateMembreDTO;
 import rigeldevsolutions.gestasso.modulelog.model.dtos.response.JwtInfos;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -15,7 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 
 @RequiredArgsConstructor
 @RestController @RequestMapping("/users") @ResponseStatus(HttpStatus.OK)
@@ -52,7 +52,7 @@ public class UserResource
     }
 
     @PostMapping(path = "/create-member")
-    public ReadUserDTO createMember(@RequestBody @Valid CreateAdherantDTO dto)
+    public ReadUserDTO createMember(@RequestBody @Valid CreateMembreDTO dto)
     {
         ActionIdentifier ai = ais.getActionIdentifierFromSecurityContext(AuthActions.CREATE_MEMBER);
         return userService.createAdherant(dto, ai);

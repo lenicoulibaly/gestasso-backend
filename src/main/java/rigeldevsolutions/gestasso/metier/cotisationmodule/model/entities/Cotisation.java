@@ -25,6 +25,7 @@ public class Cotisation  extends HistoDetails {
     private Long cotisationId;
     private String nomCotisation;
     private BigDecimal montantCotisation;
+    private String motif;
     @ManyToOne @JoinColumn(name = "frequence_cotisation_unique_code")
     private Type frequenceCotisation;
     @ManyToOne @JoinColumn(name = "mode_prelevement_unique_code")
@@ -36,4 +37,9 @@ public class Cotisation  extends HistoDetails {
     private Association association;
     @ManyToOne @JoinColumn(name = "section_id")
     private Section section;
+
+    public Cotisation(Long cotisationId)
+    {
+        this.cotisationId = cotisationId;
+    }
 }

@@ -145,4 +145,10 @@ public class TypeResource
     {
         return typeService.getOptions(TypeGroup.MODE_PRELEVEMENT);
     }
+
+    @GetMapping(path = "/{typeGroup}/all-options")
+    public List<SelectOption> getOptionsByTypeGroup(@PathVariable String typeGroup)
+    {
+        return typeService.getOptions(typeGroup);
+    }
 }

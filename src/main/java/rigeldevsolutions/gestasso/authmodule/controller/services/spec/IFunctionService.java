@@ -5,9 +5,8 @@ import rigeldevsolutions.gestasso.authmodule.model.dtos.appfunction.CreateFncDTO
 import rigeldevsolutions.gestasso.authmodule.model.dtos.appfunction.ReadFncDTO;
 import rigeldevsolutions.gestasso.authmodule.model.dtos.appfunction.UpdateFncDTO;
 import rigeldevsolutions.gestasso.authmodule.model.dtos.appuser.AuthResponseDTO;
-import rigeldevsolutions.gestasso.authmodule.model.dtos.asignation.SetAuthoritiesToFunctionDTO;
 import rigeldevsolutions.gestasso.authmodule.model.entities.ActionIdentifier;
-import rigeldevsolutions.gestasso.authmodule.model.events.AdherantCreatedEvent;
+import rigeldevsolutions.gestasso.metier.assomodule.model.dtos.CreateMembreDTO;
 
 import java.net.UnknownHostException;
 
@@ -28,5 +27,5 @@ public interface IFunctionService
 
     Page<ReadFncDTO> search(Long userId, String key, int page, int size, boolean withRevoked);
 
-    void onAdherantCreatedEvent(AdherantCreatedEvent event);
+    void createMembreFunction(Long userId, CreateMembreDTO membreDTO, ActionIdentifier ai);
 }

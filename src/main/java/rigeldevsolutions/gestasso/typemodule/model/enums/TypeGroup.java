@@ -9,11 +9,10 @@ import java.util.stream.Collectors;
 @Getter @AllArgsConstructor
 public enum TypeGroup
 {
-    TYPE_REGLEMENT("TYP_REG", "Type de règlement"),
-    MOUVEMENT("TYP_MVT", "TYPE-MOUVEMENT"),
     TYPE_PRV("TYP_PRV", "TYPE-PRIVILEGE"),
     DOCUMENT("TYP_DOC", "TYPE-DOCUMENT"),
-    MODE_REGLEMENT("TYP_MOD_REG", "MODE_REGLEMENT"),
+    MODE_PAIEMENT("MODE_PAIEMENT", "Mode de paiement"),
+    TYPE_PAIEMENT("TYPE_PAIEMENT", "Type de paiement"),
     TYPE_CIVILITE("TYP_CIV", "Civilité"),
     TYPE_PIECE("TYP_PCE", "Type de pièce"),
     TYPE_FUNCTION("TYP_FNC", "Type de fonction"),

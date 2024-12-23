@@ -35,11 +35,17 @@ public class AssociationController
     }
 
     @GetMapping(path = "/search")
-    Page<ReadAssociationDTO> searchAssociations(@RequestParam(defaultValue = "", required = false) String key,
+    public Page<ReadAssociationDTO> searchAssociations(@RequestParam(defaultValue = "", required = false) String key,
                                                 @RequestParam(required = false) Long strId,
                                                 @RequestParam(defaultValue = "0", required = false) int page,
                                                 @RequestParam(defaultValue = Requests.PAGE_SIZE, required = false) int size)
     {
         return associationService.searchAssociations(key, PageRequest.of(page, size));
+    }
+
+    @GetMapping(path = "/find-by-id/{assoId}")
+    public Association findById(@PathVariable Long assoId)
+    {
+        return associationService.findById(assoId);
     }
 }

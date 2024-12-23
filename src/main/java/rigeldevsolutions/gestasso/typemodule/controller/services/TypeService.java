@@ -1,5 +1,6 @@
 package rigeldevsolutions.gestasso.typemodule.controller.services;
 
+import org.apache.commons.lang3.EnumUtils;
 import rigeldevsolutions.gestasso.modulelog.controller.service.ILogService;
 import rigeldevsolutions.gestasso.sharedmodule.dtos.SelectOption;
 import rigeldevsolutions.gestasso.sharedmodule.enums.PersStatus;
@@ -107,7 +108,16 @@ public class TypeService implements ITypeService
     @Override
     public List<SelectOption> getOptions(TypeGroup typeGroup)
     {
-        return typeRepo.findOptionsByTypeGroup(typeGroup);
+        List<SelectOption> options = typeRepo.findOptionsByTypeGroup(typeGroup);
+        //options.add(0, new SelectOption("", "Choisir"));
+        return options;
+    }
+
+    @Override
+    public List<SelectOption> getOptions(String typeGroup)
+    {
+        if(typeGroup == null || !EnumUtils.isValidEnum(TypeGroup.class, typeGroup)) return Collections.emptyList();
+        return typeRepo.findOptionsByTypeGroup(EnumUtils.getEnum(TypeGroup.class, typeGroup));
     }
 
     @Override @Transactional

@@ -10,8 +10,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import rigeldevsolutions.gestasso.archivemodule.controller.repositories.DocumentRepository;
-import rigeldevsolutions.gestasso.archivemodule.model.constants.ArchiveActions;
-import rigeldevsolutions.gestasso.archivemodule.model.constants.ArchiveTable;
 import rigeldevsolutions.gestasso.archivemodule.model.constants.DocumentsConstants;
 import rigeldevsolutions.gestasso.archivemodule.model.dtos.DocMapper;
 import rigeldevsolutions.gestasso.archivemodule.model.dtos.request.UpdateDocReq;
@@ -118,7 +116,7 @@ public abstract class AbstractDocumentService implements IServiceDocument
 		uploadFile(dto.getFile(), doc.getDocPath());
 		doc = docRepo.save(doc);
 		//logService.logg(ArchiveActions.UPLOAD_DOCUMENT, null, doc, ArchiveTable.DOCUMENT, );
-		return true;
+		return true;//01 03 70 79 72
 	}
 
 	@Transactional @Override

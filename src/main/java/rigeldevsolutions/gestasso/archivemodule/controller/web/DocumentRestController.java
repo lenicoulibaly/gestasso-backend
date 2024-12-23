@@ -47,9 +47,9 @@ public class DocumentRestController
     }
 
     @PostMapping(path = "/{groupDocUniqueCode}/upload2", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public boolean uploadDocument(@RequestParam MultipartFile file, @RequestParam Long objectId, @RequestParam String docNum, @RequestParam String docDescription, @RequestParam String typeDocUniqueCode, @PathVariable String groupDocUniqueCode, @PathVariable String docName) throws IOException {
+    public boolean uploadDocument(@RequestParam MultipartFile file, @RequestParam Long objectId, @RequestParam String docNum, @RequestParam String docDescription, @RequestParam String typeDocUniqueCode, @PathVariable String groupDocUniqueCode, @PathVariable(required = false) String docName) throws IOException {
         AbstractDocumentService docUploader = docServiceProvider.getDocUploader(groupDocUniqueCode);
-        String base64FileString = Base64ToFileConverter.convertToBase64UrlString(file);
+        //String base64FileString = Base64ToFileConverter.convertToBase64UrlString(file);
         if(docUploader == null)  throw new AppException("Ce type de document n'est pas pris en charge par le système");
         UploadDocReq dto = new UploadDocReq(objectId, typeDocUniqueCode.toUpperCase(Locale.ROOT), docNum, docName,docDescription, file);
         docUploader.uploadDocument(dto);
