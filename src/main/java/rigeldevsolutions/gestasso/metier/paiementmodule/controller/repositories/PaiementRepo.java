@@ -19,7 +19,7 @@ public interface PaiementRepo extends JpaRepository<Paiement, Long>
 
     @Query("""
             select new rigeldevsolutions.gestasso.metier.paiementmodule.model.dtos.ReadEcheanceDTO 
-            (ec.echeanceId, ec.dateEcheance,  ec.echeancierId, ec.echeanceEchu)
+            (ec.echeanceId, ec.dateEcheance, ec.nomEcheance,  ec.echeancierId, ec.echeanceEchu)
             from EcheanceCotisation ec 
             where ec.cotisationId = ?1 
                 and ec.echeanceId not in (select pc.echeanceId 

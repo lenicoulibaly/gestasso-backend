@@ -10,6 +10,7 @@ import rigeldevsolutions.gestasso.metier.cotisationmodule.model.dtos.ReadCotisat
 import rigeldevsolutions.gestasso.metier.cotisationmodule.model.entities.Cotisation;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 public interface CotisationRepo extends JpaRepository<Cotisation, Long> {
     @Query("select (count(c.cotisationId)>0) from Cotisation c where trim(upper(c.nomCotisation)) = trim(upper(?1)) and c.section.sectionId = ?2")
@@ -55,5 +56,8 @@ select (count(c.cotisationId)>0) from Cotisation  c left join c.association a le
     Page<ReadCotisationDTO> searchCotisations(@Param("key")String key, @Param("assoId")Long assoId, @Param("sectionId")Long sectionId, @Param("actuel") boolean actuel, Pageable pageable);
 
     @Query("select c.montantCotisation from Cotisation c where c.cotisationId = ?1")
-    BigDecimal getMotantCotisation(Long cotisationId);
+    Optional<BigDecimal> getMontantCotisation(Long cotisationId);
+
+    @Query("select c.delaiDeRigueurEnJours from Cotisation c where c.cotisationId = ?1")
+    Long getDelaiRigueur(Long cotisationId);
 }

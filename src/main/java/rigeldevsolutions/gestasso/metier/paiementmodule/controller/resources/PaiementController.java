@@ -10,7 +10,7 @@ import rigeldevsolutions.gestasso.authmodule.controller.services.spec.IActionIde
 import rigeldevsolutions.gestasso.authmodule.model.entities.ActionIdentifier;
 import rigeldevsolutions.gestasso.metier.paiementmodule.controller.services.IPaiementService;
 import rigeldevsolutions.gestasso.metier.paiementmodule.model.constants.PaiementActions;
-import rigeldevsolutions.gestasso.metier.paiementmodule.model.dtos.PaiementDTO;
+import rigeldevsolutions.gestasso.metier.paiementmodule.model.dtos.PaiementCotisationDTO;
 import rigeldevsolutions.gestasso.metier.paiementmodule.model.dtos.VersementDTO;
 
 @RestController @RequiredArgsConstructor @RequestMapping(path = "/paiements")
@@ -19,10 +19,16 @@ public class PaiementController
     private final IPaiementService paiementService;
     private final IActionIdentifierService ais;
 
-    @PostMapping(path = "/create-versement")
-    public VersementDTO createVersement(@RequestBody @Valid PaiementDTO dto)
+    @PostMapping(path = "/create-versement-cotisation")
+    public VersementDTO createVersement(@RequestBody @Valid PaiementCotisationDTO dto)
     {
         ActionIdentifier ai = ais.getActionIdentifierFromSecurityContext(PaiementActions.CREATE_VERSEMENT);
         return paiementService.createVersementCotisation(dto, ai);
+    }
+
+    @PostMapping(path = "/get-paiement-cotisation-dto")
+    public PaiementCotisationDTO getPaiementCotisationDTO(@RequestBody @Valid PaiementCotisationDTO dto)
+    {
+        return paiementService.getPaiementCotisationDto(dto);
     }
 }

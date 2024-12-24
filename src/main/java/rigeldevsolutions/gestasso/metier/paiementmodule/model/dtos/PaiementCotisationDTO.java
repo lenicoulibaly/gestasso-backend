@@ -18,7 +18,7 @@ import java.time.LocalDate;
 
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
 @UniqueReference
-public class PaiementDTO
+public class PaiementCotisationDTO
 {
     private Long PaiementId;
     private String reference;
@@ -49,4 +49,11 @@ public class PaiementDTO
     private String motif;
     private Long versementId;
     private String codeVersement;
+
+    private String echeanceCoursPaiement;
+    private BigDecimal retardPaiement;
+    private Long nbrEcheancesSoldeesParCeVersement;
+    private String prochaineEcheance;
+    private BigDecimal montantProchaineEcheance;
+    private BigDecimal montantVersementSouhaite;
 }

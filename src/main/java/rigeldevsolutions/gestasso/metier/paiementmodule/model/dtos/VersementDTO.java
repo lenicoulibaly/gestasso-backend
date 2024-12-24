@@ -31,5 +31,5 @@ public class VersementDTO
     private Long cotisationId;
     private String nomCotisation;
     private String motif;
-    List<PaiementDTO> paiements;
+    List<PaiementCotisationDTO> paiements;
 }

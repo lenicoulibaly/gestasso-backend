@@ -7,7 +7,7 @@ import jakarta.validation.Payload;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import rigeldevsolutions.gestasso.metier.paiementmodule.controller.repositories.PaiementRepo;
-import rigeldevsolutions.gestasso.metier.paiementmodule.model.dtos.PaiementDTO;
+import rigeldevsolutions.gestasso.metier.paiementmodule.model.dtos.PaiementCotisationDTO;
 
 import java.lang.annotation.*;
 
@@ -22,11 +22,11 @@ public @interface UniqueReference
     Class<? extends Payload>[] payload() default {};
 
     @Component @RequiredArgsConstructor
-    class UniqueReferenceValidator implements ConstraintValidator<UniqueReference, PaiementDTO>
+    class UniqueReferenceValidator implements ConstraintValidator<UniqueReference, PaiementCotisationDTO>
     {
         private final PaiementRepo paiementRepo;
         @Override
-        public boolean isValid(PaiementDTO dto, ConstraintValidatorContext context)
+        public boolean isValid(PaiementCotisationDTO dto, ConstraintValidatorContext context)
         {
             if(dto == null) return true;
             if(dto.getPaiementId() == null) return !paiementRepo.existsByReference(dto.getReference());

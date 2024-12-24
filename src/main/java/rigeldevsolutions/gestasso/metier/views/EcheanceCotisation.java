@@ -43,4 +43,5 @@ public class EcheanceCotisation
     private Boolean echeanceEchu;
     @Column(name = "delai_echu")
     private Boolean delaiEchu;
+    private String nomEcheance;
 }

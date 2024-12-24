@@ -2,7 +2,7 @@ package rigeldevsolutions.gestasso.metier.paiementmodule.model.mappers;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import rigeldevsolutions.gestasso.metier.paiementmodule.model.dtos.PaiementDTO;
+import rigeldevsolutions.gestasso.metier.paiementmodule.model.dtos.PaiementCotisationDTO;
 import rigeldevsolutions.gestasso.metier.paiementmodule.model.dtos.VersementDTO;
 import rigeldevsolutions.gestasso.metier.paiementmodule.model.entities.Paiement;
 import rigeldevsolutions.gestasso.metier.paiementmodule.model.entities.Versement;
@@ -11,7 +11,7 @@ import rigeldevsolutions.gestasso.metier.paiementmodule.model.entities.Versement
 public interface PaiementMapper
 {
 
-    Paiement mapToPaiementCotisation(PaiementDTO dto);
+    Paiement mapToPaiementCotisation(PaiementCotisationDTO dto);
 
     @Mapping(target = "datePaiement", source = "versement.dateVersement")
     @Mapping(target = "modePaiementCode", source = "versement.modePaiement.uniqueCode")
@@ -27,14 +27,14 @@ public interface PaiementMapper
     @Mapping(target = "cotisationId", source = "versement.cotisation.cotisationId")
     @Mapping(target = "nomCotisation", source = "versement.cotisation.nomCotisation")
     @Mapping(target = "motif", source = "versement.cotisation.motif")
-    PaiementDTO mapToPaiementDTO(Paiement paiement);
+    PaiementCotisationDTO mapToPaiementDTO(Paiement paiement);
 
     @Mapping(target = "dateVersement", source = "datePaiement")
     @Mapping(target = "modePaiement", expression = "java(new rigeldevsolutions.gestasso.typemodule.model.entities.Type(dto.getModePaiementCode()))")
     @Mapping(target = "typePaiement", expression = "java(new rigeldevsolutions.gestasso.typemodule.model.entities.Type(dto.getTypePaiementCode()))")
     @Mapping(target = "adhesion", expression = "java(dto.getAdhesionId() == null ? null : new rigeldevsolutions.gestasso.metier.assomodule.model.entities.Adhesion(dto.getAdhesionId()))")
     @Mapping(target = "cotisation", expression = "java(dto.getCotisationId() == null ? null : new rigeldevsolutions.gestasso.metier.cotisationmodule.model.entities.Cotisation(dto.getCotisationId()))")
-    Versement mapToVersement(PaiementDTO dto);
+    Versement mapToVersement(PaiementCotisationDTO dto);
 
     @Mapping(target = "modePaiement", source = "modePaiement.name")
     @Mapping(target = "modePaiementCode", source = "modePaiement.uniqueCode")

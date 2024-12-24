@@ -23,7 +23,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.math.BigDecimal.ZERO;
@@ -34,7 +33,9 @@ public class EcheanceService implements IEcheanceService
     private final EcheanceMapper echeanceMapper;
     private final EcheanceRepo echeanceRepo;
     private final PaiementRepo paiementRepo;
+    private final ICalculPaiementService calculPaiementService;
     private final CotisationRepo cotisationRepo;
+
 
     @Override @Transactional
     public ReadEcheanceDTO createEcheance(CreateEcheanceDTO dto, ActionIdentifier ai)
@@ -57,12 +58,44 @@ public class EcheanceService implements IEcheanceService
     }
 
     @Override
-    public List<ReadEcheanceDTO> getNextEcheancesToPay(int nbr, Long cotisationId, Long adhesionId)
+    public List<ReadEcheanceDTO> getNextEcheancesToPay(long nbr, Long cotisationId, Long adhesionId)
     {
-        Page<ReadEcheanceDTO> echeancePage = paiementRepo.getNextEcheances(cotisationId, adhesionId, PageRequest.of(0, nbr));
+        Page<ReadEcheanceDTO> echeancePage = paiementRepo.getNextEcheances(cotisationId, adhesionId, PageRequest.of(0, (int)nbr));
         List<ReadEcheanceDTO> echeances = echeancePage != null ? echeancePage.getContent() : Collections.emptyList();
-        echeances = echeances.stream().peek(e->e.setMontantEcheance(this.calculateResteAPayer(cotisationId, adhesionId, e.getEcheanceId()))).collect(Collectors.toList());
+        echeances = echeances.stream().peek(e->e.setMontantEcheance(calculPaiementService.calculateResteAPayer(cotisationId, adhesionId, e.getEcheanceId()))).collect(Collectors.toList());
         return echeances;
+    }
+
+    @Override
+    public ReadEcheanceDTO getCurrentEcheanceToPay(Long cotisationId, Long adhesionId)
+    {
+        Page<ReadEcheanceDTO> echeancePage = paiementRepo.getNextEcheances(cotisationId, adhesionId, PageRequest.of(0, 1));
+        List<ReadEcheanceDTO> echeances = echeancePage != null ? echeancePage.getContent() : Collections.emptyList();
+        if(echeances.isEmpty()) return null;
+        ReadEcheanceDTO dto = echeances.get(echeances.size()-1);
+
+        dto.setMontantEcheance(calculPaiementService.calculateResteAPayer(cotisationId, adhesionId, dto.getEcheanceId()));
+        return dto;
+    }
+
+    @Override
+    public ReadEcheanceDTO getNextEcheanceToPayAfterPaying(Long cotisationId, Long adhesionId, BigDecimal montantVersement)
+    {
+        long nbrEcheances = calculPaiementService.calculateNbrEcheancesSoldeesParVersement(cotisationId, adhesionId, montantVersement);
+        BigDecimal montantCotisation = cotisationRepo.getMontantCotisation(cotisationId).orElseThrow(()->new AppException("Le montant de la cotisation ne peut être nul"));
+        List<ReadEcheanceDTO> echeances = this.getNextEcheancesToPay(nbrEcheances, cotisationId, adhesionId);
+        BigDecimal totalMontantEcheances = echeances.stream()
+                .map(ReadEcheanceDTO::getMontantEcheance)
+                .filter(montant -> montant != null)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal montantPaiementDerniereEcheance = montantVersement.subtract(totalMontantEcheances);
+        if(montantPaiementDerniereEcheance.compareTo(ZERO)<0) throw new AppException("Le montant sur la dernière échéance ne devrait pas être négatif");
+        ReadEcheanceDTO lastEcheance = echeances.get(echeances.size()-1);
+        ReadEcheanceDTO nextEcheance = this.getNextEcheance(lastEcheance.getEcheanceId());
+        if(nextEcheance == null) return null;
+        nextEcheance.setMontantEcheance(montantCotisation.subtract(montantPaiementDerniereEcheance));
+
+        return nextEcheance;
     }
 
     @Override
@@ -71,26 +104,16 @@ public class EcheanceService implements IEcheanceService
         return echeanceRepo.getNextEcheance(echeanceId);
     }
 
+    @Override
+    public ReadEcheanceDTO getLastEcheance(Long echeancierId)
+    {
+        return echeanceRepo.getLastEcheance(echeancierId);
+    }
+
 
     @Override
-    public ReadEcheanceDTO getEcheancesRetard(Long cotisationId, Long adhesionId) {
+    public List<ReadEcheanceDTO> getEcheancesRetard(Long cotisationId, Long adhesionId) {
         return null;
-    }
-
-    @Override
-    public BigDecimal calculateResteAPayer(Long cotisationId, Long adhesionId, Long echeanceId)
-    {
-        BigDecimal dejaPaye = this.calculateDejaPaye(cotisationId, adhesionId, echeanceId);
-        BigDecimal montantCotisation = Optional.of(cotisationRepo.getMotantCotisation(cotisationId)).orElse(ZERO);
-        BigDecimal resteAPayer = montantCotisation.subtract(dejaPaye);
-        return resteAPayer.compareTo(ZERO)<0 ? ZERO : resteAPayer ;
-    }
-
-    @Override
-    public BigDecimal calculateDejaPaye(Long cotisationId, Long adhesionId, Long echeanceId)
-    {
-        BigDecimal dejaPaye = Optional.ofNullable(paiementRepo.calculateDejaPaye(cotisationId, adhesionId, echeanceId)).orElse(ZERO);
-        return dejaPaye;
     }
 
     private String getNomEcheance(LocalDate date, String frenquenceUniqueCode)

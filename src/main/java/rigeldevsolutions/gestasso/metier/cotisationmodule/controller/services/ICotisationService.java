@@ -7,8 +7,6 @@ import rigeldevsolutions.gestasso.metier.cotisationmodule.model.dtos.CreateCotis
 import rigeldevsolutions.gestasso.metier.cotisationmodule.model.dtos.ReadCotisationDTO;
 import rigeldevsolutions.gestasso.metier.cotisationmodule.model.dtos.UpdateCotisationDTO;
 
-import java.math.BigDecimal;
-
 public interface ICotisationService
 {
     ReadCotisationDTO createCotisation(CreateCotisationDTO dto, ActionIdentifier ai);
@@ -16,7 +14,4 @@ public interface ICotisationService
     ReadCotisationDTO updateCotisation(UpdateCotisationDTO dto, ActionIdentifier ai);
 
     Page<ReadCotisationDTO> searchCotisations(String key, Long assoId, Long sectionId, boolean actuel, Pageable pageable);
-
-    long determineNbrEcheances(Long cotisationId);
-    BigDecimal calculateMontantAttenduParMembre(Long cotisationId);
 }

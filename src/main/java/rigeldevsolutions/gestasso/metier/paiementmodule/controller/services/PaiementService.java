@@ -7,10 +7,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import rigeldevsolutions.gestasso.authmodule.model.entities.ActionIdentifier;
 import rigeldevsolutions.gestasso.metier.cotisationmodule.controller.repositories.CotisationRepo;
-import rigeldevsolutions.gestasso.metier.cotisationmodule.controller.services.ICotisationService;
+import rigeldevsolutions.gestasso.metier.cotisationmodule.model.entities.Cotisation;
 import rigeldevsolutions.gestasso.metier.paiementmodule.controller.repositories.PaiementRepo;
 import rigeldevsolutions.gestasso.metier.paiementmodule.controller.repositories.VersementRepo;
-import rigeldevsolutions.gestasso.metier.paiementmodule.model.dtos.PaiementDTO;
+import rigeldevsolutions.gestasso.metier.paiementmodule.model.dtos.PaiementCotisationDTO;
 import rigeldevsolutions.gestasso.metier.paiementmodule.model.dtos.ReadEcheanceDTO;
 import rigeldevsolutions.gestasso.metier.paiementmodule.model.dtos.VersementDTO;
 import rigeldevsolutions.gestasso.metier.paiementmodule.model.entities.Echeance;
@@ -19,11 +19,10 @@ import rigeldevsolutions.gestasso.metier.paiementmodule.model.entities.Versement
 import rigeldevsolutions.gestasso.metier.paiementmodule.model.mappers.PaiementMapper;
 import rigeldevsolutions.gestasso.sharedmodule.exceptions.AppException;
 import rigeldevsolutions.gestasso.sharedmodule.utilities.MontantConverter;
+import rigeldevsolutions.gestasso.sharedmodule.utilities.MontantFormater;
 
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.math.BigDecimal.ZERO;
@@ -37,14 +36,13 @@ public class PaiementService implements IPaiementService
     private final CotisationRepo cotisationRepo;
     private final VersementRepo versementRepo;
     private final IEcheanceService echeanceService;
-    private final ICotisationService cotisationService;
-    private final DecimalFormat decimalFormat;
+    private final ICalculPaiementService calculPaiementService;
 
     @Override @Transactional
-    public VersementDTO createVersementCotisation(PaiementDTO dto, ActionIdentifier ai)
+    public VersementDTO createVersementCotisation(PaiementCotisationDTO dto, ActionIdentifier ai)
     {
-        BigDecimal resteAPayer = this.calculateResteAPayer(dto.getCotisationId(), dto.getAdhesionId());
-        if(dto.getMontant().subtract(resteAPayer).compareTo(CINQ)>0) throw new AppException("Le montant du versement ne peut exéder " + decimalFormat.format(resteAPayer));
+        BigDecimal resteAPayer = calculPaiementService.calculateResteAPayer(dto.getCotisationId(), dto.getAdhesionId());
+        if(dto.getMontant().subtract(resteAPayer).compareTo(CINQ)>0) throw new AppException("Le montant du versement ne peut exéder " + MontantFormater.format(resteAPayer));
         Versement versement = paiementMapper.mapToVersement(dto);
         versement.setMontantLettre(MontantConverter.numberToLetter(dto.getMontant()));
         versement.setActive(true);
@@ -52,7 +50,7 @@ public class PaiementService implements IPaiementService
         versement = versementRepo.save(versement);
         String codeVersement = "VERS-COT-" + versement.getVersementId();
         versement.setCodeVersement(codeVersement);
-        BigDecimal montantCotisation = cotisationRepo.getMotantCotisation(dto.getCotisationId());
+        BigDecimal montantCotisation = cotisationRepo.getMontantCotisation(dto.getCotisationId()).orElseThrow(()->new AppException("Le montant de la cotisation ne peut être nul"));;
         BigDecimal montantPaiement = dto.getMontant();
         int nbrPaiements = montantPaiement.divideToIntegralValue(montantCotisation).intValue();
 
@@ -62,14 +60,14 @@ public class PaiementService implements IPaiementService
         final Versement finalVersement = versement;
         List<ReadEcheanceDTO> echeances = echeanceService.getNextEcheancesToPay(nbrPaiements, dto.getCotisationId(), dto.getAdhesionId());
 
-        List<PaiementDTO> paiements = echeances.stream().map(e->
+        List<PaiementCotisationDTO> paiements = echeances.stream().map(e->
                 this.createPaiementCotisation(dto, e.getMontantEcheance(), e.getEcheanceId(), finalVersement, ai)
         ).collect(Collectors.toList());
 
         if(montantDernierPaiement.compareTo(ZERO)!=0)
         {
             ReadEcheanceDTO lastEcheance = echeanceService.getNextEcheance(echeances.get(echeances.size()-1).getEcheanceId());
-            PaiementDTO lastPaiement = this.createPaiementCotisation(dto, montantDernierPaiement, lastEcheance.getEcheanceId(), finalVersement, ai);
+            PaiementCotisationDTO lastPaiement = this.createPaiementCotisation(dto, montantDernierPaiement, lastEcheance.getEcheanceId(), finalVersement, ai);
             paiements.add(lastPaiement);
         }
 
@@ -78,8 +76,8 @@ public class PaiementService implements IPaiementService
         return versementDTO;
     }
 
-    private PaiementDTO createPaiementCotisation(PaiementDTO dto, BigDecimal montantPaiement, Long echeanceId, Versement versement, ActionIdentifier ai) {
-        PaiementDTO paiementDTO = new PaiementDTO();
+    private PaiementCotisationDTO createPaiementCotisation(PaiementCotisationDTO dto, BigDecimal montantPaiement, Long echeanceId, Versement versement, ActionIdentifier ai) {
+        PaiementCotisationDTO paiementDTO = new PaiementCotisationDTO();
         BeanUtils.copyProperties(dto, paiementDTO);
         paiementDTO.setMontant(montantPaiement);
 
@@ -90,7 +88,7 @@ public class PaiementService implements IPaiementService
         paiement.setVersement(versement);
         BeanUtils.copyProperties(ai, paiement);
         paiement = paiementRepo.save(paiement);
-        String reference = "PAIE-COT" + paiement.getPaiementId();
+        String reference = "PAIE-COT-" + paiement.getPaiementId();
         paiement.setReference(reference);
         paiement = paiementRepo.save(paiement);
         paiementDTO = paiementMapper.mapToPaiementDTO(paiement);
@@ -99,16 +97,35 @@ public class PaiementService implements IPaiementService
 
 
     @Override
-    public Page<PaiementDTO> findPaiementByCotisation(Long cotisationId)
+    public Page<PaiementCotisationDTO> findPaiementsByCotisation(Long cotisationId)
     {
         return null;
     }
 
     @Override
-    public BigDecimal calculateResteAPayer(Long cotisationId, Long adhesionId)
+    public PaiementCotisationDTO getPaiementCotisationDto(PaiementCotisationDTO dto)
     {
-        BigDecimal dejaPaye = Optional.ofNullable(paiementRepo.calculateDejaPaye(cotisationId, adhesionId)).orElse(ZERO);
-        BigDecimal montantAttenduParMembre = cotisationService.calculateMontantAttenduParMembre(cotisationId);
-        return montantAttenduParMembre.subtract(dejaPaye);
+        Long cotisationId = dto.getCotisationId();
+        Long adhesionId = dto.getAdhesionId();
+        BigDecimal montantVersement = dto.getMontant();
+        if(cotisationId == null) throw new AppException("Veuillez fournir l'ID de la cotisation");
+        if(adhesionId == null) throw new AppException("Veuillez fournir l'ID de l'adhésion");
+        if(montantVersement == null) montantVersement = ZERO;
+
+        Cotisation cotisation = cotisationRepo.findById(cotisationId).orElseThrow(()->new AppException("Cotisation introuvable " + cotisationId));
+        ReadEcheanceDTO echeance = echeanceService.getCurrentEcheanceToPay(cotisationId, adhesionId);
+        BigDecimal montantRetard = calculPaiementService.calculateMontantRetard(cotisationId, adhesionId);
+        BigDecimal montantVersementSouhaite = calculPaiementService.calculateMontantVersementSouhaite(cotisationId, adhesionId);
+        Long nbrEcheancesSoldees = calculPaiementService.calculateNbrEcheancesSoldeesParVersement(cotisationId,adhesionId, montantVersement );
+        ReadEcheanceDTO nextEcheanceAfterPaying = echeanceService.getNextEcheanceToPayAfterPaying(cotisationId, adhesionId, montantVersement);
+        dto.setEcheanceCoursPaiement(echeance.getNomEcheance());
+        dto.setRetardPaiement(montantRetard);
+        dto.setMontantVersementSouhaite(montantVersementSouhaite);
+        dto.setNbrEcheancesSoldeesParCeVersement(nbrEcheancesSoldees);
+        dto.setProchaineEcheance(nextEcheanceAfterPaying == null ? "Cotisation soldée" : nextEcheanceAfterPaying.getNomEcheance());
+        dto.setMontantProchaineEcheance(nextEcheanceAfterPaying == null ? ZERO : nextEcheanceAfterPaying.getMontantEcheance());
+        dto.setNomCotisation(cotisation.getNomCotisation());
+        dto.setMotif(cotisation.getMotif());
+        return dto;
     }
 }
