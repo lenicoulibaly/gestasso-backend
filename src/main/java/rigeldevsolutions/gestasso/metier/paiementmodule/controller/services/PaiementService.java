@@ -126,6 +126,7 @@ public class PaiementService implements IPaiementService
         dto.setMontantProchaineEcheance(nextEcheanceAfterPaying == null ? ZERO : nextEcheanceAfterPaying.getMontantEcheance());
         dto.setNomCotisation(cotisation.getNomCotisation());
         dto.setMotif(cotisation.getMotif());
+        dto.setMontantLettre(MontantConverter.numberToLetter(dto.getMontant()));
         return dto;
     }
 }
