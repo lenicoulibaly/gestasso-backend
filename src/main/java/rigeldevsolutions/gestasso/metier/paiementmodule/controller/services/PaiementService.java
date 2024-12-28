@@ -5,6 +5,10 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import rigeldevsolutions.gestasso.archivemodule.controller.service.VersementsDocUploader;
+import rigeldevsolutions.gestasso.archivemodule.model.dtos.request.UploadDocReq;
+import rigeldevsolutions.gestasso.archivemodule.model.dtos.response.ReadDocDTO;
 import rigeldevsolutions.gestasso.authmodule.model.entities.ActionIdentifier;
 import rigeldevsolutions.gestasso.metier.cotisationmodule.controller.repositories.CotisationRepo;
 import rigeldevsolutions.gestasso.metier.cotisationmodule.model.entities.Cotisation;
@@ -22,6 +26,7 @@ import rigeldevsolutions.gestasso.sharedmodule.utilities.MontantConverter;
 import rigeldevsolutions.gestasso.sharedmodule.utilities.MontantFormater;
 
 import java.math.BigDecimal;
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,6 +42,7 @@ public class PaiementService implements IPaiementService
     private final VersementRepo versementRepo;
     private final IEcheanceService echeanceService;
     private final ICalculPaiementService calculPaiementService;
+    private final VersementsDocUploader versementsDocUploader;
 
     @Override @Transactional
     public VersementDTO createVersementCotisation(PaiementCotisationDTO dto, ActionIdentifier ai)
@@ -128,5 +134,17 @@ public class PaiementService implements IPaiementService
         dto.setMotif(cotisation.getMotif());
         dto.setMontantLettre(MontantConverter.numberToLetter(dto.getMontant()));
         return dto;
+    }
+
+    @Override @Transactional
+    public VersementDTO createVersementCotisation(PaiementCotisationDTO dto, List<MultipartFile> files, ActionIdentifier ai) throws UnknownHostException {
+        VersementDTO versement = this.createVersementCotisation(dto, ai);
+        for(int i = 0; i< files.size(); i++)
+        {
+            ReadDocDTO doc = dto.getDocuments().get(i);
+            UploadDocReq uploadDocReq = new UploadDocReq(versement.getVersementId(), doc.getDocUniqueCode(), doc.getDocNum(), doc.getDocName(), doc.getDocDescription(), files.get(i));
+            versementsDocUploader.uploadDocument(uploadDocReq, ai);
+        }
+        return versement;
     }
 }

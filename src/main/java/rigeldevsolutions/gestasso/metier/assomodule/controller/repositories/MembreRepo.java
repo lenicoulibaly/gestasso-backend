@@ -8,7 +8,9 @@ import org.springframework.data.repository.query.Param;
 import rigeldevsolutions.gestasso.metier.assomodule.model.dtos.CreateMembreDTO;
 import rigeldevsolutions.gestasso.metier.assomodule.model.dtos.ReadMembreDTO;
 import rigeldevsolutions.gestasso.metier.assomodule.model.entities.Adhesion;
+import rigeldevsolutions.gestasso.sharedmodule.dtos.SelectOption;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface MembreRepo extends JpaRepository<Adhesion, Long>
@@ -68,4 +70,11 @@ public interface MembreRepo extends JpaRepository<Adhesion, Long>
 
     @Query("select a from Adhesion a where a.member.email = ?1 and a.association.assoId = ?2")
     Optional<Adhesion> findByEmailAndAsso(String email, Long assoId);
+
+    @Query("""
+    select new rigeldevsolutions.gestasso.sharedmodule.dtos.SelectOption(a.adhesionId, 
+    concat(m.firstName, ' ', m.lastName, ' (', coalesce('', m.matriculeFonctionnaire), '-', m.email, '-', m.tel, ')' ) ) 
+    from Adhesion a join a.member m where a.association.assoId = ?1
+    """)
+    List<SelectOption> getAdhesionOptions(Long assoId);
 }

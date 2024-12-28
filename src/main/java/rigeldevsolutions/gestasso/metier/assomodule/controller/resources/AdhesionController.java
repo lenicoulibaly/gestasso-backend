@@ -12,6 +12,9 @@ import rigeldevsolutions.gestasso.metier.assomodule.model.dtos.CreateMembreDTO;
 import rigeldevsolutions.gestasso.metier.assomodule.model.dtos.ReadMembreDTO;
 import rigeldevsolutions.gestasso.metier.assomodule.model.entities.Adhesion;
 import rigeldevsolutions.gestasso.sharedmodule.constants.Requests;
+import rigeldevsolutions.gestasso.sharedmodule.dtos.SelectOption;
+
+import java.util.List;
 
 @RestController @RequestMapping(path = "/adhesions")
 @RequiredArgsConstructor
@@ -50,6 +53,12 @@ public class AdhesionController
                                       @RequestParam(defaultValue = Requests.PAGE_SIZE, required = false) int size)
     {
         return adhesionService.searchMembers(key, assoId, sectionId, PageRequest.of(page, size));
+    }
+
+    @GetMapping(path = "/all-options")
+    List<SelectOption> getAdhesionOptions(@RequestParam Long assoId)
+    {
+        return adhesionService.getOptions(assoId);
     }
 
     @GetMapping(path = "/get-membre-dto")

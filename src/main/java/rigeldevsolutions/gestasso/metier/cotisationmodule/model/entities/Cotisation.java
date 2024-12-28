@@ -20,8 +20,8 @@ import java.time.LocalDate;
 @EntityListeners(AuditingEntityListener.class)
 @Entity
 public class Cotisation  extends HistoDetails {
-    @Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ADHESION_ID_GEN")
-    @SequenceGenerator(name = "ADHESION_ID_GEN", sequenceName = "ADHESION_ID_GEN", allocationSize = 10)
+    @Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "COTISATION_ID_GEN")
+    @SequenceGenerator(name = "COTISATION_ID_GEN", sequenceName = "COTISATION_ID_GEN", allocationSize = 10)
     private Long cotisationId;
     private String nomCotisation;
     private BigDecimal montantCotisation;

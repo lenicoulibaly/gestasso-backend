@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import rigeldevsolutions.gestasso.archivemodule.model.dtos.response.ReadDocDTO;
 import rigeldevsolutions.gestasso.metier.assomodule.model.validators.ExistingAdhesionId;
 import rigeldevsolutions.gestasso.metier.cotisationmodule.model.validators.ExistingCotisationId;
 import rigeldevsolutions.gestasso.metier.paiementmodule.model.validators.UniqueReference;
@@ -15,6 +16,7 @@ import rigeldevsolutions.gestasso.metier.paiementmodule.model.validators.ValidTy
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
 @UniqueReference
@@ -56,4 +58,5 @@ public class PaiementCotisationDTO
     private String prochaineEcheance;
     private BigDecimal montantProchaineEcheance;
     private BigDecimal montantVersementSouhaite;
+    private List<ReadDocDTO> documents;
 }

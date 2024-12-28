@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import rigeldevsolutions.gestasso.archivemodule.model.dtos.request.UpdateDocReq;
 import rigeldevsolutions.gestasso.archivemodule.model.dtos.request.UploadDocReq;
 import rigeldevsolutions.gestasso.archivemodule.model.dtos.response.ReadDocDTO;
+import rigeldevsolutions.gestasso.authmodule.model.entities.ActionIdentifier;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -18,8 +19,10 @@ public interface IServiceDocument
 	byte[] downloadFile(String filePAth);
 
     @Transactional
-	boolean uploadDocument(UploadDocReq dto) throws UnknownHostException;
+	boolean uploadDocument(UploadDocReq dto, ActionIdentifier ai) throws UnknownHostException;
 
+	@Transactional
+	boolean uploadDocument(UploadDocReq dto) throws UnknownHostException;
 	@Transactional
 	boolean deleteDocument(Long docId) throws UnknownHostException;
 

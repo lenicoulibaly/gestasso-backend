@@ -24,7 +24,13 @@ public interface EcheanceRepo extends JpaRepository<Echeance, Long>
      select new rigeldevsolutions.gestasso.metier.paiementmodule.model.dtos.ReadEcheanceDTO 
             (ech1.echeanceId, ech1.dateEcheance, ech1.nomEcheance,  ech1.echeancier.echeancierId)
     from Echeance ech1 where 
-        ech1.echeancier.echeancierId = (select ech2.echeancier.echeancierId from Echeance ech2 where ech2.echeanceId = ?1 and ech1.dateEcheance = (select min(ech3.dateEcheance) from Echeance ech3 where ech3.echeancier.echeancierId = ech2.echeancier.echeancierId and ech3.dateEcheance > ech2.dateEcheance))
+        ech1.echeancier.frequence.uniqueCode = 
+        (select ech2.echeancier.frequence.uniqueCode 
+        from Echeance ech2 where ech2.echeanceId = ?1 
+            and ech1.dateEcheance = (select min(ech3.dateEcheance) 
+                                    from Echeance ech3 where ech3.echeancier.frequence.uniqueCode = ech2.echeancier.frequence.uniqueCode 
+                                        and ech3.dateEcheance > ech2.dateEcheance and ech1.echeancier.typeEcheancier.uniqueCode = ech3.echeancier.typeEcheancier.uniqueCode) )
+        
        
     """)
     ReadEcheanceDTO getNextEcheance(Long echeanceId);

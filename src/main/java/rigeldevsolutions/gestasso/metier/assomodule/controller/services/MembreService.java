@@ -17,10 +17,13 @@ import rigeldevsolutions.gestasso.metier.assomodule.model.dtos.ReadMembreDTO;
 import rigeldevsolutions.gestasso.metier.assomodule.model.entities.Adhesion;
 import rigeldevsolutions.gestasso.metier.assomodule.model.entities.Section;
 import rigeldevsolutions.gestasso.metier.assomodule.model.mappers.MembreMapper;
+import rigeldevsolutions.gestasso.sharedmodule.dtos.SelectOption;
 import rigeldevsolutions.gestasso.sharedmodule.exceptions.AppException;
 import rigeldevsolutions.gestasso.sharedmodule.utilities.StringUtils;
 import rigeldevsolutions.gestasso.typemodule.model.entities.Type;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 @Service @RequiredArgsConstructor
@@ -92,5 +95,12 @@ public class MembreService implements IMembreService
         uniqueIdentifier = Optional.ofNullable(uniqueIdentifier).orElse("{#}") ;
         CreateMembreDTO dto = membreRepo.findByIdIdentifiant(uniqueIdentifier);
         return dto;
+    }
+
+    @Override
+    public List<SelectOption> getOptions(Long assoId)
+    {
+        if(assoId == null) return Collections.emptyList();
+        return membreRepo.getAdhesionOptions(assoId);
     }
 }

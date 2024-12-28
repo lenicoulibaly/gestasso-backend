@@ -60,6 +60,7 @@ public class EcheanceService implements IEcheanceService
     @Override
     public List<ReadEcheanceDTO> getNextEcheancesToPay(long nbr, Long cotisationId, Long adhesionId)
     {
+        if(nbr == 0) return Collections.singletonList(this.getCurrentEcheanceToPay(cotisationId, adhesionId));
         Page<ReadEcheanceDTO> echeancePage = paiementRepo.getNextEcheances(cotisationId, adhesionId, PageRequest.of(0, (int)nbr));
         List<ReadEcheanceDTO> echeances = echeancePage != null ? echeancePage.getContent() : Collections.emptyList();
         echeances = echeances.stream().peek(e->e.setMontantEcheance(calculPaiementService.calculateResteAPayer(cotisationId, adhesionId, e.getEcheanceId()))).collect(Collectors.toList());
@@ -89,8 +90,13 @@ public class EcheanceService implements IEcheanceService
                 .filter(montant -> montant != null)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         BigDecimal montantPaiementDerniereEcheance = montantVersement.subtract(totalMontantEcheances);
-        if(montantPaiementDerniereEcheance.compareTo(ZERO)<0) throw new AppException("Le montant sur la dernière échéance ne devrait pas être négatif");
         ReadEcheanceDTO lastEcheance = echeances.get(echeances.size()-1);
+        if(montantPaiementDerniereEcheance.compareTo(ZERO)<0)
+        {
+            lastEcheance.setMontantEcheance(lastEcheance.getMontantEcheance().subtract(montantVersement));
+            return lastEcheance;
+        }
+
         ReadEcheanceDTO nextEcheance = this.getNextEcheance(lastEcheance.getEcheanceId());
         if(nextEcheance == null) return null;
         nextEcheance.setMontantEcheance(montantCotisation.subtract(montantPaiementDerniereEcheance));

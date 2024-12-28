@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.envers.Audited;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import rigeldevsolutions.gestasso.authmodule.model.entities.HistoDetails;
 import rigeldevsolutions.gestasso.metier.assomodule.model.entities.Adhesion;
 import rigeldevsolutions.gestasso.metier.cotisationmodule.model.entities.Cotisation;
@@ -17,7 +19,8 @@ import static rigeldevsolutions.gestasso.sharedmodule.constants.PRECISION.QUARAN
 import static rigeldevsolutions.gestasso.sharedmodule.constants.PRECISION.VINGT_INT;
 
 @AllArgsConstructor @NoArgsConstructor @Getter @Setter
-@Entity
+@Entity @Audited
+@EntityListeners(AuditingEntityListener.class)
 public class Versement extends HistoDetails
 {
     @Id
@@ -39,4 +42,9 @@ public class Versement extends HistoDetails
     private Adhesion adhesion;
     @ManyToOne @JoinColumn(name = "cotisation_id")
     private Cotisation cotisation;
+
+    public Versement(Long versementId)
+    {
+        this.versementId = versementId;
+    }
 }

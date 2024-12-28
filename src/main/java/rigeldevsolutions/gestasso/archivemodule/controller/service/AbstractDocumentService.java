@@ -3,6 +3,7 @@ package rigeldevsolutions.gestasso.archivemodule.controller.service;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +17,7 @@ import rigeldevsolutions.gestasso.archivemodule.model.dtos.request.UpdateDocReq;
 import rigeldevsolutions.gestasso.archivemodule.model.dtos.request.UploadDocReq;
 import rigeldevsolutions.gestasso.archivemodule.model.dtos.response.ReadDocDTO;
 import rigeldevsolutions.gestasso.archivemodule.model.entities.Document;
+import rigeldevsolutions.gestasso.authmodule.model.entities.ActionIdentifier;
 import rigeldevsolutions.gestasso.modulelog.controller.service.ILogService;
 import rigeldevsolutions.gestasso.sharedmodule.exceptions.AppException;
 import rigeldevsolutions.gestasso.sharedmodule.utilities.Base64ToFileConverter;
@@ -105,7 +107,7 @@ public abstract class AbstractDocumentService implements IServiceDocument
 	}
 
 	@Transactional @Override
-	public boolean uploadDocument(UploadDocReq dto) throws UnknownHostException {
+	public boolean uploadDocument(UploadDocReq dto, ActionIdentifier ai) throws UnknownHostException {
 		if(dto.getDocUniqueCode() == null ) throw new AppException("Le type de document ne peut être null");
 		Type docType = typeRepo.findById(dto.getDocUniqueCode().toUpperCase(Locale.ROOT)).orElseThrow(()->new AppException("Type de document inconnu"));
 		if(docType == null || docType.getTypeGroup() != TypeGroup.DOCUMENT)  throw new AppException("Ce type de document n'est pris en charge par le système");;
@@ -115,8 +117,14 @@ public abstract class AbstractDocumentService implements IServiceDocument
 
 		uploadFile(dto.getFile(), doc.getDocPath());
 		doc = docRepo.save(doc);
+		if(ai!=null)BeanUtils.copyProperties(ai, doc);
 		//logService.logg(ArchiveActions.UPLOAD_DOCUMENT, null, doc, ArchiveTable.DOCUMENT, );
 		return true;//01 03 70 79 72
+	}
+
+	@Transactional @Override
+	public boolean uploadDocument(UploadDocReq dto) throws UnknownHostException {
+		return this.uploadDocument(dto, null);
 	}
 
 	@Transactional @Override

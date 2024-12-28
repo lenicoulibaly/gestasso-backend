@@ -7,6 +7,9 @@ import rigeldevsolutions.gestasso.authmodule.model.entities.ActionIdentifier;
 import rigeldevsolutions.gestasso.metier.assomodule.model.dtos.CreateMembreDTO;
 import rigeldevsolutions.gestasso.metier.assomodule.model.dtos.ReadMembreDTO;
 import rigeldevsolutions.gestasso.metier.assomodule.model.entities.Adhesion;
+import rigeldevsolutions.gestasso.sharedmodule.dtos.SelectOption;
+
+import java.util.List;
 
 public interface IMembreService
 {
@@ -18,4 +21,6 @@ public interface IMembreService
     void seDesabonner(Long adhesionId, ActionIdentifier ai);
     Page<ReadMembreDTO> searchMembers(String key, Long assoId, Long sectionId, Pageable pageable);
     CreateMembreDTO getMembreDTO(String uniqueIdentifier);
+
+    List<SelectOption> getOptions(Long assoId);
 }

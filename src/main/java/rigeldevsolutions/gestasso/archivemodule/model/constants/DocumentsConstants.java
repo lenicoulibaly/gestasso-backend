@@ -6,7 +6,7 @@ import java.util.List;
 
 public class DocumentsConstants
 {
-	public static final String UPLOADS_DIR = System.getProperty("user.home")+ File.separator + "workspace/gestasso/docs/uploads";
+	public static final String UPLOADS_DIR = System.getProperty("user.home")+ File.separator + "workspace"+File.separator+ "gestasso" + File.separator + "docs" + File.separator + "uploads";
 
 	public static final long UPLOAD_MAX_SIZE = 5 * 1024 * 1024;
 	public static final List<String> PHOTO_AUTHORIZED_TYPE = Arrays.asList("jpeg", "jpg", "png");

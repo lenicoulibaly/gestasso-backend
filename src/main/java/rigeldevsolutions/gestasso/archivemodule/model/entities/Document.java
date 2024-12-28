@@ -3,8 +3,10 @@ package rigeldevsolutions.gestasso.archivemodule.model.entities;
 import org.hibernate.envers.Audited;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import rigeldevsolutions.gestasso.authmodule.model.entities.AppUser;
+import rigeldevsolutions.gestasso.authmodule.model.entities.HistoDetails;
 import rigeldevsolutions.gestasso.metier.assomodule.model.entities.Association;
 import rigeldevsolutions.gestasso.metier.assomodule.model.entities.Section;
+import rigeldevsolutions.gestasso.metier.paiementmodule.model.entities.Versement;
 import rigeldevsolutions.gestasso.modulestatut.entities.Statut;
 import rigeldevsolutions.gestasso.typemodule.model.entities.Type;
 import jakarta.persistence.*;
@@ -20,7 +22,7 @@ import java.time.LocalDateTime;
 @Entity
 @Data @NoArgsConstructor @AllArgsConstructor
 @Audited @EntityListeners(AuditingEntityListener.class)
-public class Document
+public class Document extends HistoDetails
 {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "DOC_ID_GEN")
@@ -40,6 +42,8 @@ public class Document
 	private Association association;
 	@ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "SECTION_ID")
 	private Section section;
+	@ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "VERSEMENT_ID")
+	private Versement versement;
 
 
 	@CreationTimestamp
