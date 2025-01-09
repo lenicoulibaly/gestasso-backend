@@ -18,14 +18,13 @@ import javax.sql.DataSource;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.sql.Connection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Service @RequiredArgsConstructor
-public class ServiceReportImpl implements IServiceReport
+public class ServiceReportImpl implements IReportService
 {
     private final JasperReportConfig jrConfig;
     private final DataSource dataSource;
@@ -42,31 +41,25 @@ public class ServiceReportImpl implements IServiceReport
         try (ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
             bitMatrix = qrCodeWriter.encode(qrText, BarcodeFormat.QR_CODE, 200, 200, hints);
             MatrixToImageWriter.writeToStream(bitMatrix, "png", stream);
-            parameters.put("qrCode", new ByteArrayInputStream(stream.toByteArray()));
+            parameters.put("QR_CODE", new ByteArrayInputStream(stream.toByteArray()));
         } catch (WriterException e) {
             e.printStackTrace();
         }
     }
 
-    private InputStream getImages(String path) throws IOException {
-        String resourcePath = "classpath:"+path ;
-        Resource resource = resourceLoader.getResource(resourcePath);
-        return resource.getInputStream();
-    }
-
     @Override
     public byte[] generateReport(String reportName, Map<String, Object> parameters, List<Object> data, String qrText) throws Exception
     {
-        qrText =  qrText != null ? qrText : "Application SynchronRE : Numéro Fac : " + parameters.get("aff_id") + " Assuré : " + parameters.get("aff_assure") + " Numéro de Police : " + parameters.get("fac_numero_police");
+        qrText =  qrText != null ? qrText : "";
         // Génération du code QR
         String resourcePath = "classpath:"+jrConfig.reportLocation + "/" + reportName;
-        Resource resource = resourceLoader.getResource(resourcePath);
+        Resource reportResource = resourceLoader.getResource(resourcePath);
         this.setQrCodeParam(parameters, qrText);
-        parameters.put("logo_nre", this.getImages(jrConfig.nreLogo));
-        parameters.put("logo_synchronre", this.getImages(jrConfig.synchronRelogo));
-        parameters.put("visa", this.getImages(jrConfig.visa));
+       //parameters.put("logo_nre", this.getStaticImages(jrConfig.nreLogo));
+       //parameters.put("logo_synchronre", this.getStaticImages(jrConfig.synchronRelogo));
+       //parameters.put("visa", this.getStaticImages(jrConfig.visa));
 
-        JasperReport jasperReport = JasperCompileManager.compileReport(resource.getInputStream());
+        JasperReport jasperReport = JasperCompileManager.compileReport(reportResource.getInputStream());
         // Remplissez le rapport Jasper en utilisant la connexion JDBC
         Connection connection = dataSource.getConnection();
         JRBeanCollectionDataSource jrBeanCollectionDataSource = data == null || data.isEmpty() ? null : new JRBeanCollectionDataSource(data);

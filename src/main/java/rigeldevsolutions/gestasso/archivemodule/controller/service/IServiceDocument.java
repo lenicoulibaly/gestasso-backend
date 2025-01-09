@@ -27,11 +27,14 @@ public interface IServiceDocument
 	boolean deleteDocument(Long docId) throws UnknownHostException;
 
 	@Transactional
-    boolean updateDocument(UpdateDocReq dto) throws IOException;
+    boolean updateDocument(UpdateDocReq dto, ActionIdentifier ai) throws IOException;
 
     void displayPdf(HttpServletResponse response, byte[] reportBytes, String displayName)  throws Exception;
-	boolean deleteFile(String filePath);
-	String generatePath(MultipartFile file, String objectFolder, String typeCode, String objectName);
+
+    MultipartFile downloadMultipartFile(String filePAth);
+
+    boolean deleteFile(String filePath);
+	String generatePath(MultipartFile file, String typeCode, String objectName);
 	void renameFile(String oldPath, String newPath);
 
 	Page<ReadDocDTO> getAllDocsForObject(Long userId, Long assoId, Long sectionId, String key, Pageable pageable);

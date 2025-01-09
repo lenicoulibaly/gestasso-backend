@@ -2,13 +2,9 @@ package rigeldevsolutions.gestasso.metier.paiementmodule.controller.resources;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.Part;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import rigeldevsolutions.gestasso.archivemodule.controller.service.IServiceDocument;
@@ -19,9 +15,7 @@ import rigeldevsolutions.gestasso.metier.paiementmodule.model.constants.Paiement
 import rigeldevsolutions.gestasso.metier.paiementmodule.model.dtos.PaiementCotisationDTO;
 import rigeldevsolutions.gestasso.metier.paiementmodule.model.dtos.VersementDTO;
 
-import java.io.IOException;
 import java.net.UnknownHostException;
-import java.util.Collection;
 import java.util.List;
 
 @RestController @RequiredArgsConstructor @RequestMapping(path = "/paiements")
@@ -56,14 +50,10 @@ public class PaiementController
         return versement;
     }
 
-    @PostMapping(value = "/debug-create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> debugRequest(HttpServletRequest request) throws IOException, ServletException {
-        Collection<Part> parts = request.getParts();
-        for (Part part : parts) {
-            System.out.println("Nom de la partie : " + part.getName());
-            System.out.println("Type de contenu : " + part.getContentType());
-            System.out.println("Taille de la partie : " + part.getSize());
-        }
-        return ResponseEntity.ok("Debug terminé");
+    @GetMapping(path = "/generate-recu-paiement/{versementId}")
+    public String generateRecuPaiement(@PathVariable Long versementId) throws Exception
+    {
+        String base64String = paiementService.generateRecuVersement(versementId);
+        return base64String;
     }
 }

@@ -1,12 +1,13 @@
 package rigeldevsolutions.gestasso.metier.assomodule.model.entities;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.envers.Audited;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import rigeldevsolutions.gestasso.authmodule.model.entities.HistoDetails;
-import rigeldevsolutions.gestasso.metier.paiementmodule.model.enums.Frequence;
-import rigeldevsolutions.gestasso.structuremodule.model.entities.Structure;
 
 import java.math.BigDecimal;
 
@@ -22,6 +23,8 @@ public class Association extends HistoDetails
     private String situationGeo;
     private String sigle;
     private BigDecimal droitAdhesion;
+    @Column(columnDefinition = "BOOLEAN DEFAULT TRUE")
+    private boolean masculin;
 
     public Association(Long assoId) {
         this.assoId = assoId;

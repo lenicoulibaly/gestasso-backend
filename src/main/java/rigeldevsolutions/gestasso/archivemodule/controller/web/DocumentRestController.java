@@ -1,6 +1,6 @@
 package rigeldevsolutions.gestasso.archivemodule.controller.web;
 
-import jakarta.validation.Valid;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,6 +16,8 @@ import rigeldevsolutions.gestasso.archivemodule.model.dtos.request.UploadDocReq;
 import rigeldevsolutions.gestasso.archivemodule.model.dtos.response.Base64FileDto;
 import rigeldevsolutions.gestasso.archivemodule.model.dtos.response.ReadDocDTO;
 import rigeldevsolutions.gestasso.archivemodule.model.entities.Document;
+import rigeldevsolutions.gestasso.authmodule.controller.services.spec.IActionIdentifierService;
+import rigeldevsolutions.gestasso.authmodule.model.entities.ActionIdentifier;
 import rigeldevsolutions.gestasso.sharedmodule.exceptions.AppException;
 import rigeldevsolutions.gestasso.sharedmodule.utilities.Base64ToFileConverter;
 import rigeldevsolutions.gestasso.typemodule.controller.repositories.TypeRepo;
@@ -36,13 +38,14 @@ public class DocumentRestController
     private final TypeRepo typeRepo;
     private final DocServiceProvider docServiceProvider;
     private final AbstractDocumentService docService;
+    private final IActionIdentifierService actionIdentifierService;
+    private final ObjectMapper objectMapper;
 
     @GetMapping(path = "/{typeDocUniqueCode}/types")
     public List<ReadTypeDTO> getTypeDocumentReglement(@PathVariable String typeDocUniqueCode) throws UnknownHostException {
         Type typeDoc = typeDocUniqueCode == null ? null : typeRepo.findById(typeDocUniqueCode.toUpperCase()).orElseThrow(()->new AppException("Type de document inconnu"));
         if(typeDoc == null) return new ArrayList<>();
         if(typeDoc.getTypeGroup() != TypeGroup.DOCUMENT) return new ArrayList<>();
-
         return typeRepo.findSousTypeOf(typeDoc.getUniqueCode());
     }
 
@@ -68,8 +71,12 @@ public class DocumentRestController
     }
 
     @PutMapping(path = "/update")
-    public boolean updateDocument(@Valid @RequestBody UpdateDocReq dto) throws IOException {
-        return docService.updateDocument(dto);
+    public boolean updateDocument(@RequestPart("data") String jsonStringDto, @RequestPart("file") MultipartFile file) throws IOException
+    {
+        ActionIdentifier actionIdentifier = actionIdentifierService.getActionIdentifierFromSecurityContext("Modification de document");
+        UpdateDocReq dto = objectMapper.readValue(jsonStringDto, UpdateDocReq.class);
+        dto.setFile(file);
+        return docService.updateDocument(dto, actionIdentifier);
     }
 
     @DeleteMapping(path = "/delete/{docId}")

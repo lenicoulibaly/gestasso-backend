@@ -14,5 +14,15 @@ public class ReadDocDTO
 	private String docPath;
 	private String docUniqueCode;
 	private String docTypeName;
+	private byte[] file;
 
+	public ReadDocDTO(Long docId, String docNum, String docName, String docDescription, String docPath, String docUniqueCode, String docTypeName) {
+		this.docId = docId;
+		this.docNum = docNum;
+		this.docName = docName;
+		this.docDescription = docDescription;
+		this.docPath = docPath;
+		this.docUniqueCode = docUniqueCode;
+		this.docTypeName = docTypeName;
+	}
 }

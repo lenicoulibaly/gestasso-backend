@@ -23,7 +23,7 @@ import rigeldevsolutions.gestasso.authmodule.model.events.AccountActivationToken
 import rigeldevsolutions.gestasso.notificationmodule.controller.dao.EmailNotificationRepo;
 import rigeldevsolutions.gestasso.notificationmodule.model.dto.EmailAttachment;
 import rigeldevsolutions.gestasso.notificationmodule.model.entities.EmailNotification;
-import rigeldevsolutions.gestasso.reportmodule.service.IServiceReport;
+import rigeldevsolutions.gestasso.reportmodule.service.IReportService;
 
 import java.util.List;
 
@@ -35,7 +35,7 @@ public class EmailSenderServiceImpl implements EmailSenderService
     private final JavaMailSender javaMailSender;
     private final HTMLEmailBuilder htmlEmailBuilder;
     private final EmailServiceConfig emailServiceConfig;
-    private final IServiceReport reportService;
+    private final IReportService reportService;
     @Value("${auth.server.address}")
     private String authServerAddress;
     @Value("${gestasso.server.address}")

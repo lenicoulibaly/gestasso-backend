@@ -8,6 +8,7 @@ import rigeldevsolutions.gestasso.metier.paiementmodule.model.dtos.ReadEcheanceD
 import rigeldevsolutions.gestasso.metier.paiementmodule.model.entities.Paiement;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public interface PaiementRepo extends JpaRepository<Paiement, Long>
 {
@@ -36,4 +37,7 @@ public interface PaiementRepo extends JpaRepository<Paiement, Long>
 
     @Query("select sum(pc.paiementEcheance) from PaiementCotisation pc where pc.cotisationId = ?1 and pc.adhesionId = ?2 ")
     BigDecimal calculateDejaPaye(Long cotisationId, Long adhesionId);
+
+    @Query("select e.nomEcheance from Paiement p join p.echeance e where p.versement.versementId = ?1 and p.active order by e.dateEcheance asc")
+    List<String> getEcheancesVersement(Long versementId);
 }

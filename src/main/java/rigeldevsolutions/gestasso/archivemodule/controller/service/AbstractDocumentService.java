@@ -4,7 +4,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
@@ -21,20 +20,20 @@ import rigeldevsolutions.gestasso.authmodule.model.entities.ActionIdentifier;
 import rigeldevsolutions.gestasso.modulelog.controller.service.ILogService;
 import rigeldevsolutions.gestasso.sharedmodule.exceptions.AppException;
 import rigeldevsolutions.gestasso.sharedmodule.utilities.Base64ToFileConverter;
-import rigeldevsolutions.gestasso.sharedmodule.utilities.ObjectCopier;
 import rigeldevsolutions.gestasso.sharedmodule.utilities.StringUtils;
 import rigeldevsolutions.gestasso.typemodule.controller.repositories.TypeRepo;
 import rigeldevsolutions.gestasso.typemodule.model.entities.Type;
 import rigeldevsolutions.gestasso.typemodule.model.enums.TypeGroup;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.MessageDigest;
+import java.util.Arrays;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.UUID;
 
 @Component @RequiredArgsConstructor
@@ -44,7 +43,7 @@ public abstract class AbstractDocumentService implements IServiceDocument
 	protected final DocMapper docMapper;
 	protected final DocumentRepository docRepo;
 	protected final ILogService logService;
-	@Autowired protected  ObjectCopier<Document> docCopier;
+	//@Autowired protected  ObjectCopier<Document> docCopier;
 
 	@Override
 	public byte[] downloadFile(String filePAth)
@@ -62,6 +61,13 @@ public abstract class AbstractDocumentService implements IServiceDocument
 	}
 
 	@Override
+	public MultipartFile downloadMultipartFile(String filePAth)
+	{
+		File file = new File(filePAth);
+		return new CustomMultipartFile(file);
+	}
+
+	@Override
 	public boolean deleteFile(String filePath)
 	{
 		File file = new File(filePath);
@@ -72,12 +78,12 @@ public abstract class AbstractDocumentService implements IServiceDocument
 
 
 	@Override
-	public String generatePath(MultipartFile file, String objectFolder, String typeCode, String objectName)
+	public String generatePath(MultipartFile file, String typeCode, String objectName)
 	{
 		if(!typeRepo.existsByUniqueCode(typeCode)) return "";
 		String uuid = UUID.randomUUID().toString().substring(0, 9);
 
-		return DocumentsConstants.UPLOADS_DIR + File.separator + objectFolder+ File.separator  +typeCode + File.separator +
+		return DocumentsConstants.UPLOADS_DIR +  File.separator  +typeCode + "_" +
 				StringUtils.stripAccents(objectName).replace(" ", "_") + uuid + "." + FilenameUtils.getExtension(file.getOriginalFilename());
 	}
 
@@ -107,12 +113,12 @@ public abstract class AbstractDocumentService implements IServiceDocument
 	}
 
 	@Transactional @Override
-	public boolean uploadDocument(UploadDocReq dto, ActionIdentifier ai) throws UnknownHostException {
+	public boolean uploadDocument(UploadDocReq dto, ActionIdentifier ai) {
 		if(dto.getDocUniqueCode() == null ) throw new AppException("Le type de document ne peut être null");
 		Type docType = typeRepo.findById(dto.getDocUniqueCode().toUpperCase(Locale.ROOT)).orElseThrow(()->new AppException("Type de document inconnu"));
 		if(docType == null || docType.getTypeGroup() != TypeGroup.DOCUMENT)  throw new AppException("Ce type de document n'est pris en charge par le système");;
 		Document doc = mapToDocument(dto);
-		String path = generatePath(dto.getFile(), docType.getObjectFolder(), dto.getDocUniqueCode(), docType.getName());
+		String path = generatePath(dto.getFile(), dto.getDocUniqueCode(), docType.getName());
 		doc.setDocPath(path);
 
 		uploadFile(dto.getFile(), doc.getDocPath());
@@ -128,7 +134,7 @@ public abstract class AbstractDocumentService implements IServiceDocument
 	}
 
 	@Transactional @Override
-	public boolean deleteDocument(Long docId) throws UnknownHostException {
+	public boolean deleteDocument(Long docId) {
 		Document doc = docRepo.findById(docId).orElseThrow(()->new AppException("Document inexistant"));
 		docRepo.deleteById(docId);
 		//logService.logg(ArchiveActions.DELETE_DOCUMENT, doc, new Document(), ArchiveTable.DOCUMENT);
@@ -137,31 +143,33 @@ public abstract class AbstractDocumentService implements IServiceDocument
 	}
 
 	@Transactional @Override
-	public boolean updateDocument(UpdateDocReq dto) throws IOException {
+	public boolean updateDocument(UpdateDocReq dto, ActionIdentifier ai) throws IOException {
 		Document doc = docRepo.findById(dto.getDocId()).orElseThrow(()->new AppException("Document inexistant"));
+		//if(dto.getFile() == null && dto.getBase64UrlFile() == null) throw new AppException("Veuillez charger le fichier!");
+		MultipartFile file = dto.getFile() == null ? Base64ToFileConverter.convertToFile(dto.getBase64UrlFile(), "." + dto.getExtension()) : dto.getFile();
+		String oldDocPath = doc.getDocPath();
+		doc.setDocNum(Optional.ofNullable(dto.getDocNum()).orElse(doc.getDocNum()));
+		doc.setDocDescription(Optional.ofNullable(dto.getDocDescription()).orElse(doc.getDocDescription()));
+		doc.setDocName(Optional.ofNullable(dto.getDocName()).orElse(doc.getDocName()));
+		BeanUtils.copyProperties(ai, doc);
+		Type newType = dto.getDocUniqueCode() == null ? null : typeRepo.findById(dto.getDocUniqueCode()).orElseThrow(()->new AppException("Type de document inconnu"));
 
-		Document oldDoc = docCopier.copy(doc);
-		doc.setDocNum(dto.getDocNum());
-		doc.setDocDescription(dto.getDocDescription());
-		doc.setDocName(dto.getDocName());
-		String oldBase64UrlFile = Base64ToFileConverter.getBase64UrlFromPath(doc.getDocPath());
-		Type newType = typeRepo.findById(dto.getDocUniqueCode()).orElseThrow(()->new AppException("Type de document inconnu"));
-		if(!doc.getDocType().getUniqueCode().equals(newType.getUniqueCode()))
+		if(dto.getDocUniqueCode() != null && !doc.getDocType().getUniqueCode().equals(dto.getDocUniqueCode())&& file != null)
 		{
 			doc.setDocType(newType);
-			MultipartFile file = Base64ToFileConverter.convertToFile(dto.getBase64UrlFile(), "." + dto.getExtension());
-			String path = generatePath(file, newType.getObjectFolder(), dto.getDocUniqueCode(), doc.getDocDescription());
-			doc.setDocPath(path);
-			uploadFile(Base64ToFileConverter.convertToFile(dto.getBase64UrlFile(), dto.getExtension()), path);
-		}
-		else if(!oldBase64UrlFile.equals(dto.getBase64UrlFile().replace("+", "-").replace("/", "_")))
-		{
-			MultipartFile file = Base64ToFileConverter.convertToFile(dto.getBase64UrlFile(), "." + dto.getExtension());
-			String path = generatePath(file, newType.getObjectFolder(), dto.getDocUniqueCode(), newType.getName());
+			String path = generatePath(file, dto.getDocUniqueCode(), doc.getDocDescription());
 			doc.setDocPath(path);
 			uploadFile(file, path);
+			this.deleteFile(oldDocPath);
 		}
-		this.deleteFile(oldDoc.getDocPath());
+		else if(!areFilesIdentical(file, oldDocPath)&& file != null)
+		{
+			String path = generatePath(file, dto.getDocUniqueCode(), newType.getName());
+			doc.setDocPath(path);
+			uploadFile(file, path);
+			this.deleteFile(oldDocPath);
+		}
+
 		//logService.logg(ArchiveActions.UPLOAD_DOCUMENT, doc, new Document(), ArchiveTable.DOCUMENT);
 		return true;
 	}
@@ -186,5 +194,80 @@ public abstract class AbstractDocumentService implements IServiceDocument
 	{
 		key = key == null || key.trim().equals("") ? "" : StringUtils.stripAccentsToUpperCase(key);
 		return docRepo.getAllDocsForObject(userId, assoId, sectionId, key, pageable);
+	}
+
+	public boolean areFilesIdentical(MultipartFile file1, MultipartFile file2) throws Exception {
+		// Vérifiez les métadonnées
+		if (!file1.getOriginalFilename().equals(file2.getOriginalFilename())) {
+			return false;
+		}
+
+		if (!file1.getContentType().equals(file2.getContentType())) {
+			return false;
+		}
+
+		// Vérifiez les tailles
+		if (file1.getSize() != file2.getSize()) {
+			return false;
+		}
+
+		// Vérifiez le contenu ou le hash
+		String hash1 = calculateFileHash(file1);
+		String hash2 = calculateFileHash(file2);
+		return hash1.equals(hash2);
+	}
+
+	public static boolean areFilesIdentical(MultipartFile multipartFile, String localFilePath) throws IOException {
+		File localFile = new File(localFilePath);
+
+		// Étape 1: Vérifiez les tailles
+		if (multipartFile.getSize() != localFile.length()) {
+			return false; // Les tailles sont différentes
+		}
+
+		// Étape 2: Comparez le contenu byte à byte
+		byte[] multipartFileBytes = multipartFile.getBytes();
+		byte[] localFileBytes = Files.readAllBytes(localFile.toPath());
+
+		return Arrays.equals(multipartFileBytes, localFileBytes);
+	}
+
+	// Optionnel : Comparaison via hash (SHA-256)
+	public  boolean areFilesIdenticalByHash(MultipartFile multipartFile, String localFilePath) throws Exception {
+		String multipartFileHash = calculateFileHash(multipartFile);
+		String localFileHash = calculateFileHash(Files.readAllBytes(new File(localFilePath).toPath()));
+
+		return multipartFileHash.equals(localFileHash);
+	}
+
+	private String calculateFileHash(MultipartFile file) throws Exception {
+		MessageDigest digest = MessageDigest.getInstance("SHA-256");
+		try (InputStream is = file.getInputStream()) {
+			byte[] buffer = new byte[1024];
+			int bytesRead;
+			while ((bytesRead = is.read(buffer)) != -1) {
+				digest.update(buffer, 0, bytesRead);
+			}
+		}
+		StringBuilder hexString = new StringBuilder();
+		for (byte b : digest.digest()) {
+			String hex = Integer.toHexString(0xff & b);
+			if (hex.length() == 1) hexString.append('0');
+			hexString.append(hex);
+		}
+		return hexString.toString();
+	}
+
+	private static String calculateFileHash(byte[] fileBytes) throws Exception {
+		MessageDigest digest = MessageDigest.getInstance("SHA-256");
+		byte[] hash = digest.digest(fileBytes);
+
+		StringBuilder hexString = new StringBuilder();
+		for (byte b : hash) {
+			String hex = Integer.toHexString(0xff & b);
+			if (hex.length() == 1) hexString.append('0');
+			hexString.append(hex);
+		}
+		return hexString.toString();
 	}
 }

@@ -48,16 +48,16 @@ public class AssoRepoTest
         Structure tresor = strRepo.save(new Structure(null, "MPE/DGTCP", "Direction Générale du Trésor et de la Comptabilité Publics", 2l, "DGTCP", mpe, DG, "", "", "", "", null, null, null, PersStatus.ACTIVE, null));
         Structure solde = strRepo.save(new Structure(null, "MFB/DGBF/DS", "Direction de la Solde", 3l, "DS", dgbf, DC, "", "", "", "", null, null, null, PersStatus.ACTIVE, null));
 
-        Association mafib = assoRepo.save(new Association(null, "Mutuelle des Agents des Finances Générales", "Plateau", "MAFIB", new BigDecimal(5000)));
-        Association synafig = assoRepo.save(new Association(null, "Syndicat des Agents des Finances Générales", "Plateau", "SYNAFIG", new BigDecimal(5000)));
-        Association resafig = assoRepo.save(new Association(null, "Réseau des Agents des Finances Générales", "Plateau", "RESAFIG", new BigDecimal(5000)));
-        Association alternative = assoRepo.save(new Association(null, "Alternative Syndicale des Finances Générales", "Plateau", "ALTER", new BigDecimal(5000)));
-        Association fondDgmp = assoRepo.save(new Association(null, "Fonds de solidarité de la DGMP", "Riviera Bonoumin", "FDGMP", null));
-        Association madgi = assoRepo.save(new Association(null, "Mutuelle des Agents de la DGI", "Plateau", "MADGI", new BigDecimal(20000)));
-        Association madgbf = assoRepo.save(new Association(null, "Mutuelle des Agents de la DGBF", "Plateau", "MADGBF", new BigDecimal(10000)));
-        Association fondDouane = assoRepo.save(new Association(null, "Fonds de Solidarité de la Douane", "Plateau", "FSD", new BigDecimal(5000)));
-        Association fondSolde = assoRepo.save(new Association(null, "Fonds de Solidarité de la Solde", "Plateau", "FSS", new BigDecimal(10000)));
-        Association monTresor = assoRepo.save(new Association(null, "Mutuelle des Agents du Trésor", "Plateau", "MONTRESOR", new BigDecimal(5000)));
+        Association mafib = assoRepo.save(new Association(null, "Mutuelle des Agents des Finances Générales", "Plateau", "MAFIB", new BigDecimal(5000), false));
+        Association synafig = assoRepo.save(new Association(null, "Syndicat des Agents des Finances Générales", "Plateau", "SYNAFIG", new BigDecimal(5000), true));
+        Association resafig = assoRepo.save(new Association(null, "Réseau des Agents des Finances Générales", "Plateau", "RESAFIG", new BigDecimal(5000), true));
+        Association alternative = assoRepo.save(new Association(null, "Alternative Syndicale des Finances Générales", "Plateau", "ALTER", new BigDecimal(5000), false));
+        Association fondDgmp = assoRepo.save(new Association(null, "Fonds de solidarité de la DGMP", "Riviera Bonoumin", "FDGMP", null, true));
+        Association madgi = assoRepo.save(new Association(null, "Mutuelle des Agents de la DGI", "Plateau", "MADGI", new BigDecimal(20000), false));
+        Association madgbf = assoRepo.save(new Association(null, "Mutuelle des Agents de la DGBF", "Plateau", "MADGBF", new BigDecimal(10000), false));
+        Association fondDouane = assoRepo.save(new Association(null, "Fonds de Solidarité de la Douane", "Plateau", "FSD", new BigDecimal(5000), true));
+        Association fondSolde = assoRepo.save(new Association(null, "Fonds de Solidarité de la Solde", "Plateau", "FSS", new BigDecimal(10000), true));
+        Association monTresor = assoRepo.save(new Association(null, "Mutuelle des Agents du Trésor", "Plateau", "MONTRESOR", new BigDecimal(5000), false));
 
         Page<ReadAssociationDTO> associations = assoRepo.searchAssociations("",  PageRequest.of(0, 5));
 

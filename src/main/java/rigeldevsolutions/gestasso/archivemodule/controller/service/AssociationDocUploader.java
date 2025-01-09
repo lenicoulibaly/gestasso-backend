@@ -16,6 +16,6 @@ public class AssociationDocUploader extends AbstractDocumentService
 	}
 	@Override
 	protected Document mapToDocument(UploadDocReq dto) {
-		return docMapper.mapToMembreDoc(dto);
+		return docMapper.mapToAssociationDoc(dto);
 	}
 }

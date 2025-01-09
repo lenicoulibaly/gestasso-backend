@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import rigeldevsolutions.gestasso.archivemodule.model.dtos.response.ReadDocDTO;
 import rigeldevsolutions.gestasso.metier.assomodule.model.dtos.ReadAssociationDTO;
 import rigeldevsolutions.gestasso.metier.assomodule.model.entities.Association;
 
@@ -30,5 +31,15 @@ public interface AssoRepo extends JpaRepository<Association, Long>
     boolean existsByName(String assoName);
     @Query("select (count(a.assoId)>0) from Association a where trim(upper(a.assoName)) = trim(upper(?1)) and a.assoId <> ?2")
     boolean existsByName(String assoName, Long assoId);
+
+    @Query("""
+        select new rigeldevsolutions.gestasso.metier.assomodule.model.dtos.ReadAssociationDTO(
+    a.assoId, a.assoName, a.situationGeo, a.sigle, a.droitAdhesion) 
+    from Association a where a.assoId = ?1
+""")
+    ReadAssociationDTO findReadAssoDtoById(Long assoId);
+
+    @Query("select a.sigle from Association  a where a.assoId = ?1")
+    String getSigleByAssoId(Long assoId);
 }
 

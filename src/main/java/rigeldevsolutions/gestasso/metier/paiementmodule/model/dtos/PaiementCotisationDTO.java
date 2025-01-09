@@ -59,4 +59,12 @@ public class PaiementCotisationDTO
     private BigDecimal montantProchaineEcheance;
     private BigDecimal montantVersementSouhaite;
     private List<ReadDocDTO> documents;
+
+    public PaiementCotisationDTO(Long paiementId, String reference, BigDecimal montant, String montantLettre, String echeanceCoursPaiement) {
+        PaiementId = paiementId;
+        this.reference = reference;
+        this.montant = montant;
+        this.montantLettre = montantLettre;
+        this.echeanceCoursPaiement = echeanceCoursPaiement;
+    }
 }

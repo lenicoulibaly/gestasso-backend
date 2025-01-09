@@ -1,7 +1,12 @@
 package rigeldevsolutions.gestasso.archivemodule.model.entities;
 
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.envers.Audited;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.web.multipart.MultipartFile;
 import rigeldevsolutions.gestasso.authmodule.model.entities.AppUser;
 import rigeldevsolutions.gestasso.authmodule.model.entities.HistoDetails;
 import rigeldevsolutions.gestasso.metier.assomodule.model.entities.Association;
@@ -9,15 +14,6 @@ import rigeldevsolutions.gestasso.metier.assomodule.model.entities.Section;
 import rigeldevsolutions.gestasso.metier.paiementmodule.model.entities.Versement;
 import rigeldevsolutions.gestasso.modulestatut.entities.Statut;
 import rigeldevsolutions.gestasso.typemodule.model.entities.Type;
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Data @NoArgsConstructor @AllArgsConstructor
@@ -44,12 +40,6 @@ public class Document extends HistoDetails
 	private Section section;
 	@ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "VERSEMENT_ID")
 	private Versement versement;
-
-
-	@CreationTimestamp
-	private LocalDateTime createdAt;
-	@UpdateTimestamp
-	private LocalDateTime updatedAt;
 	@ManyToOne @JoinColumn(name = "STA_CODE")
 	private Statut status;
 

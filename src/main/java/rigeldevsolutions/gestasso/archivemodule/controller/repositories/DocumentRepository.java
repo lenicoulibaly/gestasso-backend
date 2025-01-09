@@ -34,4 +34,10 @@ public interface DocumentRepository extends JpaRepository<Document, Long>
     Page<ReadDocDTO> getAllDocsForObject(@Param("userId") Long userId,
                                          @Param("assoId") Long assoId,
                                          @Param("sectionId") Long sectionId,  @Param("key") String key, Pageable pageable);
+
+    @Query("""
+        select new rigeldevsolutions.gestasso.archivemodule.model.dtos.response.ReadDocDTO(d.docId, d.docNum, d.docName, d.docDescription, d.docPath, d.docType.uniqueCode, d.docType.name)
+        from Document d where d.association.assoId = ?1 and d.docType.uniqueCode = 'LOGO' and d.createdAt = (select max(d0.createdAt)  from Document d0 where d0.association.assoId = ?1 and d0.docType.uniqueCode = 'LOGO')
+        """)
+    ReadDocDTO getAssoLogo(Long assoId);
 }

@@ -6,6 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import rigeldevsolutions.gestasso.archivemodule.controller.repositories.DocumentRepository;
+import rigeldevsolutions.gestasso.archivemodule.controller.service.IResourceLoader;
 import rigeldevsolutions.gestasso.archivemodule.controller.service.VersementsDocUploader;
 import rigeldevsolutions.gestasso.archivemodule.model.dtos.request.UploadDocReq;
 import rigeldevsolutions.gestasso.archivemodule.model.dtos.response.ReadDocDTO;
@@ -21,13 +23,15 @@ import rigeldevsolutions.gestasso.metier.paiementmodule.model.entities.Echeance;
 import rigeldevsolutions.gestasso.metier.paiementmodule.model.entities.Paiement;
 import rigeldevsolutions.gestasso.metier.paiementmodule.model.entities.Versement;
 import rigeldevsolutions.gestasso.metier.paiementmodule.model.mappers.PaiementMapper;
+import rigeldevsolutions.gestasso.reportmodule.service.IReportService;
 import rigeldevsolutions.gestasso.sharedmodule.exceptions.AppException;
 import rigeldevsolutions.gestasso.sharedmodule.utilities.MontantConverter;
 import rigeldevsolutions.gestasso.sharedmodule.utilities.MontantFormater;
 
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.net.UnknownHostException;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.math.BigDecimal.ZERO;
@@ -43,6 +47,9 @@ public class PaiementService implements IPaiementService
     private final IEcheanceService echeanceService;
     private final ICalculPaiementService calculPaiementService;
     private final VersementsDocUploader versementsDocUploader;
+    private final DocumentRepository docRepo;
+    private final IReportService reportService;
+    private final IResourceLoader resourceLoader;
 
     @Override @Transactional
     public VersementDTO createVersementCotisation(PaiementCotisationDTO dto, ActionIdentifier ai)
@@ -57,24 +64,47 @@ public class PaiementService implements IPaiementService
         String codeVersement = "VERS-COT-" + versement.getVersementId();
         versement.setCodeVersement(codeVersement);
         BigDecimal montantCotisation = cotisationRepo.getMontantCotisation(dto.getCotisationId()).orElseThrow(()->new AppException("Le montant de la cotisation ne peut être nul"));;
-        BigDecimal montantPaiement = dto.getMontant();
-        int nbrPaiements = montantPaiement.divideToIntegralValue(montantCotisation).intValue();
-
-        BigDecimal montantDernierPaiement = montantPaiement.remainder(montantCotisation);
-
+        BigDecimal montantVersement = dto.getMontant();
 
         final Versement finalVersement = versement;
-        List<ReadEcheanceDTO> echeances = echeanceService.getNextEcheancesToPay(nbrPaiements, dto.getCotisationId(), dto.getAdhesionId());
+        ReadEcheanceDTO echeanceActuelle = echeanceService.getCurrentEcheanceToPay(dto.getCotisationId(), dto.getAdhesionId());
+        List<PaiementCotisationDTO> paiements = new ArrayList<>();
 
-        List<PaiementCotisationDTO> paiements = echeances.stream().map(e->
-                this.createPaiementCotisation(dto, e.getMontantEcheance(), e.getEcheanceId(), finalVersement, ai)
-        ).collect(Collectors.toList());
-
-        if(montantDernierPaiement.compareTo(ZERO)!=0)
+        if(echeanceActuelle != null )
         {
-            ReadEcheanceDTO lastEcheance = echeanceService.getNextEcheance(echeances.get(echeances.size()-1).getEcheanceId());
-            PaiementCotisationDTO lastPaiement = this.createPaiementCotisation(dto, montantDernierPaiement, lastEcheance.getEcheanceId(), finalVersement, ai);
-            paiements.add(lastPaiement);
+            BigDecimal montantEcheanceActuelle = echeanceActuelle.getMontantEcheance();
+
+            //Le montant du versement ne permet pas de soldé l'échéance actuelle : il n'y a qu'un seul paiement
+            if(montantVersement.compareTo(montantEcheanceActuelle)<=0)
+            {
+                PaiementCotisationDTO paiement0 = this.createPaiementCotisation(dto, montantVersement, echeanceActuelle.getEcheanceId(), finalVersement, ai);
+                paiements.add(paiement0);
+            }
+            else //Le montant du versement est supérieur au montant de l'échéance actuelle
+            {//On fait cas de paiements : solde de l'échéance en cours, paiement des échéances intermédiaires (entiers), dernier paiement
+                BigDecimal montantPremierPaiement = echeanceActuelle.getMontantEcheance();
+                BigDecimal montantApresPremierPaiement = montantVersement.subtract(montantPremierPaiement);
+                PaiementCotisationDTO paiement1 = this.createPaiementCotisation(dto, montantPremierPaiement, echeanceActuelle.getEcheanceId(), finalVersement, ai);
+                paiements.add(paiement1);
+                int nbrPaiementsEntiers = montantApresPremierPaiement.divideToIntegralValue(montantCotisation).intValue();
+                List<ReadEcheanceDTO> echeances = echeanceService.getNextEcheancesToPay(nbrPaiementsEntiers+1, dto.getCotisationId(), dto.getAdhesionId());
+
+                if(echeances != null && echeances.size() >=1)
+                {
+                    for(int i = 1; i<=nbrPaiementsEntiers; i++)
+                    {
+                        PaiementCotisationDTO paiement2 = this.createPaiementCotisation(dto, montantCotisation, echeances.get(i).getEcheanceId(), finalVersement, ai);
+                        paiements.add(paiement2);
+                    }
+                }
+                BigDecimal montantDernierPaiement = montantApresPremierPaiement.remainder(montantCotisation);
+                if(montantDernierPaiement != null && montantDernierPaiement.compareTo(ZERO) > 0)
+                {
+                    ReadEcheanceDTO lastEcheance = echeanceService.getNextEcheance(echeances.get(echeances.size()-1).getEcheanceId());
+                    PaiementCotisationDTO paiement3 = this.createPaiementCotisation(dto, montantDernierPaiement, lastEcheance.getEcheanceId(), finalVersement, ai);
+                    paiements.add(paiement3);
+                }
+            }
         }
 
         VersementDTO versementDTO = paiementMapper.mapToVersementDto(versement);
@@ -146,5 +176,51 @@ public class PaiementService implements IPaiementService
             versementsDocUploader.uploadDocument(uploadDocReq, ai);
         }
         return versement;
+    }
+
+    @Override // Cette méthode retourne les noms des échéances concernées par un versement
+    public String getPeriodesVersement(Long versementId)
+    {
+        List<String> echeances = paiementRepo.getEcheancesVersement(versementId);
+        return String.join(", ", echeances);
+    }
+
+    @Override
+    public String generateRecuVersement(Long versementId) throws Exception {
+        Map<String, Object> parameters = new HashMap<>();
+
+        Long assoId = versementRepo.getAssoIdByVersementId(versementId);
+        String qrText = this.generateQrText(versementId);
+        parameters.put("VERSEMENT_ID", versementId);
+
+        ReadDocDTO logoDoc = docRepo.getAssoLogo(assoId);
+        if(logoDoc != null)
+        {
+            InputStream logo = resourceLoader.getLocalImages(logoDoc.getDocPath());
+            parameters.put("LOGO", logo);
+        }
+
+        byte[] bytes = reportService.generateReport("RecuVersement.jrxml", parameters, Collections.EMPTY_LIST, qrText);
+
+        return Base64.getEncoder().encodeToString(bytes);
+    }
+
+
+    private String generateQrText(Long versementId)
+    {
+        VersementDTO dto = versementRepo.findVersmentById(versementId);
+
+        String qrText = "Association : " + dto.getAssoName() + "(" + dto.getAssoSigle() + ")" + "\n";
+        qrText = qrText + "Cotisation : " + dto.getNomCotisation() + "\n";
+        qrText = qrText + "Motif : " + dto.getMotif()+ "\n";
+        qrText = qrText + "Adhérant : " + dto.getFirstName() + " "+ dto.getLastName() +  "\n";
+        qrText = qrText + "Matricule : " + dto.getMatricule()+ "\n";
+        qrText = qrText + "Email : " + dto.getEmail()+ "\n";
+        qrText = qrText + "Tel : " + dto.getTel()+ "\n";
+
+        qrText = qrText + "Montant versé : " + MontantFormater.format(dto.getMontant()) + "(" + dto.getMontantLettre() +")"+ "\n";
+        qrText = qrText + "Date de versement : " + dto.getDateVersement()+ "\n";
+        qrText = qrText + "Périodes concernées : " + this.getPeriodesVersement(versementId)+ "\n";
+        return qrText;
     }
 }

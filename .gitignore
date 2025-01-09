@@ -31,3 +31,8 @@ build/
 
 ### VS Code ###
 .vscode/
+/src/main/resources/reports/RecuVersement.jasper
+/src/main/resources/reports/Blank_A4.jrxml
+/DataAdapter.xml
+/src/main/resources/reports/NEW_STYLE.jrtx
+/test_fiche_adhesion.pdf

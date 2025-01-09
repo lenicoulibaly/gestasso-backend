@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import rigeldevsolutions.gestasso.metier.paiementmodule.model.enums.Frequence;
+import rigeldevsolutions.gestasso.archivemodule.model.dtos.response.ReadDocDTO;
 
 import java.math.BigDecimal;
 
@@ -16,8 +16,11 @@ public class ReadAssociationDTO
     private String situationGeo;
     private String sigle;
     private BigDecimal droitAdhesion;
+    private ReadDocDTO logo;
 
-    public ReadAssociationDTO(Long assoId, String assoName, String situationGeo, String sigle, BigDecimal montantCotisation, BigDecimal droitAdhesion, Frequence frequenceCotisation, String strName, String strSigle) {
+
+    public ReadAssociationDTO(Long assoId, String assoName, String situationGeo, String sigle, BigDecimal droitAdhesion)
+    {
         this.assoId = assoId;
         this.assoName = assoName;
         this.situationGeo = situationGeo;

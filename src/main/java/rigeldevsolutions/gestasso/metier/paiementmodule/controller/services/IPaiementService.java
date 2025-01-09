@@ -17,4 +17,6 @@ public interface IPaiementService {
     PaiementCotisationDTO getPaiementCotisationDto(PaiementCotisationDTO dto);
 
     VersementDTO createVersementCotisation(PaiementCotisationDTO dto, List<MultipartFile> files, ActionIdentifier ai) throws UnknownHostException;
+    String getPeriodesVersement(Long versementId);
+    String generateRecuVersement(Long versementId) throws Exception;
 }
