@@ -12,6 +12,7 @@ import rigeldevsolutions.gestasso.authmodule.model.entities.HistoDetails;
 import rigeldevsolutions.gestasso.metier.assomodule.model.entities.Association;
 import rigeldevsolutions.gestasso.metier.assomodule.model.entities.Section;
 import rigeldevsolutions.gestasso.metier.paiementmodule.model.entities.Versement;
+import rigeldevsolutions.gestasso.metier.prelevementmodule.model.entities.Prelevement;
 import rigeldevsolutions.gestasso.modulestatut.entities.Statut;
 import rigeldevsolutions.gestasso.typemodule.model.entities.Type;
 
@@ -40,6 +41,8 @@ public class Document extends HistoDetails
 	private Section section;
 	@ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "VERSEMENT_ID")
 	private Versement versement;
+	@ManyToOne @JoinColumn(name = "PRELEVEMENT_ID")
+	private Prelevement prelevement;
 	@ManyToOne @JoinColumn(name = "STA_CODE")
 	private Statut status;
 

@@ -37,4 +37,10 @@ public abstract class DocMapper
     @Mapping(target = "versement", expression = "java(new rigeldevsolutions.gestasso.metier.paiementmodule.model.entities.Versement(dto.getObjectId()))")
     @Mapping(target = "file", expression = "java(dto.getFile() != null ? dto.getFile() : rigeldevsolutions.gestasso.sharedmodule.utilities.Base64ToFileConverter.convertToFile(dto.getBase64UrlFile(), dto.getExtension()))")
     public abstract Document mapToVersementDoc(UploadDocReq dto);
+
+    @Mapping(target = "docType", expression = "java(typeRepo.findById(dto.getDocUniqueCode()).orElseThrow(()->new rigeldevsolutions.gestasso.sharedmodule.exceptions.AppException(\"Type de document inconnu\")))")
+    @Mapping(target = "prelevement", expression = "java(new rigeldevsolutions.gestasso.metier.prelevementmodule.model.entities.Prelevement(dto.getObjectId()))")
+    @Mapping(target = "file", expression = "java(dto.getFile() != null ? dto.getFile() : rigeldevsolutions.gestasso.sharedmodule.utilities.Base64ToFileConverter.convertToFile(dto.getBase64UrlFile(), dto.getExtension()))")
+    public abstract Document mapToPrelevementDoc(UploadDocReq dto);
+
 }

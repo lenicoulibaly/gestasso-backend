@@ -16,6 +16,7 @@ import rigeldevsolutions.gestasso.metier.paiementmodule.model.dtos.UpdateEcheanc
 import rigeldevsolutions.gestasso.metier.paiementmodule.model.entities.Echeance;
 import rigeldevsolutions.gestasso.metier.paiementmodule.model.entities.Echeancier;
 import rigeldevsolutions.gestasso.metier.paiementmodule.model.mappers.EcheanceMapper;
+import rigeldevsolutions.gestasso.metier.prelevementmodule.controller.repositories.PrelevementRepo;
 import rigeldevsolutions.gestasso.sharedmodule.exceptions.AppException;
 import rigeldevsolutions.gestasso.sharedmodule.utilities.DateParser;
 
@@ -35,6 +36,7 @@ public class EcheanceService implements IEcheanceService
     private final PaiementRepo paiementRepo;
     private final ICalculPaiementService calculPaiementService;
     private final CotisationRepo cotisationRepo;
+    private final PrelevementRepo prelRepo;
 
 
     @Override @Transactional
@@ -120,6 +122,14 @@ public class EcheanceService implements IEcheanceService
     @Override
     public List<ReadEcheanceDTO> getEcheancesRetard(Long cotisationId, Long adhesionId) {
         return null;
+    }
+
+    @Override
+    public ReadEcheanceDTO getCurrentEcheanceToPay(Long cotisationId) {
+        Echeance lastEcheance = prelRepo.getLastEcheancePreleve(cotisationId);
+        ReadEcheanceDTO currentEcheance = this.getNextEcheance(lastEcheance.getEcheanceId());
+        if(currentEcheance == null) throw new AppException("Toutes échéances de la cotisation ont été prélevée");
+        return currentEcheance;
     }
 
     private String getNomEcheance(LocalDate date, String frenquenceUniqueCode)
