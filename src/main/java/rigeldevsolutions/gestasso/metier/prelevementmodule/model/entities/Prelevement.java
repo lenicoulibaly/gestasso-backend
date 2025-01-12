@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.envers.Audited;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import rigeldevsolutions.gestasso.authmodule.model.entities.HistoDetails;
 import rigeldevsolutions.gestasso.metier.cotisationmodule.model.entities.Cotisation;
 import rigeldevsolutions.gestasso.metier.paiementmodule.model.entities.Echeance;
@@ -16,6 +18,7 @@ import static rigeldevsolutions.gestasso.sharedmodule.constants.PRECISION.VINGT_
 
 @AllArgsConstructor @NoArgsConstructor @Getter @Setter
 @Entity
+@Audited @EntityListeners(AuditingEntityListener.class)
 public class Prelevement extends HistoDetails
 {
   @Id
