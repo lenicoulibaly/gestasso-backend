@@ -10,9 +10,8 @@ import rigeldevsolutions.gestasso.metier.prelevementmodule.model.entities.Prelev
 @Mapper(componentModel = "spring")
 public interface PrelevementMapper
 {
-
-    @Mapping(target = "echeance", expression = "java(dto.getEcheanceId() == null ? null : new rigeldevsolutions.gestasso.metier.prelevementmodule.model.entities.Echeance(dto.getEcheanceId()))")
-    @Mapping(target = "cotisation", expression = "java(dto.getCotisationId() == null ? null : new rigeldevsolutions.gestasso.metier.prelevementmodule.model.entities.Cotisaion(dto.getCotisationId()))")
+    @Mapping(target = "echeance", expression = "java(dto.getEcheanceId() == null ? null : new rigeldevsolutions.gestasso.metier.paiementmodule.model.entities.Echeance(dto.getEcheanceId()))")
+    @Mapping(target = "cotisation", expression = "java(dto.getCotisationId() == null ? null : new rigeldevsolutions.gestasso.metier.cotisationmodule.model.entities.Cotisation(dto.getCotisationId()))")
     Prelevement mapToPrelevementCotisation(PrelevementDTO dto);
 
     @Mapping(target = "echeanceId", source = "prelevement.echeance.echeanceId")
