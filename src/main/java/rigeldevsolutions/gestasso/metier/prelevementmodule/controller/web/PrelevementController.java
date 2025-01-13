@@ -56,9 +56,9 @@ public class PrelevementController
         return prelevementService.getDefautPrelevementCotisationPage(prelevementId, PageRequest.of(page, size));
     }
 
-    @GetMapping(path = "/edit-dto")
-    PrelevementDTO getPrelevementEditDto(@PathVariable Long cotisationId)
+    @PostMapping(path = "/edit-dto")
+    PrelevementDTO getPrelevementEditDto(@RequestBody PrelevementDTO dto)
     {
-        return prelevementService.getPrelevementEditDto(cotisationId);
+        return prelevementService.getPrelevementEditDto(dto);
     }
 }

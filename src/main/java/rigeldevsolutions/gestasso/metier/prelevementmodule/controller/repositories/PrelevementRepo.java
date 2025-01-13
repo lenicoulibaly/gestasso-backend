@@ -31,7 +31,7 @@ public interface PrelevementRepo extends JpaRepository<Prelevement, Long>
 
     @Query("""
     select new rigeldevsolutions.gestasso.metier.prelevementmodule.model.dtos.PrelevementDTO(
-    cot.montantCotisation, cot.montantCotisationLettre, cot.cotisationId, cot.nomCotisation, cot.motif)
+    cot.cotisationId, cot.nomCotisation, cot.motif)
     from Cotisation cot where cot.cotisationId = ?1
 """)
     PrelevementDTO getPrelevementEditDto(Long cotisationId);

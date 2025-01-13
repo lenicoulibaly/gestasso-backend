@@ -29,6 +29,7 @@ public class PrelevementDTO
   private Long echeanceId;
   private String nomEcheance;
   @ExistingCotisationId
+  @NotNull(message = "L'ID de la cotisation ne peut être nul")
   private Long cotisationId;
   private String nomCotisation;
   private String motif;
@@ -49,10 +50,8 @@ public class PrelevementDTO
     this.motif = motif;
   }
 
-  public PrelevementDTO(BigDecimal montant, String montantLettre, Long cotisationId, String nomCotisation, String motif)
+  public PrelevementDTO(Long cotisationId, String nomCotisation, String motif)
   {
-    this.montant = montant;
-    this.montantLettre = montantLettre;
     this.cotisationId = cotisationId;
     this.nomCotisation = nomCotisation;
     this.motif = motif;

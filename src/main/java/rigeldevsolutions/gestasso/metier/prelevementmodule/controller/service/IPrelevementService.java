@@ -16,5 +16,5 @@ public interface IPrelevementService
     Page<DefautPrelevementDTO> getDefautPrelevementCotisationPage(Long prelevementId, Pageable pageable);
 
     DefautPrelevementDTO saveDefautPrelevementCotisation(DefautPrelevementDTO dto, ActionIdentifier ai);
-    PrelevementDTO getPrelevementEditDto(Long cotisationId);
+    PrelevementDTO getPrelevementEditDto(PrelevementDTO dto);
 }

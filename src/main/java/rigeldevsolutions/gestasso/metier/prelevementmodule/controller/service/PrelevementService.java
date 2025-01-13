@@ -11,6 +11,8 @@ import rigeldevsolutions.gestasso.archivemodule.controller.service.PrelevementsD
 import rigeldevsolutions.gestasso.archivemodule.model.dtos.request.UploadDocReq;
 import rigeldevsolutions.gestasso.archivemodule.model.dtos.response.ReadDocDTO;
 import rigeldevsolutions.gestasso.authmodule.model.entities.ActionIdentifier;
+import rigeldevsolutions.gestasso.metier.cotisationmodule.controller.repositories.CotisationRepo;
+import rigeldevsolutions.gestasso.metier.cotisationmodule.model.entities.Cotisation;
 import rigeldevsolutions.gestasso.metier.paiementmodule.controller.services.IEcheanceService;
 import rigeldevsolutions.gestasso.metier.paiementmodule.model.dtos.ReadEcheanceDTO;
 import rigeldevsolutions.gestasso.metier.prelevementmodule.controller.repositories.DefautPrelevementRepo;
@@ -40,11 +42,21 @@ public class PrelevementService implements IPrelevementService
     private final PrelevementMapper prelevementMapper;
     private final PrelevementsDocUploader prelevementsDocUploader;
     private final IEcheanceService echeanceService;
+    private final CotisationRepo cotisationRepo;
 
     @Override
-    public PrelevementDTO getPrelevementEditDto(Long cotisationId)
+    public PrelevementDTO getPrelevementEditDto(PrelevementDTO dto)
     {
+        if(dto == null) throw new AppException("Aucune donnée de prélèvement parvenue");
+        Long cotisationId = dto.getCotisationId();
+        Cotisation cotisation = cotisationRepo.findById(cotisationId).orElseThrow(()->new AppException("Cotisation introuvable " + cotisationId));
+        BigDecimal motantCotisation = cotisation.getMontantCotisation();
+        BigDecimal montantPrelevement = motantCotisation.multiply(new BigDecimal(dto.getNbrAdherant()));
+        String montantPrelevementLettre = MontantConverter.numberToLetter(montantPrelevement);
+
         PrelevementDTO editDto = prelevementRepo.getPrelevementEditDto(cotisationId);
+        editDto.setMontant(montantPrelevement);
+        editDto.setMontantLettre(montantPrelevementLettre);
         ReadEcheanceDTO currentEcheance = echeanceService.getCurrentEcheanceToPay(cotisationId);
         editDto.setEcheanceId(currentEcheance.getEcheanceId());
         editDto.setNomEcheance(currentEcheance.getNomEcheance());
