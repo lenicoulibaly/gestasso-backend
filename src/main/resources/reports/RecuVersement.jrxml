@@ -172,6 +172,12 @@ where v.versement_id=$P{VERSEMENT_ID}]]>
 	<title>
 		<band height="797" splitType="Stretch">
 			<frame>
+				<reportElement x="92" y="-8" width="370" height="71" uuid="93106352-6b95-4d08-be02-f2c4568aae82"/>
+				<box>
+					<pen lineWidth="3.0" lineStyle="Solid" lineColor="#7E57C2"/>
+				</box>
+			</frame>
+			<frame>
 				<reportElement mode="Transparent" x="10" y="411" width="550" height="369" forecolor="#F23430" backcolor="#CC2825" uuid="0daed867-9196-48c4-a3df-11518a6780a0">
 					<property name="com.jaspersoft.studio.element.name" value="Informations sur le versement"/>
 				</reportElement>
@@ -185,7 +191,7 @@ where v.versement_id=$P{VERSEMENT_ID}]]>
 				<staticText>
 					<reportElement mode="Opaque" x="12" y="70" width="86" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="2f331da4-0f54-47ed-81f8-259f943c0593"/>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
-						<font fontName="SansSerif" size="14" isBold="true"/>
+						<font fontName="Times New Roman" size="14" isBold="true"/>
 					</textElement>
 					<text><![CDATA[Périodes]]></text>
 				</staticText>
@@ -194,14 +200,14 @@ where v.versement_id=$P{VERSEMENT_ID}]]>
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					</reportElement>
 					<textElement verticalAlignment="Middle">
-						<font fontName="SansSerif" size="16" isBold="false"/>
+						<font fontName="Times New Roman" size="16" isBold="false"/>
 					</textElement>
 					<textFieldExpression><![CDATA[NumberFormat.getInstance(Locale.FRENCH).format($F{montant}) + " (" + $F{montant_lettre} + " F CFA)"]]></textFieldExpression>
 				</textField>
 				<staticText>
 					<reportElement mode="Opaque" x="339" y="40" width="31" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="f6cceb94-9a92-4f45-bb0d-a4806951d833"/>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
-						<font fontName="SansSerif" size="14" isBold="true"/>
+						<font fontName="Times New Roman" size="14" isBold="true"/>
 					</textElement>
 					<text><![CDATA[Date]]></text>
 				</staticText>
@@ -210,14 +216,14 @@ where v.versement_id=$P{VERSEMENT_ID}]]>
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					</reportElement>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
-						<font fontName="SansSerif" size="14" isBold="true"/>
+						<font fontName="Times New Roman" size="14" isBold="true"/>
 					</textElement>
 					<text><![CDATA[Montant versé]]></text>
 				</staticText>
 				<textField>
 					<reportElement x="105" y="64" width="440" height="31" uuid="a14f84c4-2bed-4124-ac01-9c9af4a33423"/>
 					<textElement verticalAlignment="Middle">
-						<font fontName="SansSerif" size="16"/>
+						<font fontName="Times New Roman" size="16"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{periodes}]]></textFieldExpression>
 				</textField>
@@ -226,12 +232,12 @@ where v.versement_id=$P{VERSEMENT_ID}]]>
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					</reportElement>
 					<textElement verticalAlignment="Middle">
-						<font fontName="SansSerif" size="16"/>
+						<font fontName="Times New Roman" size="16"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{date_versement}]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement mode="Opaque" x="1" y="1" width="549" height="18" forecolor="#000000" backcolor="#E3DBD5" uuid="9a3fdba0-9201-4a7c-95ff-9b5606fa4ec8"/>
+					<reportElement mode="Opaque" x="1" y="1" width="549" height="18" forecolor="#FFFFFF" backcolor="#4527A0" uuid="9a3fdba0-9201-4a7c-95ff-9b5606fa4ec8"/>
 					<box>
 						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -239,12 +245,12 @@ where v.versement_id=$P{VERSEMENT_ID}]]>
 						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Top">
-						<font fontName="SansSerif" size="13" isBold="true"/>
+						<font fontName="Times New Roman" size="13" isBold="true"/>
 					</textElement>
 					<text><![CDATA[Informations sur le versement]]></text>
 				</staticText>
 				<staticText>
-					<reportElement mode="Opaque" x="21" y="111" width="508" height="18" forecolor="#000000" backcolor="#E3DBD5" uuid="dea7dfe3-721e-4f41-9eec-6a277321f5c1"/>
+					<reportElement mode="Opaque" x="21" y="111" width="508" height="18" forecolor="#FFFFFF" backcolor="#4527A0" uuid="dea7dfe3-721e-4f41-9eec-6a277321f5c1"/>
 					<box>
 						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -252,7 +258,7 @@ where v.versement_id=$P{VERSEMENT_ID}]]>
 						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Top">
-						<font fontName="SansSerif" size="13" isBold="true"/>
+						<font fontName="Times New Roman" size="13" isBold="true"/>
 					</textElement>
 					<text><![CDATA[---------Détails---------]]></text>
 				</staticText>
@@ -261,7 +267,7 @@ where v.versement_id=$P{VERSEMENT_ID}]]>
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					</reportElement>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
-						<font fontName="SansSerif" size="12" isBold="true"/>
+						<font fontName="Times New Roman" size="12" isBold="true"/>
 					</textElement>
 					<text><![CDATA[:]]></text>
 				</staticText>
@@ -270,7 +276,7 @@ where v.versement_id=$P{VERSEMENT_ID}]]>
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					</reportElement>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
-						<font fontName="SansSerif" size="12" isBold="true"/>
+						<font fontName="Times New Roman" size="12" isBold="true"/>
 					</textElement>
 					<text><![CDATA[:]]></text>
 				</staticText>
@@ -279,7 +285,7 @@ where v.versement_id=$P{VERSEMENT_ID}]]>
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					</reportElement>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
-						<font fontName="SansSerif" size="12" isBold="true"/>
+						<font fontName="Times New Roman" size="12" isBold="true"/>
 					</textElement>
 					<text><![CDATA[:]]></text>
 				</staticText>
@@ -307,7 +313,7 @@ where v.versement_id=$P{VERSEMENT_ID}]]>
 							</jr:tableFooter>
 							<jr:columnHeader style="Table_CH" height="30" rowSpan="1">
 								<staticText>
-									<reportElement mode="Opaque" x="0" y="0" width="100" height="30" backcolor="#FC1612" uuid="e99be137-db8c-4cac-b62a-3b1147a8daaf"/>
+									<reportElement mode="Opaque" x="0" y="0" width="100" height="30" forecolor="#FFFFFF" backcolor="#1E88E5" uuid="e99be137-db8c-4cac-b62a-3b1147a8daaf"/>
 									<textElement textAlignment="Center" verticalAlignment="Middle">
 										<font fontName="Times New Roman" size="12" isBold="true"/>
 									</textElement>
@@ -331,7 +337,7 @@ where v.versement_id=$P{VERSEMENT_ID}]]>
 							<jr:tableFooter style="Table_TH" height="0" rowSpan="1"/>
 							<jr:columnHeader style="Table_CH" height="30" rowSpan="1">
 								<staticText>
-									<reportElement mode="Opaque" x="0" y="0" width="230" height="30" backcolor="#FC1612" uuid="199c0d86-a14e-473b-9aba-784661f7d162"/>
+									<reportElement mode="Opaque" x="0" y="0" width="230" height="30" forecolor="#FFFFFF" backcolor="#1E88E5" uuid="199c0d86-a14e-473b-9aba-784661f7d162"/>
 									<textElement textAlignment="Center" verticalAlignment="Middle">
 										<font fontName="Times New Roman" size="12" isBold="true"/>
 									</textElement>
@@ -357,7 +363,7 @@ where v.versement_id=$P{VERSEMENT_ID}]]>
 							<jr:tableFooter style="Table_TH" height="0" rowSpan="1"/>
 							<jr:columnHeader style="Table_CH" height="30" rowSpan="1">
 								<staticText>
-									<reportElement mode="Opaque" x="0" y="0" width="120" height="30" backcolor="#FC1612" uuid="cab72b38-aa3c-4bce-818e-fecd61b4bdf3"/>
+									<reportElement mode="Opaque" x="0" y="0" width="120" height="30" forecolor="#FFFFFF" backcolor="#1E88E5" uuid="cab72b38-aa3c-4bce-818e-fecd61b4bdf3"/>
 									<textElement textAlignment="Center" verticalAlignment="Middle">
 										<font fontName="Times New Roman" size="12" isBold="true"/>
 									</textElement>
@@ -381,7 +387,7 @@ where v.versement_id=$P{VERSEMENT_ID}]]>
 							<jr:tableFooter style="Table_TH" height="0" rowSpan="1"/>
 							<jr:columnHeader style="Table_CH" height="30" rowSpan="1">
 								<staticText>
-									<reportElement mode="Opaque" x="0" y="0" width="58" height="30" backcolor="#FC1612" uuid="d088d1fb-5d39-4cb2-a289-5373ab331cd3"/>
+									<reportElement mode="Opaque" x="0" y="0" width="58" height="30" forecolor="#FFFFFF" backcolor="#1E88E5" uuid="d088d1fb-5d39-4cb2-a289-5373ab331cd3"/>
 									<textElement textAlignment="Center" verticalAlignment="Middle">
 										<font fontName="Times New Roman" size="12" isBold="true"/>
 									</textElement>
@@ -416,21 +422,21 @@ where v.versement_id=$P{VERSEMENT_ID}]]>
 				<staticText>
 					<reportElement mode="Opaque" x="323" y="99" width="61" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="85676c66-cf83-4897-bc84-29d68578d275"/>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
-						<font fontName="SansSerif" size="14" isBold="true"/>
+						<font fontName="Times New Roman" size="14" isBold="true"/>
 					</textElement>
 					<text><![CDATA[Téléphone]]></text>
 				</staticText>
 				<staticText>
 					<reportElement mode="Opaque" x="12" y="99" width="95" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="3678d189-be41-4137-96ab-52253abf1ebf"/>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
-						<font fontName="SansSerif" size="14" isBold="true"/>
+						<font fontName="Times New Roman" size="14" isBold="true"/>
 					</textElement>
 					<text><![CDATA[Email]]></text>
 				</staticText>
 				<textField>
 					<reportElement x="394" y="95" width="129" height="31" uuid="6f561b0b-8b22-4cdc-815d-3dfe3be131a4"/>
 					<textElement verticalAlignment="Middle">
-						<font fontName="SansSerif" size="16"/>
+						<font fontName="Times New Roman" size="16"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{tel}]]></textFieldExpression>
 				</textField>
@@ -439,14 +445,14 @@ where v.versement_id=$P{VERSEMENT_ID}]]>
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					</reportElement>
 					<textElement verticalAlignment="Middle">
-						<font fontName="SansSerif" size="16" isBold="false"/>
+						<font fontName="Times New Roman" size="16" isBold="false"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{first_name} + " " + $F{last_name}]]></textFieldExpression>
 				</textField>
 				<staticText>
 					<reportElement mode="Opaque" x="323" y="40" width="61" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="f7316f7e-7f89-41ee-98e9-5443dcac6799"/>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
-						<font fontName="SansSerif" size="14" isBold="true"/>
+						<font fontName="Times New Roman" size="14" isBold="true"/>
 					</textElement>
 					<text><![CDATA[Matricule]]></text>
 				</staticText>
@@ -455,14 +461,14 @@ where v.versement_id=$P{VERSEMENT_ID}]]>
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					</reportElement>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
-						<font fontName="SansSerif" size="14" isBold="true"/>
+						<font fontName="Times New Roman" size="14" isBold="true"/>
 					</textElement>
 					<text><![CDATA[Nom & prénom]]></text>
 				</staticText>
 				<textField>
 					<reportElement x="113" y="95" width="208" height="31" uuid="825a34c5-6027-4542-ad16-590e70ddaf09"/>
 					<textElement verticalAlignment="Middle">
-						<font fontName="SansSerif" size="16"/>
+						<font fontName="Times New Roman" size="16"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{email}]]></textFieldExpression>
 				</textField>
@@ -471,12 +477,14 @@ where v.versement_id=$P{VERSEMENT_ID}]]>
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					</reportElement>
 					<textElement verticalAlignment="Middle">
-						<font fontName="SansSerif" size="16"/>
+						<font fontName="Times New Roman" size="16"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{matricule_fonctionnaire}]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement mode="Opaque" x="1" y="1" width="548" height="18" forecolor="#000000" backcolor="#E3DBD5" uuid="d562e38e-f7fd-4ccf-8fb2-de946eba4d1c"/>
+					<reportElement mode="Opaque" x="1" y="1" width="549" height="18" forecolor="#FFFFFF" backcolor="#4527A0" uuid="d562e38e-f7fd-4ccf-8fb2-de946eba4d1c">
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</reportElement>
 					<box>
 						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -484,7 +492,7 @@ where v.versement_id=$P{VERSEMENT_ID}]]>
 						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Top">
-						<font fontName="SansSerif" size="13" isBold="true"/>
+						<font fontName="Times New Roman" size="13" isBold="true"/>
 					</textElement>
 					<text><![CDATA[Informations sur l'adhérant]]></text>
 				</staticText>
@@ -493,7 +501,7 @@ where v.versement_id=$P{VERSEMENT_ID}]]>
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					</reportElement>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
-						<font fontName="SansSerif" size="12" isBold="true"/>
+						<font fontName="Times New Roman" size="12" isBold="true"/>
 					</textElement>
 					<text><![CDATA[:]]></text>
 				</staticText>
@@ -502,7 +510,7 @@ where v.versement_id=$P{VERSEMENT_ID}]]>
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					</reportElement>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
-						<font fontName="SansSerif" size="12" isBold="true"/>
+						<font fontName="Times New Roman" size="12" isBold="true"/>
 					</textElement>
 					<text><![CDATA[:]]></text>
 				</staticText>
@@ -511,7 +519,7 @@ where v.versement_id=$P{VERSEMENT_ID}]]>
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					</reportElement>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
-						<font fontName="SansSerif" size="12" isBold="true"/>
+						<font fontName="Times New Roman" size="12" isBold="true"/>
 					</textElement>
 					<text><![CDATA[:]]></text>
 				</staticText>
@@ -520,20 +528,24 @@ where v.versement_id=$P{VERSEMENT_ID}]]>
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					</reportElement>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
-						<font fontName="SansSerif" size="12" isBold="true"/>
+						<font fontName="Times New Roman" size="12" isBold="true"/>
 					</textElement>
 					<text><![CDATA[:]]></text>
 				</staticText>
 			</frame>
 			<frame>
-				<reportElement x="111" y="0" width="333" height="56" uuid="82feb799-442d-492c-b291-647582572d30">
+				<reportElement mode="Opaque" x="100" y="0" width="354" height="56" backcolor="#5E35B1" uuid="82feb799-442d-492c-b291-647582572d30">
 					<property name="com.jaspersoft.studio.element.name" value="Titre"/>
 				</reportElement>
 				<box>
 					<pen lineWidth="2.0" lineStyle="Solid" lineColor="#7F4585"/>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<staticText>
-					<reportElement x="0" y="10" width="333" height="30" uuid="88c490e0-cb07-4139-bc2b-1903909d1de5"/>
+					<reportElement x="11" y="10" width="333" height="30" forecolor="#FFFFFF" uuid="88c490e0-cb07-4139-bc2b-1903909d1de5"/>
 					<box>
 						<pen lineWidth="1.0"/>
 						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -542,7 +554,7 @@ where v.versement_id=$P{VERSEMENT_ID}]]>
 						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
-						<font fontName="SansSerif" size="22" isBold="true"/>
+						<font fontName="Times New Roman" size="22" isBold="true"/>
 					</textElement>
 					<text><![CDATA[Reçu de paiement de cotisation]]></text>
 				</staticText>
@@ -562,21 +574,21 @@ where v.versement_id=$P{VERSEMENT_ID}]]>
 				<staticText>
 					<reportElement mode="Transparent" x="12" y="124" width="100" height="20" forecolor="#000000" backcolor="#E3DBD5" uuid="9ffafe40-cfe3-46fb-905d-6d47f2e5ec07"/>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
-						<font fontName="SansSerif" size="14" isBold="true"/>
+						<font fontName="Times New Roman" size="14" isBold="true"/>
 					</textElement>
 					<text><![CDATA[Motif]]></text>
 				</staticText>
 				<staticText>
 					<reportElement mode="Transparent" x="7" y="75" width="105" height="20" forecolor="#000000" backcolor="#E3DBD5" uuid="299fd33c-0f39-4fd9-862c-f651b2757f12"/>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
-						<font fontName="SansSerif" size="14" isBold="true"/>
+						<font fontName="Times New Roman" size="14" isBold="true"/>
 					</textElement>
 					<text><![CDATA[Cotisation]]></text>
 				</staticText>
 				<textField>
 					<reportElement x="120" y="116" width="424" height="37" uuid="af0ec6fb-c93a-49c7-a7e8-fd56193d44d7"/>
 					<textElement verticalAlignment="Middle">
-						<font fontName="SansSerif" size="16"/>
+						<font fontName="Times New Roman" size="16"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{motif}]]></textFieldExpression>
 				</textField>
@@ -585,14 +597,14 @@ where v.versement_id=$P{VERSEMENT_ID}]]>
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					</reportElement>
 					<textElement verticalAlignment="Middle">
-						<font fontName="SansSerif" size="16" isBold="false"/>
+						<font fontName="Times New Roman" size="16" isBold="false"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{asso_name}]]></textFieldExpression>
 				</textField>
 				<staticText>
 					<reportElement mode="Transparent" x="352" y="40" width="39" height="20" forecolor="#000000" backcolor="#E3DBD5" uuid="214758f5-6228-49d4-83c5-c091c341211b"/>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
-						<font fontName="SansSerif" size="14" isBold="true"/>
+						<font fontName="Times New Roman" size="14" isBold="true"/>
 					</textElement>
 					<text><![CDATA[Sigle :]]></text>
 				</staticText>
@@ -601,14 +613,14 @@ where v.versement_id=$P{VERSEMENT_ID}]]>
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					</reportElement>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
-						<font fontName="SansSerif" size="14" isBold="true"/>
+						<font fontName="Times New Roman" size="14" isBold="true"/>
 					</textElement>
 					<text><![CDATA[Dénomination]]></text>
 				</staticText>
 				<textField>
 					<reportElement x="120" y="74" width="426" height="50" uuid="42d34e61-483b-4eb6-9e71-a5df8a0a0f7a"/>
 					<textElement verticalAlignment="Top">
-						<font fontName="SansSerif" size="16"/>
+						<font fontName="Times New Roman" size="16"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{nom_cotisation}]]></textFieldExpression>
 				</textField>
@@ -617,12 +629,14 @@ where v.versement_id=$P{VERSEMENT_ID}]]>
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					</reportElement>
 					<textElement verticalAlignment="Middle">
-						<font fontName="SansSerif" size="16"/>
+						<font fontName="Times New Roman" size="16"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{asso_sigle}]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement mode="Opaque" x="1" y="1" width="548" height="18" forecolor="#000000" backcolor="#E3DBD5" uuid="b84cc392-7212-4a66-bcd0-10df03c31377"/>
+					<reportElement mode="Opaque" x="1" y="1" width="549" height="18" forecolor="#FFFFFF" backcolor="#4527A0" uuid="b84cc392-7212-4a66-bcd0-10df03c31377">
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</reportElement>
 					<box>
 						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -630,7 +644,7 @@ where v.versement_id=$P{VERSEMENT_ID}]]>
 						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Top">
-						<font fontName="SansSerif" size="13" isBold="true"/>
+						<font fontName="Times New Roman" size="13" isBold="true"/>
 					</textElement>
 					<text><![CDATA[Informations sur l'association et la cotisation]]></text>
 				</staticText>
@@ -639,7 +653,7 @@ where v.versement_id=$P{VERSEMENT_ID}]]>
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					</reportElement>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
-						<font fontName="SansSerif" size="12" isBold="true"/>
+						<font fontName="Times New Roman" size="12" isBold="true"/>
 					</textElement>
 					<text><![CDATA[:]]></text>
 				</staticText>
@@ -648,7 +662,7 @@ where v.versement_id=$P{VERSEMENT_ID}]]>
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					</reportElement>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
-						<font fontName="SansSerif" size="12" isBold="true"/>
+						<font fontName="Times New Roman" size="12" isBold="true"/>
 					</textElement>
 					<text><![CDATA[:]]></text>
 				</staticText>
@@ -657,7 +671,7 @@ where v.versement_id=$P{VERSEMENT_ID}]]>
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					</reportElement>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
-						<font fontName="SansSerif" size="12" isBold="true"/>
+						<font fontName="Times New Roman" size="12" isBold="true"/>
 					</textElement>
 					<text><![CDATA[:]]></text>
 				</staticText>
@@ -666,17 +680,17 @@ where v.versement_id=$P{VERSEMENT_ID}]]>
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					</reportElement>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
-						<font fontName="SansSerif" size="12" isBold="true"/>
+						<font fontName="Times New Roman" size="12" isBold="true"/>
 					</textElement>
 					<text><![CDATA[:]]></text>
 				</staticText>
 			</frame>
 			<image>
-				<reportElement x="11" y="-11" width="89" height="76" uuid="4e9d4a73-937d-4436-94c3-f7f63bdb1e1b"/>
+				<reportElement x="8" y="-11" width="89" height="76" uuid="4e9d4a73-937d-4436-94c3-f7f63bdb1e1b"/>
 				<imageExpression><![CDATA[$P{LOGO}]]></imageExpression>
 			</image>
 			<image>
-				<reportElement x="460" y="-10" width="89" height="76" uuid="e562d234-7e16-4e4d-984c-30ce3db1c287"/>
+				<reportElement x="480" y="-10" width="89" height="76" uuid="e562d234-7e16-4e4d-984c-30ce3db1c287"/>
 				<imageExpression><![CDATA[$P{QR_CODE}]]></imageExpression>
 			</image>
 		</band>

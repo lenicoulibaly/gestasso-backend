@@ -1,26 +1,25 @@
 package rigeldevsolutions.gestasso.sharedmodule.exceptions;
 
 import io.jsonwebtoken.ExpiredJwtException;
-import rigeldevsolutions.gestasso.modulelog.controller.service.ILogService;
+import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import rigeldevsolutions.gestasso.modulelog.controller.service.ILogService;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice @RequiredArgsConstructor
@@ -81,5 +80,15 @@ public class AppExceptionHandler
         exception.printStackTrace();
         logService.saveLogError(exception.getMessage(), stacktrace, null);
 
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<List<String>> handleConstraintViolationException(ConstraintViolationException ex) {
+        // Convertir les violations en une liste de messages
+        List<String> errors = ex.getConstraintViolations().stream()
+                .map(violation -> violation.getMessage())
+                .collect(Collectors.toList());
+
+        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 }

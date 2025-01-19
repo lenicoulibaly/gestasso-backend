@@ -6,6 +6,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
 import rigeldevsolutions.gestasso.archivemodule.controller.service.PrelevementsDocUploader;
 import rigeldevsolutions.gestasso.archivemodule.model.dtos.request.UploadDocReq;
@@ -26,15 +27,12 @@ import rigeldevsolutions.gestasso.sharedmodule.exceptions.AppException;
 import rigeldevsolutions.gestasso.sharedmodule.utilities.MontantConverter;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.math.BigDecimal.ZERO;
 
-@Service @RequiredArgsConstructor
+@Service @RequiredArgsConstructor @Validated
 public class PrelevementService implements IPrelevementService
 {
     private final PrelevementRepo prelevementRepo;
@@ -55,11 +53,14 @@ public class PrelevementService implements IPrelevementService
         String montantPrelevementLettre = MontantConverter.numberToLetter(montantPrelevement);
 
         PrelevementDTO editDto = prelevementRepo.getPrelevementEditDto(cotisationId);
+        editDto.setNbrAdherant(dto.getNbrAdherant());
         editDto.setMontant(montantPrelevement);
         editDto.setMontantLettre(montantPrelevementLettre);
         ReadEcheanceDTO currentEcheance = echeanceService.getCurrentEcheanceToPay(cotisationId);
         editDto.setEcheanceId(currentEcheance.getEcheanceId());
         editDto.setNomEcheance(currentEcheance.getNomEcheance());
+        editDto.setDefautPrelevements(Collections.emptyList());
+        editDto.setDocs(Collections.emptyList());
         return editDto;
     }
 
@@ -133,7 +134,7 @@ public class PrelevementService implements IPrelevementService
                 prelevementsDocUploader.uploadDocument(uploadDocReq, ai);
             }
         }
-        return saveDefautPrelevements(dto.getDefautPrelevements(), prelevement.getPrelevementId(), ai);
+        return saveDefautPrelevements(dto.getDefautPrelevements(), prelevementId, ai);
     }
 
     private PrelevementDTO update(PrelevementDTO dto, ActionIdentifier ai)
@@ -155,7 +156,7 @@ public class PrelevementService implements IPrelevementService
         List<DefautPrelevementDTO> defautPrelevementsOutput = new ArrayList<>();
         if(defautPrelevementsInput != null && !defautPrelevementsInput.isEmpty())
         {
-            defautPrelevementsOutput = defautPrelevementsInput.stream().map(dp->this.saveDefautPrelevementCotisation(dp, ai)).filter(Objects::nonNull).collect(Collectors.toList());
+            defautPrelevementsOutput = defautPrelevementsInput.stream().peek(pd->pd.setPrelevementId(prelevementId)).map(dp->this.saveDefautPrelevementCotisation(dp, ai)).filter(Objects::nonNull).collect(Collectors.toList());
         }
         PrelevementDTO prelevementDTO = prelevementRepo.findPrelevementDtoById(prelevementId);
         prelevementDTO.setDefautPrelevements(defautPrelevementsOutput);

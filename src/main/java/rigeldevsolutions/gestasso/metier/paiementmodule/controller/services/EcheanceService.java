@@ -127,9 +127,17 @@ public class EcheanceService implements IEcheanceService
     @Override
     public ReadEcheanceDTO getCurrentEcheanceToPay(Long cotisationId) {
         Echeance lastEcheance = prelRepo.getLastEcheancePreleve(cotisationId);
+        if(lastEcheance == null ) return this.getFirstEcheanceByCotisationId(cotisationId);
         ReadEcheanceDTO currentEcheance = this.getNextEcheance(lastEcheance.getEcheanceId());
         if(currentEcheance == null) throw new AppException("Toutes échéances de la cotisation ont été prélevée");
         return currentEcheance;
+    }
+
+    @Override
+    public ReadEcheanceDTO getFirstEcheanceByCotisationId(Long cotisationId)
+    {
+        ReadEcheanceDTO echeance = echeanceRepo.getFirstEcheanceByCotisationId(cotisationId);
+        return echeance;
     }
 
     private String getNomEcheance(LocalDate date, String frenquenceUniqueCode)

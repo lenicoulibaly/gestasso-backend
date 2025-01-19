@@ -23,5 +23,6 @@ public interface PrelevementMapper
 
     @Mapping(target = "adhesion", expression = "java(dto.getAdhesionId() == null ? null : new rigeldevsolutions.gestasso.metier.assomodule.model.entities.Adhesion(dto.getAdhesionId()))")
     @Mapping(target = "prelevement", expression = "java(dto.getPrelevementId() == null ? null : new rigeldevsolutions.gestasso.metier.prelevementmodule.model.entities.Prelevement(dto.getPrelevementId()))")
+    @Mapping(target = "motif", source = "dto.motifDefaut")
     DefautPrelevement mapToDefautPrelevement(DefautPrelevementDTO dto);
 }

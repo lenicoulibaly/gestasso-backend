@@ -21,4 +21,6 @@ public interface IEcheanceService
     List<ReadEcheanceDTO> getEcheancesRetard(Long cotisationId, Long adhesionId);
 
     ReadEcheanceDTO getCurrentEcheanceToPay(Long cotisationId);
+
+    ReadEcheanceDTO getFirstEcheanceByCotisationId(Long cotisationId);
 }

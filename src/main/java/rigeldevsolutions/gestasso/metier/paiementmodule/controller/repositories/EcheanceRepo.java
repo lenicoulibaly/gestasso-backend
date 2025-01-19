@@ -48,8 +48,18 @@ public interface EcheanceRepo extends JpaRepository<Echeance, Long>
             (ech1.echeanceId, ech1.dateEcheance, ech1.nomEcheance,  ech1.echeancier.echeancierId)
     from Echeance ech1 where ech1.echeancier.frequence.uniqueCode = ?1 and ech1.echeancier.typeEcheancier.uniqueCode = 'ECH-NAT'
     and ech1.dateEcheance = (select max(ech2.dateEcheance) from Echeance ech2 where ech2.echeancier.frequence.uniqueCode = ?1 and ech2.echeancier.typeEcheancier.uniqueCode = 'ECH-NAT')
-""")
+    """)
     ReadEcheanceDTO getLastEcheance(String typeFrequence);
+
+    @Query("""
+    select new rigeldevsolutions.gestasso.metier.paiementmodule.model.dtos.ReadEcheanceDTO 
+            (ech1.echeanceId, ech1.dateEcheance, ech1.nomEcheance,  ech1.echeancier.echeancierId)
+    from Echeance ech1 where ech1.echeancier.frequence.uniqueCode = (select c.frequenceCotisation.uniqueCode from Cotisation c where c.cotisationId = ?1)
+        and ech1.echeancier.typeEcheancier.uniqueCode = 'ECH-NAT'
+        and ech1.dateEcheance = (select min(ech2.dateEcheance) from Echeance ech2 where ech2.echeancier.frequence.uniqueCode = (select c.frequenceCotisation.uniqueCode from Cotisation c where c.cotisationId = ?1)
+                                  and ech2.echeancier.typeEcheancier.uniqueCode = 'ECH-NAT')
+    """)
+    ReadEcheanceDTO getFirstEcheanceByCotisationId(Long cotisationId);
 
 /*
     @Query("""

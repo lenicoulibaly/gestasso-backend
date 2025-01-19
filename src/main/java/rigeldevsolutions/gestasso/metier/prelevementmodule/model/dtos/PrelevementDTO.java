@@ -26,6 +26,7 @@ public class PrelevementDTO
   private String montantLettre;
   private boolean active;
   @ExistingEcheanceId
+  @NotNull(message = "L'ID de l'écheance ne peut être nul")
   private Long echeanceId;
   private String nomEcheance;
   @ExistingCotisationId

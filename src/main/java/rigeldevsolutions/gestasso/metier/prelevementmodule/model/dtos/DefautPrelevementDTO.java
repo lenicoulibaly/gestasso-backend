@@ -39,6 +39,7 @@ public class DefautPrelevementDTO
   private Long echeanceId;
   private String nomEcheance;
   @ExistingCotisationId
+  @NotNull(message = "L'ID de la cotisation ne peut être null'")
   private Long cotisationId;
   private String nomCotisation;
   private String motifCotifCotisation;
