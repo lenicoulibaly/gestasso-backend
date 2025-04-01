@@ -1,13 +1,16 @@
 package rigeldevsolutions.gestasso.authmodule.controller.services.impl;
 
-import rigeldevsolutions.gestasso.authmodule.controller.repositories.MenuRepo;
-import rigeldevsolutions.gestasso.authmodule.controller.repositories.PrvRepo;
-import rigeldevsolutions.gestasso.authmodule.controller.services.spec.IMenuReaderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import rigeldevsolutions.gestasso.authmodule.controller.repositories.MenuRepo;
+import rigeldevsolutions.gestasso.authmodule.controller.services.spec.IMenuReaderService;
+import rigeldevsolutions.gestasso.authmodule.keycloak.controller.repositories.KeycloakRoleRepo;
+import rigeldevsolutions.gestasso.authmodule.keycloak.controller.repositories.RecursiveRoleRepo;
+import rigeldevsolutions.gestasso.authmodule.keycloak.controller.services.KeycloakApiRoleService;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -15,7 +18,9 @@ import java.util.stream.Collectors;
 public class MenuReaderService implements IMenuReaderService
 {
     private final MenuRepo menuRepo;
-    private final PrvRepo prvRepo;
+    private final KeycloakRoleRepo krRepo;
+    private final RecursiveRoleRepo rrRepo;
+    private final KeycloakApiRoleService krService;
 
     @Override
     public boolean menuHasPrv(String menuCode, String prvCode)
@@ -29,12 +34,13 @@ public class MenuReaderService implements IMenuReaderService
     }
 
     @Override
-    public boolean fncCanSeeMenu(Long fncId, String menuCode) {
-        Set<String> fncPrvCodes = prvRepo.getFunctionPrvCodes(fncId);
+    public boolean profileCanSeeMenu(String profileId, String menuCode) {
+        List<String> profilePrvCodes = krService.findAllSubAuthoritiesNames(profileId);
+
         Set<String> menuPrvCodes = this.getMenuPrvCodes(menuCode);
-        if(fncPrvCodes == null || menuPrvCodes == null) return false;
-        fncPrvCodes.retainAll(menuPrvCodes);
-        return !fncPrvCodes.isEmpty();
+        if(profilePrvCodes == null || menuPrvCodes == null) return false;
+        profilePrvCodes.retainAll(menuPrvCodes);
+        return !profilePrvCodes.isEmpty();
     }
 
     @Override
@@ -43,9 +49,9 @@ public class MenuReaderService implements IMenuReaderService
         return  prvCodeChain == null ? new HashSet<>() : new HashSet<>(Arrays.asList(prvCodeChain.split(",")));
     }
     @Override
-    public Set<String> getMenusByFncId(Long fncId)
+    public Set<String> getMenusByProfileId(String profileId)
     {
-        Set<String> prvCodes = prvRepo.getFunctionPrvCodes(fncId);
+        List<String> prvCodes = krService.findAllSubAuthoritiesNames(profileId);
         Set<String> menus = menuRepo.findAll().stream()
                 .filter(m->m.getPrvsCodes().stream().anyMatch(menuCode->prvCodes.contains(menuCode)))
                 .map(m->"MENU_" + m.getMenuCode())

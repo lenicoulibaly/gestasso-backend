@@ -7,7 +7,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 import rigeldevsolutions.gestasso.archivemodule.model.dtos.response.ReadDocDTO;
+import rigeldevsolutions.gestasso.authmodule.keycloak.model.validators.ExistingUserId;
 import rigeldevsolutions.gestasso.metier.assomodule.model.validators.ExistingAdhesionId;
 import rigeldevsolutions.gestasso.metier.cotisationmodule.model.validators.ExistingCotisationId;
 import rigeldevsolutions.gestasso.metier.paiementmodule.model.validators.UniqueReference;
@@ -42,6 +44,8 @@ public class PaiementCotisationDTO
     private String typePaiement;
     @ExistingAdhesionId
     private Long adhesionId;
+    @ExistingUserId
+    private String userId;
     private String firstName;
     private String lastName;
     private String email;
@@ -64,7 +68,7 @@ public class PaiementCotisationDTO
         PaiementId = paiementId;
         this.reference = reference;
         this.montant = montant;
-        this.montantLettre = montantLettre;
-        this.echeanceCoursPaiement = echeanceCoursPaiement;
+        this.montantLettre = StringUtils.capitalize(montantLettre);
+        this.echeanceCoursPaiement = StringUtils.capitalize(echeanceCoursPaiement) ;
     }
 }

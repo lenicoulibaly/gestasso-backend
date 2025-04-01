@@ -20,10 +20,6 @@ public interface PaiementMapper
     @Mapping(target = "typePaiement", source = "versement.typePaiement.name")
     @Mapping(target = "adhesionId", source = "versement.adhesion.adhesionId")
 
-    @Mapping(target = "firstName", source = "versement.adhesion.member.firstName")
-    @Mapping(target = "lastName", source = "versement.adhesion.member.lastName")
-    @Mapping(target = "email", source = "versement.adhesion.member.email")
-
     @Mapping(target = "cotisationId", source = "versement.cotisation.cotisationId")
     @Mapping(target = "nomCotisation", source = "versement.cotisation.nomCotisation")
     @Mapping(target = "motif", source = "versement.cotisation.motif")
@@ -41,9 +37,7 @@ public interface PaiementMapper
     @Mapping(target = "typePaiement", source = "typePaiement.name")
     @Mapping(target = "typePaiementCode", source = "typePaiement.uniqueCode")
     @Mapping(target = "adhesionId", source = "adhesion.adhesionId")
-    @Mapping(target = "firstName", source = "adhesion.member.firstName")
-    @Mapping(target = "lastName", source = "adhesion.member.lastName")
-    @Mapping(target = "email", source = "adhesion.member.email")
+    @Mapping(target = "userId", source = "adhesion.userId")
     @Mapping(target = "cotisationId", source = "cotisation.cotisationId")
     @Mapping(target = "nomCotisation", source = "cotisation.nomCotisation")
     @Mapping(target = "motif", source = "cotisation.motif")

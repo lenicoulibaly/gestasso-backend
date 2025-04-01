@@ -18,25 +18,28 @@ import java.time.LocalDateTime;
 @Audited @EntityListeners(AuditingEntityListener.class)
 public class HistoDetails
 {
+    @Column(name = "action_name")
     protected String actionName;
+    @Column(name = "action_id")
     protected String actionId;
+    @Column(name = "connexion_id")
     protected String connexionId;
     @CreatedDate
-    @Column(name = "CreatedAt")
+    @Column(name = "created_at")
     protected LocalDateTime createdAt;
     @CreatedBy
-    @Column(name = "CreatedBy", length = 50)
+    @Column(name = "created_by", length = 50)
     protected String createdBy;
     @LastModifiedDate
-    @Column(name = "UpdatedAt")
+    @Column(name = "updated_at")
     protected LocalDateTime updatedAt;
     @LastModifiedBy
-    @Column(name = "UpdatedBy", length = 50)
+    @Column(name = "updated_by", length = 50)
     protected String updatedBy;
-    @Column(name = "DeletedAt")
+    @Column(name = "deleted_at")
     protected LocalDateTime deletedAt;
-    @Column(name = "DeletedBy", length = 50)
+    @Column(name = "deleted_by", length = 50)
     protected String deletedBy;
-    @Column(name = "isDeleted", length = 50)
+    @Column(name = "is_deleted", length = 50)
     protected Boolean isDeleted = false;
 }

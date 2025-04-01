@@ -3,9 +3,13 @@ package rigeldevsolutions.gestasso.archivemodule.controller.service;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
-import org.springframework.beans.BeanUtils;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,8 +20,6 @@ import rigeldevsolutions.gestasso.archivemodule.model.dtos.request.UpdateDocReq;
 import rigeldevsolutions.gestasso.archivemodule.model.dtos.request.UploadDocReq;
 import rigeldevsolutions.gestasso.archivemodule.model.dtos.response.ReadDocDTO;
 import rigeldevsolutions.gestasso.archivemodule.model.entities.Document;
-import rigeldevsolutions.gestasso.authmodule.model.entities.ActionIdentifier;
-import rigeldevsolutions.gestasso.modulelog.controller.service.ILogService;
 import rigeldevsolutions.gestasso.sharedmodule.exceptions.AppException;
 import rigeldevsolutions.gestasso.sharedmodule.utilities.Base64ToFileConverter;
 import rigeldevsolutions.gestasso.sharedmodule.utilities.StringUtils;
@@ -25,8 +27,10 @@ import rigeldevsolutions.gestasso.typemodule.controller.repositories.TypeRepo;
 import rigeldevsolutions.gestasso.typemodule.model.entities.Type;
 import rigeldevsolutions.gestasso.typemodule.model.enums.TypeGroup;
 
-import java.io.*;
-import java.net.UnknownHostException;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -42,8 +46,6 @@ public abstract class AbstractDocumentService implements IServiceDocument
 	protected final TypeRepo typeRepo;
 	protected final DocMapper docMapper;
 	protected final DocumentRepository docRepo;
-	protected final ILogService logService;
-	//@Autowired protected  ObjectCopier<Document> docCopier;
 
 	@Override
 	public byte[] downloadFile(String filePAth)
@@ -57,6 +59,34 @@ public abstract class AbstractDocumentService implements IServiceDocument
 		{
 			e.printStackTrace();
 			throw new AppException("Erreur de téléchargement");
+		}
+	}
+
+	@Override
+	public ResponseEntity<Resource> downloadFile(Long docId) {
+		Document doc = docRepo.findById(docId).orElse(null);
+		String filename = doc.getDocType().getName();
+		if(doc == null) return null;
+		String docPath = doc.getDocPath();
+		docPath = Optional.ofNullable(docPath).orElse("");
+		//docPath = docPath.replace("\\", "\\\\");
+		try {
+			// Le chemin où se trouve le fichier
+			Path filePath = Paths.get(docPath);
+			//Path filePath = Paths.get("C:\\Users\\DGMP\\workspace\\gestasso\\docs\\uploads\\RECU-PAIE_Recu_de_reglementbbb4ba47-.pdf").normalize();
+			Resource resource = new UrlResource(filePath.toUri());
+
+			if (!resource.exists()) {
+				return ResponseEntity.notFound().build();
+			}
+
+			// Définir les headers pour le téléchargement
+			return ResponseEntity.ok()
+					.contentType(MediaType.APPLICATION_OCTET_STREAM) // Type générique
+					.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+					.body(resource);
+		} catch (Exception ex) {
+			return ResponseEntity.internalServerError().build();
 		}
 	}
 
@@ -113,24 +143,25 @@ public abstract class AbstractDocumentService implements IServiceDocument
 	}
 
 	@Transactional @Override
-	public boolean uploadDocument(UploadDocReq dto, ActionIdentifier ai) {
+	public boolean uploadDocument(UploadDocReq dto)
+	{
 		if(dto.getDocUniqueCode() == null ) throw new AppException("Le type de document ne peut être null");
+		MultipartFile file = dto.getFile();
+		if(file == null) throw new AppException("Aucun fichier sélectionné");
 		Type docType = typeRepo.findById(dto.getDocUniqueCode().toUpperCase(Locale.ROOT)).orElseThrow(()->new AppException("Type de document inconnu"));
 		if(docType == null || docType.getTypeGroup() != TypeGroup.DOCUMENT)  throw new AppException("Ce type de document n'est pris en charge par le système");;
 		Document doc = mapToDocument(dto);
 		String path = generatePath(dto.getFile(), dto.getDocUniqueCode(), docType.getName());
 		doc.setDocPath(path);
-
+		String extension = FilenameUtils.getExtension(file.getOriginalFilename());
+		String mimeType = file.getContentType();
+		doc.setDocExtension(extension);
+		doc.setDocMimeType(mimeType);
+		doc.setDocName(docType.getName());
 		uploadFile(dto.getFile(), doc.getDocPath());
 		doc = docRepo.save(doc);
-		if(ai!=null)BeanUtils.copyProperties(ai, doc);
 		//logService.logg(ArchiveActions.UPLOAD_DOCUMENT, null, doc, ArchiveTable.DOCUMENT, );
 		return true;//01 03 70 79 72
-	}
-
-	@Transactional @Override
-	public boolean uploadDocument(UploadDocReq dto) throws UnknownHostException {
-		return this.uploadDocument(dto, null);
 	}
 
 	@Transactional @Override
@@ -143,7 +174,7 @@ public abstract class AbstractDocumentService implements IServiceDocument
 	}
 
 	@Transactional @Override
-	public boolean updateDocument(UpdateDocReq dto, ActionIdentifier ai) throws IOException {
+	public boolean updateDocument(UpdateDocReq dto) throws IOException {
 		Document doc = docRepo.findById(dto.getDocId()).orElseThrow(()->new AppException("Document inexistant"));
 		//if(dto.getFile() == null && dto.getBase64UrlFile() == null) throw new AppException("Veuillez charger le fichier!");
 		MultipartFile file = dto.getFile() == null ? Base64ToFileConverter.convertToFile(dto.getBase64UrlFile(), "." + dto.getExtension()) : dto.getFile();
@@ -151,7 +182,11 @@ public abstract class AbstractDocumentService implements IServiceDocument
 		doc.setDocNum(Optional.ofNullable(dto.getDocNum()).orElse(doc.getDocNum()));
 		doc.setDocDescription(Optional.ofNullable(dto.getDocDescription()).orElse(doc.getDocDescription()));
 		doc.setDocName(Optional.ofNullable(dto.getDocName()).orElse(doc.getDocName()));
-		BeanUtils.copyProperties(ai, doc);
+		String extension = FilenameUtils.getExtension(file.getOriginalFilename());
+		String mimeType = file.getContentType();
+		doc.setDocExtension(extension);
+		doc.setDocMimeType(mimeType);
+
 		Type newType = dto.getDocUniqueCode() == null ? null : typeRepo.findById(dto.getDocUniqueCode()).orElseThrow(()->new AppException("Type de document inconnu"));
 
 		if(dto.getDocUniqueCode() != null && !doc.getDocType().getUniqueCode().equals(dto.getDocUniqueCode())&& file != null)

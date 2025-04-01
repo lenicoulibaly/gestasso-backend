@@ -1,6 +1,5 @@
 package rigeldevsolutions.gestasso.metier.paiementmodule.controller.services;
 
-import rigeldevsolutions.gestasso.authmodule.model.entities.ActionIdentifier;
 import rigeldevsolutions.gestasso.metier.paiementmodule.model.dtos.CreateEcheanceDTO;
 import rigeldevsolutions.gestasso.metier.paiementmodule.model.dtos.ReadEcheanceDTO;
 import rigeldevsolutions.gestasso.metier.paiementmodule.model.dtos.UpdateEcheanceDTO;
@@ -10,8 +9,8 @@ import java.util.List;
 
 public interface IEcheanceService
 {
-    ReadEcheanceDTO createEcheance(CreateEcheanceDTO dto, ActionIdentifier ai);
-    ReadEcheanceDTO updateEcheance(UpdateEcheanceDTO dto, ActionIdentifier ai);
+    ReadEcheanceDTO createEcheance(CreateEcheanceDTO dto);
+    ReadEcheanceDTO updateEcheance(UpdateEcheanceDTO dto);
     List<ReadEcheanceDTO> getNextEcheancesToPay(long nbr, Long cotisationId, Long adhesionId);
     ReadEcheanceDTO getCurrentEcheanceToPay(Long cotisationId, Long adhesionId);
     ReadEcheanceDTO getNextEcheanceToPayAfterPaying(Long cotisationId, Long adhesionId, BigDecimal montant);

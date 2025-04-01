@@ -8,8 +8,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import rigeldevsolutions.gestasso.authmodule.controller.services.spec.IActionIdentifierService;
-import rigeldevsolutions.gestasso.authmodule.model.entities.ActionIdentifier;
 import rigeldevsolutions.gestasso.metier.assomodule.controller.services.IAssociationService;
 import rigeldevsolutions.gestasso.metier.assomodule.model.dtos.CreateAssociationDTO;
 import rigeldevsolutions.gestasso.metier.assomodule.model.dtos.ReadAssociationDTO;
@@ -24,28 +22,25 @@ import java.util.Base64;
 public class AssociationController
 {
     private final IAssociationService associationService;
-    private final IActionIdentifierService ais;
     private final ObjectMapper objectMapper;
 
     //@PostMapping(path = "/create")
     Association createAssociation(@Valid @RequestBody CreateAssociationDTO dto)
     {
-        ActionIdentifier ai = ais.getActionIdentifierFromSecurityContext("Création d'une association et ses sections");
-        return associationService.createAssociation(dto, ai);
+        return associationService.createAssociation(dto);
     }
 
     @PostMapping(path = "/create")
-    Association createAssociation(@Valid @RequestPart("data") String dtoJsonString, @RequestPart("logo")MultipartFile logo) throws JsonProcessingException, UnknownHostException {
-        ActionIdentifier ai = ais.getActionIdentifierFromSecurityContext("Création d'une association et ses sections");
+    Association createAssociation(@Valid @RequestPart("data") String dtoJsonString, @RequestPart("logo")MultipartFile logo) throws JsonProcessingException, UnknownHostException
+    {
         CreateAssociationDTO dto = objectMapper.readValue(dtoJsonString, CreateAssociationDTO.class);
-        return associationService.createAssociation(dto, logo, ai);
+        return associationService.createAssociation(dto, logo);
     }
 
     @PutMapping(path = "/update")
     Association updateAssociation(@Valid @RequestBody UpdateAssociationDTO dto)
     {
-        ActionIdentifier ai = ais.getActionIdentifierFromSecurityContext("Modification d'une association");
-        return associationService.updateAssociation(dto, ai);
+        return associationService.updateAssociation(dto);
     }
 
     @GetMapping(path = "/search")

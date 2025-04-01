@@ -4,15 +4,14 @@ import rigeldevsolutions.gestasso.archivemodule.controller.repositories.Document
 import rigeldevsolutions.gestasso.archivemodule.model.dtos.DocMapper;
 import rigeldevsolutions.gestasso.archivemodule.model.dtos.request.UploadDocReq;
 import rigeldevsolutions.gestasso.archivemodule.model.entities.Document;
-import rigeldevsolutions.gestasso.modulelog.controller.service.ILogService;
 import rigeldevsolutions.gestasso.typemodule.controller.repositories.TypeRepo;
 import org.springframework.stereotype.Component;
 
 @Component("section")
 public class SectionDocUploader extends AbstractDocumentService
 {
-	public SectionDocUploader(TypeRepo typeRepo, DocMapper docMapper, DocumentRepository docRepo, ILogService logService) {
-		super(typeRepo, docMapper, docRepo, logService);
+	public SectionDocUploader(TypeRepo typeRepo, DocMapper docMapper, DocumentRepository docRepo) {
+		super(typeRepo, docMapper, docRepo);
 	}
 	@Override
 	protected Document mapToDocument(UploadDocReq dto) {

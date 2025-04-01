@@ -1,15 +1,16 @@
 package rigeldevsolutions.gestasso.metier.paiementmodule.controller.services;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import rigeldevsolutions.gestasso.authmodule.model.entities.ActionIdentifier;
 import rigeldevsolutions.gestasso.metier.exercicemodule.controller.repositories.ExerciceRepo;
 import rigeldevsolutions.gestasso.metier.exercicemodule.model.entities.Exercice;
 import rigeldevsolutions.gestasso.metier.paiementmodule.controller.repositories.EcheanceRepo;
 import rigeldevsolutions.gestasso.metier.paiementmodule.controller.repositories.EcheancierRepo;
-import rigeldevsolutions.gestasso.metier.paiementmodule.model.dtos.*;
+import rigeldevsolutions.gestasso.metier.paiementmodule.model.dtos.CreateEcheanceDTO;
+import rigeldevsolutions.gestasso.metier.paiementmodule.model.dtos.CreateEcheancierDTO;
+import rigeldevsolutions.gestasso.metier.paiementmodule.model.dtos.ReadEcheanceDTO2;
+import rigeldevsolutions.gestasso.metier.paiementmodule.model.dtos.ReadEcheancierDTO;
 import rigeldevsolutions.gestasso.metier.paiementmodule.model.entities.Echeancier;
 import rigeldevsolutions.gestasso.metier.paiementmodule.model.mappers.EcheanceMapper;
 import rigeldevsolutions.gestasso.metier.paiementmodule.model.mappers.EcheancierMapper;
@@ -60,22 +61,21 @@ public class EcheancierService implements IEcheancierService
     }
 
     @Override @Transactional
-    public ReadEcheancierDTO createEcheancier(CreateEcheancierDTO dto, ActionIdentifier ai)
+    public ReadEcheancierDTO createEcheancier(CreateEcheancierDTO dto)
     {
         if(dto == null) throw new AppException("Aucune donnée fournie");
         Echeancier echeancier = echeancierMapper.mapToEcheancier(dto);
 
         echeancier = echeancierRepo.save(echeancier);
-        BeanUtils.copyProperties(ai, echeancier);
         if(dto.getEcheances() == null || dto.getEcheances().isEmpty()) return echeancierMapper.mapToReadEcheancierDTO(echeancier);
-        List<ReadEcheanceDTO2> echeances = dto.getEcheances().stream().map(e->echeanceService.createEcheance(e, ai)).map(e->echeanceMapper.mapToReadEcheanceDTO2(e)).collect(Collectors.toList());
+        List<ReadEcheanceDTO2> echeances = dto.getEcheances().stream().map(e->echeanceService.createEcheance(e)).map(e->echeanceMapper.mapToReadEcheanceDTO2(e)).collect(Collectors.toList());
         ReadEcheancierDTO readEchancierDTO = echeancierMapper.mapToReadEcheancierDTO(echeancier);
         readEchancierDTO.setEcheances(echeances);
         return readEchancierDTO;
     }
 
     @Override @Transactional()
-    public ReadEcheancierDTO createEcheancierNaturel(CreateEcheancierDTO dto, ActionIdentifier ai)
+    public ReadEcheancierDTO createEcheancierNaturel(CreateEcheancierDTO dto)
     {
         if(dto == null) throw new AppException("Aucune donnée fournie");
         Echeancier echeancier = echeancierRepo.findByFrequenceTypeCodeAndExeCode(dto.getFrequenceTypeCode(), dto.getExeCode());
@@ -93,10 +93,9 @@ public class EcheancierService implements IEcheancierService
             final Long echeancierId = echeancier.getEcheancierId();
             readEcheanceDTOS = dateEcheances.stream()
                     .map(d->new CreateEcheanceDTO(d, echeancierId, dto.getFrequenceTypeCode()))
-                    .map(e->echeanceService.createEcheance(e, ai))
+                    .map(e->echeanceService.createEcheance(e))
                     .map(e->echeanceMapper.mapToReadEcheanceDTO2(e)).collect(Collectors.toList());
         }
-        BeanUtils.copyProperties(ai, echeancier);
         ReadEcheancierDTO readEchancierDTO = echeancierMapper.mapToReadEcheancierDTO(echeancier);
         readEchancierDTO.setEcheances(readEcheanceDTOS);
         return readEchancierDTO;

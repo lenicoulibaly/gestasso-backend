@@ -14,32 +14,32 @@ public abstract class DocMapper
 
     @Mapping(target = "docDescription", expression = "java(\"Photo de profil\")")
     @Mapping(target = "docType", expression = "java(typeRepo.findById(dto.getDocUniqueCode()).orElseThrow(()->new rigeldevsolutions.gestasso.sharedmodule.exceptions.AppException(\"Type de document inconnu\")))")
-    @Mapping(target = "user", expression = "java(new rigeldevsolutions.gestasso.authmodule.model.entities.AppUser(dto.getObjectId()))")
+    @Mapping(target = "user", expression = "java(new rigeldevsolutions.gestasso.authmodule.keycloak.model.entities.KeycloakUser(dto.getObjectId()) )")
     @Mapping(target = "file", expression = "java(dto.getFile() != null ? dto.getFile() : rigeldevsolutions.gestasso.sharedmodule.utilities.Base64ToFileConverter.convertToFile(dto.getBase64UrlFile(), dto.getExtension()))")
     public abstract Document mapToPhotoDoc(UploadDocReq dto);
 
     @Mapping(target = "docType", expression = "java(typeRepo.findById(dto.getDocUniqueCode()).orElseThrow(()->new rigeldevsolutions.gestasso.sharedmodule.exceptions.AppException(\"Type de document inconnu\")))")
-    @Mapping(target = "association", expression = "java(new rigeldevsolutions.gestasso.metier.assomodule.model.entities.Association(dto.getObjectId()))")
+    @Mapping(target = "association", expression = "java(new rigeldevsolutions.gestasso.metier.assomodule.model.entities.Association(Long.valueOf(dto.getObjectId())))")
     @Mapping(target = "file", expression = "java(dto.getFile() != null ? dto.getFile() : rigeldevsolutions.gestasso.sharedmodule.utilities.Base64ToFileConverter.convertToFile(dto.getBase64UrlFile(), dto.getExtension()))")
     public abstract Document mapToAssociationDoc(UploadDocReq dto);
 
     @Mapping(target = "docType", expression = "java(typeRepo.findById(dto.getDocUniqueCode()).orElseThrow(()->new rigeldevsolutions.gestasso.sharedmodule.exceptions.AppException(\"Type de document inconnu\")))")
-    @Mapping(target = "section", expression = "java(new rigeldevsolutions.gestasso.metier.assomodule.model.entities.Section(dto.getObjectId()))")
+    @Mapping(target = "section", expression = "java(new rigeldevsolutions.gestasso.metier.assomodule.model.entities.Section(Long.valueOf(dto.getObjectId())))")
     @Mapping(target = "file", expression = "java(dto.getFile() != null ? dto.getFile() : rigeldevsolutions.gestasso.sharedmodule.utilities.Base64ToFileConverter.convertToFile(dto.getBase64UrlFile(), dto.getExtension()))")
     public abstract Document mapToSectionDoc(UploadDocReq dto);
 
     @Mapping(target = "docType", expression = "java(typeRepo.findById(dto.getDocUniqueCode()).orElseThrow(()->new rigeldevsolutions.gestasso.sharedmodule.exceptions.AppException(\"Type de document inconnu\")))")
-    @Mapping(target = "user", expression = "java(new rigeldevsolutions.gestasso.authmodule.model.entities.AppUser(dto.getObjectId()))")
+    @Mapping(target = "user", expression = "java(new rigeldevsolutions.gestasso.authmodule.keycloak.model.entities.KeycloakUser(dto.getObjectId()))")
     @Mapping(target = "file", expression = "java(dto.getFile() != null ? dto.getFile() : rigeldevsolutions.gestasso.sharedmodule.utilities.Base64ToFileConverter.convertToFile(dto.getBase64UrlFile(), dto.getExtension()))")
     public abstract Document mapToMembreDoc(UploadDocReq dto);
 
     @Mapping(target = "docType", expression = "java(typeRepo.findById(dto.getDocUniqueCode()).orElseThrow(()->new rigeldevsolutions.gestasso.sharedmodule.exceptions.AppException(\"Type de document inconnu\")))")
-    @Mapping(target = "versement", expression = "java(new rigeldevsolutions.gestasso.metier.paiementmodule.model.entities.Versement(dto.getObjectId()))")
+    @Mapping(target = "versement", expression = "java(new rigeldevsolutions.gestasso.metier.paiementmodule.model.entities.Versement(Long.valueOf(dto.getObjectId())))")
     @Mapping(target = "file", expression = "java(dto.getFile() != null ? dto.getFile() : rigeldevsolutions.gestasso.sharedmodule.utilities.Base64ToFileConverter.convertToFile(dto.getBase64UrlFile(), dto.getExtension()))")
     public abstract Document mapToVersementDoc(UploadDocReq dto);
 
     @Mapping(target = "docType", expression = "java(typeRepo.findById(dto.getDocUniqueCode()).orElseThrow(()->new rigeldevsolutions.gestasso.sharedmodule.exceptions.AppException(\"Type de document inconnu\")))")
-    @Mapping(target = "prelevement", expression = "java(new rigeldevsolutions.gestasso.metier.prelevementmodule.model.entities.Prelevement(dto.getObjectId()))")
+    @Mapping(target = "prelevement", expression = "java(new rigeldevsolutions.gestasso.metier.prelevementmodule.model.entities.Prelevement(Long.valueOf(dto.getObjectId())))")
     @Mapping(target = "file", expression = "java(dto.getFile() != null ? dto.getFile() : rigeldevsolutions.gestasso.sharedmodule.utilities.Base64ToFileConverter.convertToFile(dto.getBase64UrlFile(), dto.getExtension()))")
     public abstract Document mapToPrelevementDoc(UploadDocReq dto);
 

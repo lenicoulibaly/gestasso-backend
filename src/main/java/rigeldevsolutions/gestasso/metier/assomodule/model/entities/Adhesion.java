@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import rigeldevsolutions.gestasso.authmodule.model.entities.AppUser;
+import rigeldevsolutions.gestasso.authmodule.keycloak.model.entities.KeycloakUser;
 import rigeldevsolutions.gestasso.authmodule.model.entities.HistoDetails;
 
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor //@Builder
@@ -23,8 +23,9 @@ public class Adhesion extends HistoDetails
     @ManyToOne @JoinColumn(name = "SECTION_ID")
     private Section section;
     private boolean active;
-    @ManyToOne @JoinColumn(name = "MEMBER_ID")
-    private AppUser member;
+    private String userId;
+    @Transient
+    private KeycloakUser keycloakUser;
 
     public Adhesion(Long adhesionId)
     {

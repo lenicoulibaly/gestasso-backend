@@ -5,13 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
-import rigeldevsolutions.gestasso.authmodule.controller.services.spec.IActionIdentifierService;
-import rigeldevsolutions.gestasso.authmodule.model.entities.ActionIdentifier;
-import rigeldevsolutions.gestasso.metier.assomodule.controller.services.IAssociationService;
-import rigeldevsolutions.gestasso.metier.assomodule.model.dtos.CreateAssociationDTO;
-import rigeldevsolutions.gestasso.metier.assomodule.model.dtos.ReadAssociationDTO;
-import rigeldevsolutions.gestasso.metier.assomodule.model.dtos.UpdateAssociationDTO;
-import rigeldevsolutions.gestasso.metier.assomodule.model.entities.Association;
 import rigeldevsolutions.gestasso.metier.cotisationmodule.controller.services.ICotisationService;
 import rigeldevsolutions.gestasso.metier.cotisationmodule.model.dtos.CreateCotisationDTO;
 import rigeldevsolutions.gestasso.metier.cotisationmodule.model.dtos.ReadCotisationDTO;
@@ -22,20 +15,17 @@ import rigeldevsolutions.gestasso.sharedmodule.constants.Requests;
 public class CotisationController
 {
     private final ICotisationService cotisationService;
-    private final IActionIdentifierService ais;
 
     @PostMapping(path = "/create")
     ReadCotisationDTO createCotisation(@Valid @RequestBody CreateCotisationDTO dto)
     {
-        ActionIdentifier ai = ais.getActionIdentifierFromSecurityContext("Création d'une cotisation");
-        return cotisationService.createCotisation(dto, ai);
+        return cotisationService.createCotisation(dto);
     }
 
     @PutMapping(path = "/update")
     ReadCotisationDTO updateCotisation(@Valid @RequestBody UpdateCotisationDTO dto)
     {
-        ActionIdentifier ai = ais.getActionIdentifierFromSecurityContext("Modification d'une cotisation");
-        return cotisationService.updateCotisation(dto, ai);
+        return cotisationService.updateCotisation(dto);
     }
 
     @GetMapping(path = "/search")

@@ -1,17 +1,16 @@
 package rigeldevsolutions.gestasso.archivemodule.controller.service;
 
+import org.springframework.stereotype.Component;
 import rigeldevsolutions.gestasso.archivemodule.controller.repositories.DocumentRepository;
 import rigeldevsolutions.gestasso.archivemodule.model.dtos.DocMapper;
 import rigeldevsolutions.gestasso.archivemodule.model.dtos.request.UploadDocReq;
 import rigeldevsolutions.gestasso.archivemodule.model.entities.Document;
-import rigeldevsolutions.gestasso.modulelog.controller.service.ILogService;
 import rigeldevsolutions.gestasso.typemodule.controller.repositories.TypeRepo;
-import org.springframework.stereotype.Component;
 
 @Component("membre")
 public class MembreDocUploader extends AbstractDocumentService {
-	public MembreDocUploader(TypeRepo typeRepo, DocMapper docMapper, DocumentRepository docRepo, ILogService logService) {
-		super(typeRepo, docMapper, docRepo, logService);
+	public MembreDocUploader(TypeRepo typeRepo, DocMapper docMapper, DocumentRepository docRepo) {
+		super(typeRepo, docMapper, docRepo);
 	}
 
 	@Override

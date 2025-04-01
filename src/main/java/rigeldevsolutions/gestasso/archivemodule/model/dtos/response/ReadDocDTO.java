@@ -14,9 +14,14 @@ public class ReadDocDTO
 	private String docPath;
 	private String docUniqueCode;
 	private String docTypeName;
+	private String docExtension;
+	private String docMimeType;
 	private byte[] file;
 
-	public ReadDocDTO(Long docId, String docNum, String docName, String docDescription, String docPath, String docUniqueCode, String docTypeName) {
+	public ReadDocDTO(Long docId, String docNum, String docName, String docDescription,
+					  String docPath, String docUniqueCode, String docTypeName,
+					  String extension, String mimeType)
+	{
 		this.docId = docId;
 		this.docNum = docNum;
 		this.docName = docName;
@@ -24,5 +29,7 @@ public class ReadDocDTO
 		this.docPath = docPath;
 		this.docUniqueCode = docUniqueCode;
 		this.docTypeName = docTypeName;
+		this.docExtension = extension;
+		this.docMimeType = mimeType;
 	}
 }

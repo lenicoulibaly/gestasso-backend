@@ -17,10 +17,11 @@ import org.hibernate.envers.RelationTargetAuditMode;
 public class Nationalite
 {
     @Id
+    @Column(name = "code_pays")
     private String codePays;
-    @Column(unique = true)
+    @Column(name = "nationalite", unique = true)
     private String nationalite;
-    @Column(unique = true)
+    @Column(name = "nom_pays", unique = true)
     private String nomPays;
 
     public Nationalite(String codePays) {

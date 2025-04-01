@@ -15,8 +15,7 @@ public interface MenuRepo extends JpaRepository<Menu, Long>
     (?2 =  m.prvsCodesChain or 
         locate(concat(?2, '::') , m.prvsCodesChain) = 1 or 
         locate(concat('::', ?2, '::') , m.prvsCodesChain) > 1 or 
-        locate(concat('::', ?2), m.prvsCodesChain) = length(m.prvsCodesChain) - length(concat('::', ?2)) + 1) and 
-    m.status = 'ACTIVE'
+        locate(concat('::', ?2), m.prvsCodesChain) = length(m.prvsCodesChain) - length(concat('::', ?2)) + 1)
     """)
     boolean menuHasPrivilege(String menuCode, String prvCode);
 
@@ -34,9 +33,6 @@ public interface MenuRepo extends JpaRepository<Menu, Long>
     @Query("select (count(m.menuCode) > 0) from Menu m where m.name = ?1")
     boolean existsByName(String name);
 
-    @Query("select prv.privilegeCode from AppPrivilege prv where prv.privilegeCode in ?1")
-    Set<String> getMenuPrvIdsByMenuCodes(Set<String> menuCodes);
-
     @Query("SELECT m FROM Menu m WHERE UPPER(cast(FUNCTION('unaccent', m.name) AS string)) LIKE CONCAT('%', UPPER(?1) , '%')")
     Page<Menu> searchMenu2(String key, Pageable pageable);
 
@@ -46,8 +42,4 @@ locate(upper(cast(function('unaccent', ?1) as string)) , UPPER(cast(FUNCTION('un
 
 """)
     Page<Menu> searchMenu(String key, Pageable pageable);
-
-    /*@Query("SELECT m FROM Menu m WHERE UPPER(FUNCTION('unaccent', m.name)) LIKE CONCAT('%', UPPER(CAST(?1 AS string)) , '%') OR FUNCTION('unaccent', m.menuCode) LIKE CONCAT('%', UPPER(CAST(?1 AS string)) , '%')")
-    Page<Menu> searchMenu(String key, Pageable pageable);*/
-
 }

@@ -6,7 +6,6 @@ import jakarta.validation.ConstraintValidatorContext;
 import jakarta.validation.Payload;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import rigeldevsolutions.gestasso.authmodule.controller.repositories.FunctionRepo;
 import rigeldevsolutions.gestasso.metier.paiementmodule.controller.repositories.EcheancierRepo;
 
 import java.lang.annotation.*;

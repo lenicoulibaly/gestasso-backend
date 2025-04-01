@@ -5,13 +5,12 @@ import rigeldevsolutions.gestasso.archivemodule.controller.repositories.Document
 import rigeldevsolutions.gestasso.archivemodule.model.dtos.DocMapper;
 import rigeldevsolutions.gestasso.archivemodule.model.dtos.request.UploadDocReq;
 import rigeldevsolutions.gestasso.archivemodule.model.entities.Document;
-import rigeldevsolutions.gestasso.modulelog.controller.service.ILogService;
 import rigeldevsolutions.gestasso.typemodule.controller.repositories.TypeRepo;
 
 @Component("versement")
 public class VersementsDocUploader extends AbstractDocumentService {
-    public VersementsDocUploader(TypeRepo typeRepo, DocMapper docMapper, DocumentRepository docRepo, ILogService logService) {
-        super(typeRepo, docMapper, docRepo, logService);
+    public VersementsDocUploader(TypeRepo typeRepo, DocMapper docMapper, DocumentRepository docRepo) {
+        super(typeRepo, docMapper, docRepo);
     }
 
     @Override

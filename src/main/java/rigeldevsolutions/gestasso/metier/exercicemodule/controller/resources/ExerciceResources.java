@@ -4,10 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import rigeldevsolutions.gestasso.authmodule.controller.services.spec.IActionIdentifierService;
-import rigeldevsolutions.gestasso.authmodule.model.entities.ActionIdentifier;
 import rigeldevsolutions.gestasso.metier.exercicemodule.controller.services.IExercieService;
-import rigeldevsolutions.gestasso.metier.exercicemodule.model.constants.ExerciceActions;
 import rigeldevsolutions.gestasso.metier.exercicemodule.model.dtos.CreateExerciceDTO;
 import rigeldevsolutions.gestasso.metier.exercicemodule.model.dtos.ReadExerciceDTO;
 import rigeldevsolutions.gestasso.metier.exercicemodule.model.dtos.UpdateExerciceDTO;
@@ -20,7 +17,6 @@ import java.util.List;
 public class ExerciceResources
 {
     private final IExercieService exoService;
-    private final IActionIdentifierService ais;
 
     @GetMapping(path = "/list")
     public List<ReadExerciceDTO> searchExercice(@RequestParam(defaultValue = "") String key)
@@ -31,22 +27,19 @@ public class ExerciceResources
     @PostMapping(path = "/create")
     public ReadExerciceDTO createExercice(@RequestBody @Valid CreateExerciceDTO dto)
     {
-        ActionIdentifier ai = ais.getActionIdentifierFromSecurityContext(ExerciceActions.CREATE_EXERCICE);
-        return exoService.createExercice(dto, ai);
+        return exoService.createExercice(dto);
     }
 
     @PutMapping(path = "/update")
     public ReadExerciceDTO updateExercice(@RequestBody @Valid UpdateExerciceDTO dto)
     {
-        ActionIdentifier ai = ais.getActionIdentifierFromSecurityContext(ExerciceActions.UPDATE_EXERCICE);
-        return exoService.updateExercice(dto, ai);
+        return exoService.updateExercice(dto);
     }
 
     @PutMapping(path = "/activate/{exeCode}")
     public ReadExerciceDTO activateExercice(@PathVariable Long exeCode)
     {
-        ActionIdentifier ai = ais.getActionIdentifierFromSecurityContext(ExerciceActions.ACTIVATE_EXERCICE);
-        return exoService.activateExercice(exeCode, ai);
+        return exoService.activateExercice(exeCode);
     }
 
     @GetMapping(path = "/getCourantAndPlus1")

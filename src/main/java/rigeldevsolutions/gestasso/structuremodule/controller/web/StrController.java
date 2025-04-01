@@ -4,8 +4,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import rigeldevsolutions.gestasso.authmodule.controller.repositories.UserRepo;
-import rigeldevsolutions.gestasso.authmodule.controller.services.spec.IJwtService;
 import rigeldevsolutions.gestasso.sharedmodule.dtos.SelectOption;
 import rigeldevsolutions.gestasso.structuremodule.controller.repositories.StrRepo;
 import rigeldevsolutions.gestasso.structuremodule.controller.service.IStrService;
@@ -21,8 +19,6 @@ public class StrController
     private final IStrService strService;
     private final StrRepo strRepo;
     private final StrMapper strMapper;
-    private final UserRepo userRepo;
-    private final IJwtService jwtService;
 
 
     @PostMapping(path = "/changeAnchor")

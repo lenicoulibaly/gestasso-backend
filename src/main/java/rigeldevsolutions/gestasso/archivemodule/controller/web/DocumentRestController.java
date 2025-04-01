@@ -2,10 +2,12 @@ package rigeldevsolutions.gestasso.archivemodule.controller.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import rigeldevsolutions.gestasso.archivemodule.controller.repositories.DocumentRepository;
@@ -16,8 +18,6 @@ import rigeldevsolutions.gestasso.archivemodule.model.dtos.request.UploadDocReq;
 import rigeldevsolutions.gestasso.archivemodule.model.dtos.response.Base64FileDto;
 import rigeldevsolutions.gestasso.archivemodule.model.dtos.response.ReadDocDTO;
 import rigeldevsolutions.gestasso.archivemodule.model.entities.Document;
-import rigeldevsolutions.gestasso.authmodule.controller.services.spec.IActionIdentifierService;
-import rigeldevsolutions.gestasso.authmodule.model.entities.ActionIdentifier;
 import rigeldevsolutions.gestasso.sharedmodule.exceptions.AppException;
 import rigeldevsolutions.gestasso.sharedmodule.utilities.Base64ToFileConverter;
 import rigeldevsolutions.gestasso.typemodule.controller.repositories.TypeRepo;
@@ -38,7 +38,6 @@ public class DocumentRestController
     private final TypeRepo typeRepo;
     private final DocServiceProvider docServiceProvider;
     private final AbstractDocumentService docService;
-    private final IActionIdentifierService actionIdentifierService;
     private final ObjectMapper objectMapper;
 
     @GetMapping(path = "/{typeDocUniqueCode}/types")
@@ -50,7 +49,7 @@ public class DocumentRestController
     }
 
     @PostMapping(path = "/{groupDocUniqueCode}/upload2", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public boolean uploadDocument(@RequestParam MultipartFile file, @RequestParam Long objectId, @RequestParam String docNum, @RequestParam String docDescription, @RequestParam String typeDocUniqueCode, @PathVariable String groupDocUniqueCode, @PathVariable(required = false) String docName) throws IOException {
+    public boolean uploadDocument(@RequestParam MultipartFile file, @RequestParam String objectId, @RequestParam String docNum, @RequestParam String docDescription, @RequestParam String typeDocUniqueCode, @PathVariable String groupDocUniqueCode, @PathVariable(required = false) String docName) throws IOException {
         AbstractDocumentService docUploader = docServiceProvider.getDocUploader(groupDocUniqueCode);
         //String base64FileString = Base64ToFileConverter.convertToBase64UrlString(file);
         if(docUploader == null)  throw new AppException("Ce type de document n'est pas pris en charge par le système");
@@ -73,10 +72,9 @@ public class DocumentRestController
     @PutMapping(path = "/update")
     public boolean updateDocument(@RequestPart("data") String jsonStringDto, @RequestPart("file") MultipartFile file) throws IOException
     {
-        ActionIdentifier actionIdentifier = actionIdentifierService.getActionIdentifierFromSecurityContext("Modification de document");
         UpdateDocReq dto = objectMapper.readValue(jsonStringDto, UpdateDocReq.class);
         dto.setFile(file);
-        return docService.updateDocument(dto, actionIdentifier);
+        return docService.updateDocument(dto);
     }
 
     @DeleteMapping(path = "/delete/{docId}")
@@ -120,5 +118,11 @@ public class DocumentRestController
         byte[] docBytes = docService.downloadFile(docPath);
         String base64UrlString = Base64ToFileConverter.convertBytesToBase64UrlString(docBytes).replace("_", "/").replace("-", "+");
         return new Base64FileDto(base64UrlString, docBytes);
+    }
+
+    @GetMapping("/download/{docId}")
+    public ResponseEntity<Resource> downloadFile(@PathVariable Long docId)
+    {
+        return docService.downloadFile(docId);
     }
 }

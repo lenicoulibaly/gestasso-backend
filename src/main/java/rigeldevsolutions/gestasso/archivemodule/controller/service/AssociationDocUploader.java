@@ -5,14 +5,13 @@ import rigeldevsolutions.gestasso.archivemodule.controller.repositories.Document
 import rigeldevsolutions.gestasso.archivemodule.model.dtos.DocMapper;
 import rigeldevsolutions.gestasso.archivemodule.model.dtos.request.UploadDocReq;
 import rigeldevsolutions.gestasso.archivemodule.model.entities.Document;
-import rigeldevsolutions.gestasso.modulelog.controller.service.ILogService;
 import rigeldevsolutions.gestasso.typemodule.controller.repositories.TypeRepo;
 
 @Component(value = "association")
 public class AssociationDocUploader extends AbstractDocumentService
 {
-	public AssociationDocUploader(TypeRepo typeRepo, DocMapper docMapper, DocumentRepository docRepo, ILogService logService) {
-		super(typeRepo, docMapper, docRepo, logService);
+	public AssociationDocUploader(TypeRepo typeRepo, DocMapper docMapper, DocumentRepository docRepo) {
+		super(typeRepo, docMapper, docRepo);
 	}
 	@Override
 	protected Document mapToDocument(UploadDocReq dto) {

@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
-import rigeldevsolutions.gestasso.authmodule.model.entities.ActionIdentifier;
 import rigeldevsolutions.gestasso.metier.assomodule.controller.services.ISectionService;
 import rigeldevsolutions.gestasso.metier.assomodule.model.dtos.CreateSectionDTO;
 import rigeldevsolutions.gestasso.metier.assomodule.model.entities.Association;
@@ -22,10 +21,9 @@ public class AssociationEventsListener implements IAssociationEventsListener
     {
         List<CreateSectionDTO> createSectionDTOS = event.getCreateSectionDTOS();
         Association association = event.getAssociation();
-        ActionIdentifier ai = event.getAi();
         if(createSectionDTOS == null || createSectionDTOS.isEmpty())
         {
-            sectionService.createSectionDeBase(association, ai);
+            sectionService.createSectionDeBase(association);
         }
         else
         {
@@ -34,7 +32,7 @@ public class AssociationEventsListener implements IAssociationEventsListener
                     .forEach(createSectionDTO->
             {
                 createSectionDTO.setAssoId(association.getAssoId());
-                sectionService.createSection(createSectionDTO, ai);
+                sectionService.createSection(createSectionDTO);
             });
         }
     }

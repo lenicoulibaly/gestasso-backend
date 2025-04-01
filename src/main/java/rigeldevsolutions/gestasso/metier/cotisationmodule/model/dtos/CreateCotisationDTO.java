@@ -4,7 +4,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
-import rigeldevsolutions.gestasso.authmodule.model.dtos.asignation.CoherentDates;
 import rigeldevsolutions.gestasso.metier.assomodule.model.validators.ExistingAssoId;
 import rigeldevsolutions.gestasso.metier.assomodule.model.validators.ExistingSectionId;
 import rigeldevsolutions.gestasso.metier.cotisationmodule.model.validators.AssoIdAndSectionIdNotNullTogether;
@@ -18,7 +17,7 @@ import java.time.LocalDate;
 @Getter @Setter @AllArgsConstructor @NoArgsConstructor
 @UniqueCotisationName
 @AssoIdAndSectionIdNotNullTogether
-@CoherentDates  @NotNull(message = "Aucune donnée parvenue")
+ @NotNull(message = "Aucune donnée parvenue")
 public class CreateCotisationDTO
 {
     @NotNull(message = "Veuillez nommer la cotisation")

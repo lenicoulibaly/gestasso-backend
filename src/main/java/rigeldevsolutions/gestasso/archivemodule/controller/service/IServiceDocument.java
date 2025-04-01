@@ -1,14 +1,15 @@
 package rigeldevsolutions.gestasso.archivemodule.controller.service;
 
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import rigeldevsolutions.gestasso.archivemodule.model.dtos.request.UpdateDocReq;
 import rigeldevsolutions.gestasso.archivemodule.model.dtos.request.UploadDocReq;
 import rigeldevsolutions.gestasso.archivemodule.model.dtos.response.ReadDocDTO;
-import rigeldevsolutions.gestasso.authmodule.model.entities.ActionIdentifier;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -17,17 +18,15 @@ public interface IServiceDocument
 {
 	void uploadFile(MultipartFile file, String destinationPath) throws RuntimeException;
 	byte[] downloadFile(String filePAth);
+	ResponseEntity<Resource> downloadFile(Long docI);
 
     @Transactional
-	boolean uploadDocument(UploadDocReq dto, ActionIdentifier ai) throws UnknownHostException;
-
-	@Transactional
 	boolean uploadDocument(UploadDocReq dto) throws UnknownHostException;
-	@Transactional
+
 	boolean deleteDocument(Long docId) throws UnknownHostException;
 
 	@Transactional
-    boolean updateDocument(UpdateDocReq dto, ActionIdentifier ai) throws IOException;
+    boolean updateDocument(UpdateDocReq dto) throws IOException;
 
     void displayPdf(HttpServletResponse response, byte[] reportBytes, String displayName)  throws Exception;
 

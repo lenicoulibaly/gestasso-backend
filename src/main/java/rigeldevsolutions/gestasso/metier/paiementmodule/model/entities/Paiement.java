@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import rigeldevsolutions.gestasso.authmodule.keycloak.model.entities.KeycloakUser;
 import rigeldevsolutions.gestasso.authmodule.model.entities.HistoDetails;
 
 import java.math.BigDecimal;
@@ -33,4 +34,7 @@ public class Paiement extends HistoDetails
   private Echeance echeance;
   @ManyToOne @JoinColumn(name = "versement_id")
   private Versement versement;
+  private String userId;
+  @Transient
+  private KeycloakUser keycloakUser;
 }

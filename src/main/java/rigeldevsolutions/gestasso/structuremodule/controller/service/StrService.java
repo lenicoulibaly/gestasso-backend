@@ -6,7 +6,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import rigeldevsolutions.gestasso.authmodule.controller.services.spec.IJwtService;
+import rigeldevsolutions.gestasso.authmodule.keycloak.controller.services.IJwtService;
 import rigeldevsolutions.gestasso.sharedmodule.dtos.SelectOption;
 import rigeldevsolutions.gestasso.sharedmodule.enums.PersStatus;
 import rigeldevsolutions.gestasso.sharedmodule.exceptions.AppException;

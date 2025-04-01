@@ -18,7 +18,17 @@ public class SpringConstraintValidatorFactory implements ConstraintValidatorFact
 
     @Override
     public <T extends ConstraintValidator<?, ?>> T getInstance(Class<T> key) {
-        return applicationContext.getBean(key);
+        try {
+            // Vérifie si Spring gère ce bean
+            return applicationContext.getBean(key);
+        } catch (Exception e) {
+            // Si ce n'est pas un bean Spring, instancie-le via son constructeur par défaut
+            try {
+                return key.getDeclaredConstructor().newInstance();
+            } catch (Exception ex) {
+                throw new RuntimeException("Impossible d'instancier le validateur : " + key, ex);
+            }
+        }
     }
 
     @Override

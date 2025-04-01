@@ -20,6 +20,8 @@ public interface EcheanceRepo extends JpaRepository<Echeance, Long>
     @Query("select e.echeancier.frequence.uniqueCode from Echeance e where e.echeanceId = ?1")
     String getEcheancierTypeFrequence(Long echeanceId);
 
+    //Echeance searchEcheance(String key);
+
     @Query("""
      select new rigeldevsolutions.gestasso.metier.paiementmodule.model.dtos.ReadEcheanceDTO 
             (ech1.echeanceId, ech1.dateEcheance, ech1.nomEcheance,  ech1.echeancier.echeancierId)

@@ -1,19 +1,17 @@
 package rigeldevsolutions.gestasso.authmodule.controller.services.impl;
 
-import rigeldevsolutions.gestasso.authmodule.controller.repositories.MenuRepo;
-import rigeldevsolutions.gestasso.authmodule.controller.repositories.PrvRepo;
-import rigeldevsolutions.gestasso.authmodule.controller.services.spec.IMenuMutatorService;
-import rigeldevsolutions.gestasso.authmodule.model.constants.AuthActions;
-import rigeldevsolutions.gestasso.authmodule.model.constants.AuthTables;
-import rigeldevsolutions.gestasso.authmodule.model.dtos.menu.CreateMenuDTO;
-import rigeldevsolutions.gestasso.authmodule.model.dtos.menu.MenuMapper;
-import rigeldevsolutions.gestasso.authmodule.model.dtos.menu.PrvToMenuDTO;
-import rigeldevsolutions.gestasso.authmodule.model.entities.Menu;
-import rigeldevsolutions.gestasso.modulelog.controller.service.ILogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import rigeldevsolutions.gestasso.authmodule.controller.repositories.MenuRepo;
+import rigeldevsolutions.gestasso.authmodule.controller.services.spec.IMenuMutatorService;
+import rigeldevsolutions.gestasso.authmodule.keycloak.controller.repositories.KeycloakRoleRepo;
+import rigeldevsolutions.gestasso.authmodule.keycloak.model.env.KeycloakEnv;
+import rigeldevsolutions.gestasso.authmodule.model.dtos.menu.CreateMenuDTO;
+import rigeldevsolutions.gestasso.authmodule.model.dtos.menu.MenuMapper;
+import rigeldevsolutions.gestasso.authmodule.model.dtos.menu.PrvToMenuDTO;
+import rigeldevsolutions.gestasso.authmodule.model.entities.Menu;
 
 import java.net.UnknownHostException;
 import java.util.Arrays;
@@ -24,19 +22,18 @@ import java.util.stream.Collectors;
 public class MenuMutatorService implements IMenuMutatorService
 {
     private final MenuRepo menuRepo;
-    private final PrvRepo prvRepo;
     private final MenuMapper menuMapper;
-    private final ILogService logger;
+    private final KeycloakRoleRepo krRepo;
+    private final KeycloakEnv env;
 
     @Override @Transactional
-    public Menu createMenu(CreateMenuDTO dto) throws UnknownHostException {
+    public Menu createMenu(CreateMenuDTO dto) {
         Menu menu = menuMapper.mapToMenu(dto);
         String codeChain = Arrays.stream(dto.getPrvsCodes())
-                .filter(code->!menuRepo.menuHasPrivilege(dto.getMenuCode(), code) && prvRepo.existsByCode(code))
+                .filter(code->!menuRepo.menuHasPrivilege(dto.getMenuCode(), code) && krRepo.authorityExistsById(env.getKeycloakClientUuid(), code))
                 .collect(Collectors.joining(Menu.chainSeparator));
         menu.setPrvsCodesChain(codeChain);
         menu = menuRepo.save(menu);
-        logger.logg(AuthActions.CREATE_MENU, null, menu, AuthTables.MENU_TABLE, null);
         return menu;
     }
 
@@ -48,12 +45,11 @@ public class MenuMutatorService implements IMenuMutatorService
         BeanUtils.copyProperties(menu, oldMenu);
 
         String codeChain = Arrays.stream(dto.getPrvCodes())
-                .filter(code->!menuRepo.menuHasPrivilege(dto.getMenuCode(), code) && prvRepo.existsByCode(code))
+                .filter(code->!menuRepo.menuHasPrivilege(dto.getMenuCode(), code) && krRepo.authorityExistsById(env.getKeycloakClientUuid(),code))
                 .collect(Collectors.joining(Menu.chainSeparator));
         if(codeChain == null || codeChain.trim().equals("")) return;
         menu.setPrvsCodesChain(menu.getPrvsCodesChain() + Menu.chainSeparator + codeChain);
         menu = menuRepo.save(menu);
-        logger.logg(AuthActions.ADD_PRV_TO_MENU, oldMenu, menu, "menu", null);
     }
 
     @Override
@@ -67,12 +63,11 @@ public class MenuMutatorService implements IMenuMutatorService
         BeanUtils.copyProperties(menu, oldMenu);
 
         Set<String> prvCodesToRemove = Arrays.stream(dto.getPrvCodes())
-                .filter(code->menuRepo.menuHasPrivilege(dto.getMenuCode(), code) && prvRepo.existsByCode(code))
+                .filter(code->menuRepo.menuHasPrivilege(dto.getMenuCode(), code) && krRepo.authorityExistsById(env.getKeycloakClientUuid(),code))
                 .collect(Collectors.toSet());
         if(codeChain == null || codeChain.trim().equals("")) return;
 
         menu.setPrvsCodesChain(Arrays.stream(codeChain.split(Menu.chainSeparator)).filter(code->!prvCodesToRemove.contains(code)).collect(Collectors.joining(Menu.chainSeparator)));
         menu = menuRepo.save(menu);
-        logger.logg(AuthActions.RMV_PRV_TO_MENU, oldMenu, menu, "menu", null);
     }
 }

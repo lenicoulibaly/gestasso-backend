@@ -40,4 +40,11 @@ public class StringUtils
 		if(baseString == null || searchedStr == null) return false;
 		return baseString.toLowerCase().contains(searchedStr.toLowerCase()) ? true : stripAccentsToLowerCase(baseString).contains(stripAccentsToLowerCase(searchedStr));
 	}
+
+	public static String capitalizeFirstLetter(String input) {
+		if (input == null || input.isEmpty()) {
+			return ""; // Gérer les cas de chaîne vide ou nulle
+		}
+		return input.substring(0, 1).toUpperCase() + input.substring(1).toLowerCase();
+	}
 }

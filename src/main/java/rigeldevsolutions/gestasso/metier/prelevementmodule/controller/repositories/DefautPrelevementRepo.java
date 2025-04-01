@@ -11,13 +11,11 @@ public interface DefautPrelevementRepo extends JpaRepository<DefautPrelevement, 
 {
     @Query("""
     select new rigeldevsolutions.gestasso.metier.prelevementmodule.model.dtos.DefautPrelevementDTO(
-    dp.defautPrelevementId, dp.montant, dp.montantLettre, dp.motif, dp.active, prel.prelevementId
-    , adh.adhesionId, u.firstName, u.lastName, u.matriculeFonctionnaire, u.email, u.tel
-    , ech.echeanceId, ech.nomEcheance, cot.cotisationId, cot.nomCotisation, cot.motif
+    dp.defautPrelevementId, dp.montant, dp.montantLettre, dp.motif, dp.active, prel.prelevementId, 
+    adh.adhesionId, adh.userId, ech.echeanceId, ech.nomEcheance, cot.cotisationId, cot.nomCotisation, cot.motif
     )
     from DefautPrelevement dp 
         join dp.adhesion adh
-        join adh.member u
         join dp.prelevement prel
         join prel.echeance ech
         join prel.cotisation cot
@@ -27,13 +25,11 @@ public interface DefautPrelevementRepo extends JpaRepository<DefautPrelevement, 
 
     @Query("""
     select new rigeldevsolutions.gestasso.metier.prelevementmodule.model.dtos.DefautPrelevementDTO(
-    dp.defautPrelevementId, dp.montant, dp.montantLettre, dp.motif, dp.active, prel.prelevementId
-    , adh.adhesionId, u.firstName, u.lastName, u.matriculeFonctionnaire, u.email, u.tel
-    , ech.echeanceId, ech.nomEcheance, cot.cotisationId, cot.nomCotisation, cot.motif
+    dp.defautPrelevementId, dp.montant, dp.montantLettre, dp.motif, dp.active, prel.prelevementId, 
+    adh.adhesionId, adh.userId, ech.echeanceId, ech.nomEcheance, cot.cotisationId, cot.nomCotisation, cot.motif
     )
     from DefautPrelevement dp 
         join dp.adhesion adh
-        join adh.member u
         join dp.prelevement prel
         join prel.echeance ech
         join prel.cotisation cot

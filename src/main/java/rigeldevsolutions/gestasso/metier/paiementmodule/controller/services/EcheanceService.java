@@ -6,7 +6,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import rigeldevsolutions.gestasso.authmodule.model.entities.ActionIdentifier;
 import rigeldevsolutions.gestasso.metier.cotisationmodule.controller.repositories.CotisationRepo;
 import rigeldevsolutions.gestasso.metier.paiementmodule.controller.repositories.EcheanceRepo;
 import rigeldevsolutions.gestasso.metier.paiementmodule.controller.repositories.PaiementRepo;
@@ -40,22 +39,19 @@ public class EcheanceService implements IEcheanceService
 
 
     @Override @Transactional
-    public ReadEcheanceDTO createEcheance(CreateEcheanceDTO dto, ActionIdentifier ai)
+    public ReadEcheanceDTO createEcheance(CreateEcheanceDTO dto)
     {
         Echeance echeance = echeanceMapper.mapToEcheance(dto);
         echeance.setNomEcheance(this.getNomEcheance(dto.getDateEcheance(), dto.getFrequenceUniqueCode()));
         echeance = echeanceRepo.save(echeance);
-        BeanUtils.copyProperties(ai, echeance);
         return echeanceMapper.mapToReadEcheanceDTO(echeance);
     }
 
     @Override
-    public ReadEcheanceDTO updateEcheance(UpdateEcheanceDTO dto, ActionIdentifier ai)
+    public ReadEcheanceDTO updateEcheance(UpdateEcheanceDTO dto)
     {
         Echeance echeance = echeanceRepo.findById(dto.getEcheanceId()).orElseThrow(()->new AppException("Echéance introuvable"));
         echeance.setEcheancier(new Echeancier(dto.getEcheancierId()));
-        BeanUtils.copyProperties(dto, echeance, "echeancier");
-        BeanUtils.copyProperties(ai, echeance);
         return echeanceMapper.mapToReadEcheanceDTO(echeance);
     }
 

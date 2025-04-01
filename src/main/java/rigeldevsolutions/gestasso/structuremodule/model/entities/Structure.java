@@ -8,7 +8,7 @@ import lombok.Setter;
 import org.hibernate.envers.Audited;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.web.multipart.MultipartFile;
-import rigeldevsolutions.gestasso.authmodule.model.entities.AppUser;
+import rigeldevsolutions.gestasso.authmodule.keycloak.model.entities.KeycloakUser;
 import rigeldevsolutions.gestasso.sharedmodule.enums.PersStatus;
 import rigeldevsolutions.gestasso.typemodule.model.entities.Type;
 
@@ -47,7 +47,7 @@ public class Structure
     private PersStatus status;
 
     @Transient
-    private List<AppUser> personnel;
+    private List<KeycloakUser> personnel;
 
     public Structure(Long strId)
     {

@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import rigeldevsolutions.gestasso.metier.paiementmodule.model.dtos.PaiementCotisationDTO;
 import rigeldevsolutions.gestasso.metier.paiementmodule.model.dtos.ReadEcheanceDTO;
 import rigeldevsolutions.gestasso.metier.paiementmodule.model.entities.Paiement;
 
@@ -40,4 +41,13 @@ public interface PaiementRepo extends JpaRepository<Paiement, Long>
 
     @Query("select e.nomEcheance from Paiement p join p.echeance e where p.versement.versementId = ?1 and p.active order by e.dateEcheance asc")
     List<String> getEcheancesVersement(Long versementId);
+
+    @Query("""
+        select new rigeldevsolutions.gestasso.metier.paiementmodule.model.dtos.PaiementCotisationDTO 
+        (
+            p.paiementId, p.reference, p.montant, p.montantLettre, p.echeance.nomEcheance
+        )
+        from Paiement p where p.versement.versementId = ?1
+""")
+    List<PaiementCotisationDTO> getPaiementsByVersementId(Long versementId);
 }

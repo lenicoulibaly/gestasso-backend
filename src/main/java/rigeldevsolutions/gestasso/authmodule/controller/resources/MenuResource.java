@@ -29,20 +29,20 @@ public class MenuResource
         return menuMutatorService.createMenu(dto);
     }
 
-    @GetMapping(path = "/by-fncId/{fncId}")
-    public Set<String> getMenuByFncId(@PathVariable Long fncId)
+    @GetMapping(path = "/by-fncId/{profileId}")
+    public Set<String> getMenuByFncId(@PathVariable String profileId)
     {
-        return menmenuReaderService.getMenusByFncId(fncId);
+        return menmenuReaderService.getMenusByProfileId(profileId);
     }
 
     @GetMapping(path = "/search")
     public Page<Menu> searchMenu(@RequestParam(defaultValue = "") String key, @RequestParam(defaultValue = "0") int num, @RequestParam(defaultValue = "2") int size) throws UnknownHostException, IllegalAccessException {
-        return menuRepo.searchMenu2(key, PageRequest.of(num, size));
+        return menuRepo.searchMenu(key, PageRequest.of(num, size));
     }
 
-    @GetMapping(path = "/fnc-can-see-menu/{fncId}/{nemuCode}")
-    public boolean FncCanSeeMenu(@PathVariable Long fncId, @PathVariable String nemuCode){
-        return menmenuReaderService.fncCanSeeMenu(fncId, nemuCode);
+    @GetMapping(path = "/fnc-can-see-menu/{profileId}/{nemuCode}")
+    public boolean FncCanSeeMenu(@PathVariable String profileId, @PathVariable String nemuCode){
+        return menmenuReaderService.profileCanSeeMenu(profileId, nemuCode);
     }
 
     @GetMapping(path = "/prv-can-see-menu/{prvCode}/{nemuCode}")

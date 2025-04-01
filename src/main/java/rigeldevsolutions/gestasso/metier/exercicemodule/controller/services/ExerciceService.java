@@ -1,10 +1,8 @@
 package rigeldevsolutions.gestasso.metier.exercicemodule.controller.services;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import rigeldevsolutions.gestasso.authmodule.model.entities.ActionIdentifier;
 import rigeldevsolutions.gestasso.metier.exercicemodule.controller.repositories.ExerciceRepo;
 import rigeldevsolutions.gestasso.metier.exercicemodule.model.dtos.CreateExerciceDTO;
 import rigeldevsolutions.gestasso.metier.exercicemodule.model.dtos.ReadExerciceDTO;
@@ -33,41 +31,37 @@ public class ExerciceService implements IExercieService {
     private final TypeRepo typeRepo;
 
     @Override @Transactional
-    public ReadExerciceDTO createExercice(CreateExerciceDTO dto, ActionIdentifier ai)
+    public ReadExerciceDTO createExercice(CreateExerciceDTO dto)
     {
         Exercice exercice=exoMapper.mapToExercice(dto);
         if(dto.isExeCourant()) exoRepo.setExerciceAsNoneCourant();
         exercice=exoRepo.save(exercice);
-        BeanUtils.copyProperties(ai, exercice);
-        exercice=exoRepo.save(exercice);
         List<ReadTypeDTO> typeFrequences = typeRepo.findByTypeGroup(TypeGroup.TYPE_FREQUENCE);
         typeFrequences.stream()
                 .map(f->CreateEcheancierDTO.builder().typeEcheancierCode("ECH-NAT").frequenceTypeCode(f.getUniqueCode()).exeCode(dto.getExeCode()).build())
-                .forEach(cedto->echeancierService.createEcheancierNaturel(cedto, ai));
+                .forEach(cedto->echeancierService.createEcheancierNaturel(cedto));
         exercice=exoRepo.save(exercice);
         return exoMapper.mapToReadExerciceDTO(exercice);
     }
 
     @Override @Transactional
-    public ReadExerciceDTO activateExercice(Long exeCode, ActionIdentifier ai)
+    public ReadExerciceDTO activateExercice(Long exeCode)
     {
         Exercice exercice=exoRepo.findById(exeCode).orElseThrow(()->new AppException("Exercice introuvable"));
         if (exercice.isExeCourant()) return exoMapper.mapToReadExerciceDTO(exercice);
 
         exoRepo.setExerciceAsNoneCourant();
         exercice.setExeCourant(true);
-        BeanUtils.copyProperties(ai, exercice);
         return exoMapper.mapToReadExerciceDTO(exercice);
     }
 
     @Override @Transactional
-    public ReadExerciceDTO updateExercice(UpdateExerciceDTO dto, ActionIdentifier ai)
+    public ReadExerciceDTO updateExercice(UpdateExerciceDTO dto)
     {
         Exercice exercice = exoRepo.findById(dto.getExeCode()).orElseThrow(()->new AppException("Exercice introuvable"));
         exercice.setExeLibelle(dto.getExeLibelle());
         if(dto.isExeCourant()) exoRepo.setExerciceAsNoneCourant();
         exercice=exoRepo.save(exercice);
-        BeanUtils.copyProperties(ai, exercice);
         return exoMapper.mapToReadExerciceDTO(exercice);
     }
 

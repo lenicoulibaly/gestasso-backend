@@ -1,12 +1,10 @@
 package rigeldevsolutions.gestasso.metier.cotisationmodule.controller.services;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import rigeldevsolutions.gestasso.authmodule.model.entities.ActionIdentifier;
 import rigeldevsolutions.gestasso.metier.cotisationmodule.controller.repositories.CotisationRepo;
 import rigeldevsolutions.gestasso.metier.cotisationmodule.model.dtos.CreateCotisationDTO;
 import rigeldevsolutions.gestasso.metier.cotisationmodule.model.dtos.ReadCotisationDTO;
@@ -14,8 +12,11 @@ import rigeldevsolutions.gestasso.metier.cotisationmodule.model.dtos.UpdateCotis
 import rigeldevsolutions.gestasso.metier.cotisationmodule.model.entities.Cotisation;
 import rigeldevsolutions.gestasso.metier.cotisationmodule.model.mappers.CotisationMapper;
 import rigeldevsolutions.gestasso.metier.paiementmodule.controller.repositories.EcheanceRepo;
+import rigeldevsolutions.gestasso.metier.paiementmodule.model.dtos.ReadEcheanceDTO;
 import rigeldevsolutions.gestasso.sharedmodule.exceptions.AppException;
 import rigeldevsolutions.gestasso.typemodule.model.entities.Type;
+
+import java.time.LocalDate;
 
 @Service @RequiredArgsConstructor
 public class CotisationService implements ICotisationService
@@ -23,17 +24,29 @@ public class CotisationService implements ICotisationService
     private final CotisationRepo cotisationRepo;
     private final CotisationMapper cotisationMapper;
     private final EcheanceRepo echeanceRepo;
+
+    @Override
+    public LocalDate getDateFin(Cotisation cotisation)
+    {
+        LocalDate dateFin = cotisation.getDateFinCotisation();
+        if(dateFin == null)
+        {
+            String typeFrequence = cotisation.getFrequenceCotisation().getUniqueCode();
+            ReadEcheanceDTO lastEcheance = echeanceRepo.getLastEcheance(typeFrequence);
+            dateFin = lastEcheance.getDateEcheance();
+        }
+        return dateFin;
+    }
     @Override @Transactional
-    public ReadCotisationDTO createCotisation(CreateCotisationDTO dto, ActionIdentifier ai)
+    public ReadCotisationDTO createCotisation(CreateCotisationDTO dto)
     {
         Cotisation cotisation = cotisationMapper.mapToCotisation(dto);
-        BeanUtils.copyProperties(ai, cotisation);
         cotisation = cotisationRepo.save(cotisation);
         return cotisationMapper.mapToReadCotisationDTO(cotisation);
     }
 
     @Override @Transactional
-    public ReadCotisationDTO updateCotisation(UpdateCotisationDTO dto, ActionIdentifier ai)
+    public ReadCotisationDTO updateCotisation(UpdateCotisationDTO dto)
     {
         Cotisation cotisation = cotisationRepo.findById(dto.getCotisationId()).orElseThrow(()->new AppException("Cotisation introuvable"));
         Type frequence = cotisation.getFrequenceCotisation();
@@ -50,7 +63,6 @@ public class CotisationService implements ICotisationService
         cotisation.setModePrelevement(newModePrelevement);
         cotisation.setDateDebutCotisation(dto.getDateDebutCotisation());
         cotisation.setDateFinCotisation(dto.getDateFinCotisation());
-        BeanUtils.copyProperties(ai, cotisation);
         return cotisationMapper.mapToReadCotisationDTO(cotisation);
     }
 

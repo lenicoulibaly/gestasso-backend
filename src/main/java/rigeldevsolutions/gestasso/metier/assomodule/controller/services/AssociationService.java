@@ -1,7 +1,6 @@
 package rigeldevsolutions.gestasso.metier.assomodule.controller.services;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -14,7 +13,6 @@ import rigeldevsolutions.gestasso.archivemodule.controller.service.AssociationDo
 import rigeldevsolutions.gestasso.archivemodule.controller.service.IResourceLoader;
 import rigeldevsolutions.gestasso.archivemodule.model.dtos.request.UploadDocReq;
 import rigeldevsolutions.gestasso.archivemodule.model.dtos.response.ReadDocDTO;
-import rigeldevsolutions.gestasso.authmodule.model.entities.ActionIdentifier;
 import rigeldevsolutions.gestasso.metier.assomodule.controller.repositories.AssoRepo;
 import rigeldevsolutions.gestasso.metier.assomodule.model.dtos.CreateAssociationDTO;
 import rigeldevsolutions.gestasso.metier.assomodule.model.dtos.CreateSectionDTO;
@@ -27,7 +25,6 @@ import rigeldevsolutions.gestasso.sharedmodule.exceptions.AppException;
 import rigeldevsolutions.gestasso.sharedmodule.utilities.StringUtils;
 
 import java.io.InputStream;
-import java.net.UnknownHostException;
 import java.util.*;
 
 @Service @RequiredArgsConstructor
@@ -41,11 +38,11 @@ public class AssociationService implements IAssociationService
     private final AbstractDocumentService documentService;
     private final IReportService reportService;
     private final IResourceLoader resourceLoader;
+
     @Override @Transactional
-    public Association createAssociation(CreateAssociationDTO dto, ActionIdentifier ai)
+    public Association createAssociation(CreateAssociationDTO dto)
     {
         Association association = assoMapper.mapToAssociation(dto);
-        BeanUtils.copyProperties(ai, association);
         association = assoRepo.save(association);
         Long assoId = association.getAssoId();
 
@@ -53,7 +50,7 @@ public class AssociationService implements IAssociationService
 
         if(createSectionDTOS == null || createSectionDTOS.isEmpty())
         {
-            sectionService.createSectionDeBase(association, ai);
+            sectionService.createSectionDeBase(association);
         }
         else
         {
@@ -62,7 +59,7 @@ public class AssociationService implements IAssociationService
                     .forEach(createSectionDTO->
                     {
                         createSectionDTO.setAssoId(assoId);
-                        sectionService.createSection(createSectionDTO, ai);
+                        sectionService.createSection(createSectionDTO);
                     });
         }
 
@@ -70,10 +67,10 @@ public class AssociationService implements IAssociationService
     }
 
     @Override @Transactional
-    public Association updateAssociation(UpdateAssociationDTO dto, ActionIdentifier ai)
+    public Association updateAssociation(UpdateAssociationDTO dto)
     {
         Association association = assoRepo.findById(dto.getAssoId()).orElseThrow(()->new AppException("Association introuvable"));
-        BeanUtils.copyProperties(ai, association);
+
         association.setAssoName(dto.getAssoName());
         association.setSigle(dto.getSigle());
         association.setDroitAdhesion(dto.getDroitAdhesion());
@@ -107,9 +104,10 @@ public class AssociationService implements IAssociationService
     }
 
     @Override
-    public Association createAssociation(CreateAssociationDTO dto, MultipartFile logo, ActionIdentifier ai) throws UnknownHostException {
-        Association association = this.createAssociation(dto, ai);
-        UploadDocReq uploadDocReq = new UploadDocReq(association.getAssoId(), "LOGO", null, "logo_"+dto.getSigle(), "logo", logo);
+    public Association createAssociation(CreateAssociationDTO dto, MultipartFile logo)
+    {
+        Association association = this.createAssociation(dto);
+        UploadDocReq uploadDocReq = new UploadDocReq(String.valueOf(association.getAssoId()), "LOGO", null, "logo_"+dto.getSigle(), "logo", logo);
         associationDocUploader.uploadDocument(uploadDocReq);
         return association;
     }

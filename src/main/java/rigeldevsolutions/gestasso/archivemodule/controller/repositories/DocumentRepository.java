@@ -17,9 +17,9 @@ public interface DocumentRepository extends JpaRepository<Document, Long>
 
     @Query("""
         select new rigeldevsolutions.gestasso.archivemodule.model.dtos.response.ReadDocDTO(
-        d.docId, d.docNum, d.docName, d.docDescription, d.docPath, d.docType.uniqueCode, d.docType.name
+        d.docId, d.docNum, d.docName, d.docDescription, d.docPath, d.docType.uniqueCode, d.docType.name, d.docExtension, d.docMimeType
         ) 
-        from Document d left join d.user u left join d.association a left join d.section s
+        from Document d left join d.association a left join d.section s
         where (
         locate(upper(coalesce(:key, '')), upper(cast(function('strip_accents',  coalesce(d.docDescription, '') ) as string))) >0 
         or locate(upper(coalesce(:key, '')), upper(cast(function('strip_accents',  coalesce(d.docType.name, '') ) as string))) >0 
@@ -27,7 +27,7 @@ public interface DocumentRepository extends JpaRepository<Document, Long>
         or locate(upper(coalesce(:key, '')), upper(cast(function('strip_accents',  coalesce(d.docName, '') ) as string))) >0
         )
         and
-        (u.userId is null or u.userId = :userId)
+        (d.userId is null or d.userId = :userId)
         and (a.assoId is null or a.assoId = :assoId)
         and (s.sectionId is null or s.sectionId = :sectionId)
     """)
@@ -36,7 +36,16 @@ public interface DocumentRepository extends JpaRepository<Document, Long>
                                          @Param("sectionId") Long sectionId,  @Param("key") String key, Pageable pageable);
 
     @Query("""
-        select new rigeldevsolutions.gestasso.archivemodule.model.dtos.response.ReadDocDTO(d.docId, d.docNum, d.docName, d.docDescription, d.docPath, d.docType.uniqueCode, d.docType.name)
+        select new rigeldevsolutions.gestasso.archivemodule.model.dtos.response.ReadDocDTO(
+        d.docId, d.docNum, d.docName, d.docDescription, d.docPath, d.docType.uniqueCode, d.docType.name, d.docExtension, d.docMimeType
+        ) 
+        from Document d 
+        where d.versement.versementId = ?1
+    """)
+    List<ReadDocDTO> getDocsByVersementId(Long versementId);
+
+    @Query("""
+        select new rigeldevsolutions.gestasso.archivemodule.model.dtos.response.ReadDocDTO(d.docId, d.docNum, d.docName, d.docDescription, d.docPath, d.docType.uniqueCode, d.docType.name, d.docExtension, d.docMimeType)
         from Document d where d.association.assoId = ?1 and d.docType.uniqueCode = 'LOGO' and d.createdAt = (select max(d0.createdAt)  from Document d0 where d0.association.assoId = ?1 and d0.docType.uniqueCode = 'LOGO')
         """)
     ReadDocDTO getAssoLogo(Long assoId);

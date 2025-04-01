@@ -31,6 +31,11 @@ public class Type
     private List<Type> children;
     private String objectFolder;
 
+    public Type(String uniqueCode, String name) {
+        this.uniqueCode = uniqueCode;
+        this.name = name;
+    }
+
     @Override
     public String toString() {
         return name + " (" +uniqueCode + ")"  ;

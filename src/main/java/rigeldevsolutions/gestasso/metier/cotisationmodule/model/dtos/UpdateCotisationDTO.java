@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import rigeldevsolutions.gestasso.authmodule.model.dtos.asignation.CoherentDates;
 import rigeldevsolutions.gestasso.metier.cotisationmodule.model.validators.ExistingCotisationId;
 import rigeldevsolutions.gestasso.metier.cotisationmodule.model.validators.UniqueCotisationName;
 import rigeldevsolutions.gestasso.metier.cotisationmodule.model.validators.ValidFrequenceCotisation;
@@ -16,8 +15,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Getter @Setter @AllArgsConstructor @NoArgsConstructor
-@UniqueCotisationName
-@CoherentDates @NotNull(message = "Aucune donnée parvenue")
+@UniqueCotisationName @NotNull(message = "Aucune donnée parvenue")
 public class UpdateCotisationDTO
 {
     @NotNull(message = "Veuillez choisir la cotisation à modifier")

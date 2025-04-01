@@ -1,12 +1,10 @@
 package rigeldevsolutions.gestasso.authmodule.model.entities;
 
-import rigeldevsolutions.gestasso.sharedmodule.enums.PersStatus;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import jakarta.persistence.*;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
 
@@ -15,20 +13,19 @@ import java.util.Arrays;
 import java.util.List;
 
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
-@Entity
+@Entity @Table(name = "menu")
 @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
 public class Menu
 {
     @Id
+    @Column(name = "menu_code")
     private String menuCode;
-    @Column(unique = true)
+    @Column(name = "name", unique = true)
     private String name;
-    @Column(length=4000)
+    @Column(name = "prvs_codes_chain", length = 4000)
     private String prvsCodesChain;
     @Transient
     private List<String> prvsCodes;
-    @Enumerated(EnumType.STRING)
-    private PersStatus status;
     @Transient
     public static final String chainSeparator = "::";
 
@@ -38,11 +35,10 @@ public class Menu
         return Arrays.asList(this.prvsCodesChain.split(Menu.chainSeparator));
     }
 
-    public Menu(String menuCode, String name, String prvsCodesChain, PersStatus status) {
+    public Menu(String menuCode, String name, String prvsCodesChain) {
         this.menuCode = menuCode;
         this.name = name;
         this.prvsCodesChain = prvsCodesChain;
-        this.status = status;
     }
 
     @Getter @Setter @NoArgsConstructor @AllArgsConstructor

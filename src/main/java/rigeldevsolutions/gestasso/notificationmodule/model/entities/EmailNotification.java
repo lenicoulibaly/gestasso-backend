@@ -1,11 +1,10 @@
 package rigeldevsolutions.gestasso.notificationmodule.model.entities;
 
-import org.hibernate.envers.Audited;
-import org.hibernate.envers.RelationTargetAuditMode;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import rigeldevsolutions.gestasso.authmodule.model.entities.AppUser;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.RelationTargetAuditMode;
+import rigeldevsolutions.gestasso.authmodule.keycloak.model.entities.KeycloakUser;
 
 import java.time.LocalDateTime;
 
@@ -30,7 +29,7 @@ public class EmailNotification
 
     private String systemMailSender; /* L'adresse mail utilisée pour envoyer le mail*/
 
-    public EmailNotification(AppUser user, String mailObject, String token, Long connectedUserId)
+    public EmailNotification(KeycloakUser user, String mailObject, String token, Long connectedUserId)
     {
         this.username = user.getFirstName();
         this.email = user.getEmail();

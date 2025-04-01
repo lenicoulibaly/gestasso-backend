@@ -6,7 +6,7 @@ import jakarta.validation.ConstraintValidatorContext;
 import jakarta.validation.Payload;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import rigeldevsolutions.gestasso.metier.assomodule.controller.repositories.MembreRepo;
+import rigeldevsolutions.gestasso.metier.assomodule.controller.repositories.AdhesionRepo;
 
 import java.lang.annotation.*;
 
@@ -24,13 +24,13 @@ public @interface ExistingAdhesionId
     @RequiredArgsConstructor
     class ExistingAdhesionIdValidator implements ConstraintValidator<ExistingAdhesionId, Long>
     {
-        private final MembreRepo membreRepo;
+        private final AdhesionRepo adhesionRepo;
 
         @Override
         public boolean isValid(Long value, ConstraintValidatorContext context)
         {
             if(value == null) return true;
-            return membreRepo.existsById(value) ;
+            return adhesionRepo.existsById(value) ;
         }
     }
 }

@@ -29,6 +29,7 @@ public class DefautPrelevementDTO
 
   @ExistingAdhesionId
   private Long adhesionId;
+  private String userId;
   private String firstName;
   private String lastName;
   private String matriculeFonctionnaire;
@@ -43,4 +44,22 @@ public class DefautPrelevementDTO
   private Long cotisationId;
   private String nomCotisation;
   private String motifCotifCotisation;
+
+  public DefautPrelevementDTO(Long defautPrelevementId, BigDecimal montant, String montantLettre, String motifDefaut, boolean active, Long prelevementId,
+                              Long adhesionId, String userId, Long echeanceId, String nomEcheance, Long cotisationId, String nomCotisation, String motifCotifCotisation)
+  {
+    this.defautPrelevementId = defautPrelevementId;
+    this.montant = montant;
+    this.montantLettre = montantLettre;
+    this.motifDefaut = motifDefaut;
+    this.active = active;
+    this.prelevementId = prelevementId;
+    this.adhesionId = adhesionId;
+    this.userId = userId;
+    this.echeanceId = echeanceId;
+    this.nomEcheance = nomEcheance;
+    this.cotisationId = cotisationId;
+    this.nomCotisation = nomCotisation;
+    this.motifCotifCotisation = motifCotifCotisation;
+  }
 }

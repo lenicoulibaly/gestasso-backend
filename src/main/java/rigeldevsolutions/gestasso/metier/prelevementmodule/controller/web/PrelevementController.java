@@ -8,8 +8,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import rigeldevsolutions.gestasso.authmodule.controller.services.spec.IActionIdentifierService;
-import rigeldevsolutions.gestasso.authmodule.model.entities.ActionIdentifier;
 import rigeldevsolutions.gestasso.metier.prelevementmodule.controller.service.IPrelevementService;
 import rigeldevsolutions.gestasso.metier.prelevementmodule.model.dtos.DefautPrelevementDTO;
 import rigeldevsolutions.gestasso.metier.prelevementmodule.model.dtos.PrelevementDTO;
@@ -22,20 +20,17 @@ public class PrelevementController
 {
     private final IPrelevementService prelevementService;
     private final ObjectMapper objectMapper;
-    private final IActionIdentifierService ais;
 
     @PostMapping(path = "/save")
     public PrelevementDTO save(@RequestPart("data") String jsonString, @RequestPart(name = "files", required = false) List<MultipartFile> files) throws JsonProcessingException {
-        ActionIdentifier ai = ais.getActionIdentifierFromSecurityContext("Enregistrement d'un prélèvement automatique à la source sur cotisation");
         PrelevementDTO dto = objectMapper.readValue(jsonString, PrelevementDTO.class);
-        return prelevementService.savePrelevement(dto, files, ai);
+        return prelevementService.savePrelevement(dto, files);
     }
 
     @PostMapping(path = "/save-defaut-prelevement")
     public DefautPrelevementDTO saveDefautPrelevement(@RequestBody @Valid DefautPrelevementDTO dto)
     {
-        ActionIdentifier ai = ais.getActionIdentifierFromSecurityContext("Enregistrement d'un defaut de prélèvement sur cotisation");
-        return prelevementService.saveDefautPrelevementCotisation(dto, ai);
+        return prelevementService.saveDefautPrelevementCotisation(dto);
     }
 
     @GetMapping(path = "/search")

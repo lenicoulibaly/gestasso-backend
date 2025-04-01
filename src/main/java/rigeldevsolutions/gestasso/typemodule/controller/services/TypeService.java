@@ -1,7 +1,11 @@
 package rigeldevsolutions.gestasso.typemodule.controller.services;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.EnumUtils;
-import rigeldevsolutions.gestasso.modulelog.controller.service.ILogService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import rigeldevsolutions.gestasso.sharedmodule.dtos.SelectOption;
 import rigeldevsolutions.gestasso.sharedmodule.enums.PersStatus;
 import rigeldevsolutions.gestasso.sharedmodule.exceptions.AppException;
@@ -9,17 +13,10 @@ import rigeldevsolutions.gestasso.sharedmodule.utilities.ObjectCopier;
 import rigeldevsolutions.gestasso.sharedmodule.utilities.StringUtils;
 import rigeldevsolutions.gestasso.typemodule.controller.repositories.TypeParamRepo;
 import rigeldevsolutions.gestasso.typemodule.controller.repositories.TypeRepo;
-import rigeldevsolutions.gestasso.typemodule.model.constants.TypeActions;
-import rigeldevsolutions.gestasso.typemodule.model.constants.TypeTables;
 import rigeldevsolutions.gestasso.typemodule.model.dtos.*;
 import rigeldevsolutions.gestasso.typemodule.model.entities.Type;
 import rigeldevsolutions.gestasso.typemodule.model.entities.TypeParam;
 import rigeldevsolutions.gestasso.typemodule.model.enums.TypeGroup;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.net.UnknownHostException;
 import java.util.*;
@@ -33,14 +30,12 @@ public class TypeService implements ITypeService
     private final TypeRepo typeRepo;
     private final TypeMapper typeMapper;
     private final TypeParamRepo typeParamRepo;
-    private final ILogService logger;
     private final ObjectCopier<Type> typeCopier;
     private final ObjectCopier<TypeParam> typeParamCopier;
     @Override
     public Type createType(CreateTypeDTO dto) throws UnknownHostException {
         Type type = typeMapper.mapToType(dto);
         type = typeRepo.save(type);
-        logger.logg(TypeActions.CREATE_TYPE, null, type, TypeTables.TYPE, null);
         return type;
     }
 
@@ -48,12 +43,9 @@ public class TypeService implements ITypeService
     public Type updateType(UpdateTypeDTO dto) throws UnknownHostException {
         Type loadedType = typeRepo.findById(dto.getOldUniqueCode()).orElseThrow(()->new AppException("Type introuvable : " + dto.getOldUniqueCode()));
         Type oldType = typeCopier.copy(loadedType);
-
         loadedType.setTypeGroup(TypeGroup.valueOf(dto.getTypeGroup()));
         loadedType.setName(dto.getName().toUpperCase(Locale.ROOT));
         loadedType.setUniqueCode(dto.getUniqueCode().toUpperCase(Locale.ROOT));
-        logger.logg(TypeActions.UPDATE_TYPE, oldType, loadedType, TypeTables.TYPE, null);
-
         return loadedType;
     }
 
@@ -63,7 +55,6 @@ public class TypeService implements ITypeService
         if(loadedType == null || loadedType.getStatus() == PersStatus.DELETED) return;
         Type oldType = typeCopier.copy(loadedType);
         loadedType.setStatus(PersStatus.DELETED);
-        logger.logg(TypeActions.DELETE_TYPE, oldType, loadedType, TypeTables.TYPE, null);
     }
 
     @Override
@@ -72,7 +63,6 @@ public class TypeService implements ITypeService
         if(loadedType == null || loadedType.getStatus() == PersStatus.ACTIVE) return;
         Type oldType = typeCopier.copy(loadedType);
         loadedType.setStatus(PersStatus.ACTIVE);
-        logger.logg(TypeActions.RESTORE_TYPE, oldType, loadedType, TypeTables.TYPE, null);
     }
 
     @Override
@@ -129,13 +119,11 @@ public class TypeService implements ITypeService
             TypeParam typeParam = typeParamRepo.findByParentAndChild(dto.getParentCode(), dto.getChildCode());
             TypeParam oldTypeParam = typeParamCopier.copy(typeParam);
             typeParam.setStatus(PersStatus.ACTIVE);
-            logger.logg(TypeActions.RESTORE_SUB_TYPE, oldTypeParam, typeParam, TypeTables.TYPE_PARAM, null);
             return;
         }
         TypeParam typeParam = typeMapper.mapToTypeParam(dto);
         typeParam.setStatus(PersStatus.ACTIVE);
         typeParam = typeParamRepo.save(typeParam);
-        logger.logg(TypeActions.ADD_SUB_TYPE, null, typeParam, TypeTables.TYPE_PARAM, null);
     }
 
 
@@ -171,14 +159,11 @@ public class TypeService implements ITypeService
             TypeParam typeParam = typeParamRepo.findByParentAndChild(dto.getParentCode(), dto.getChildCode());
             TypeParam oldTypeParam = typeParamCopier.copy(typeParam);
             typeParam.setStatus(PersStatus.DELETED);
-            logger.logg(TypeActions.REMOVE_SUB_TYPE, oldTypeParam, typeParam, TypeTables.TYPE_PARAM, null);
             return;
         }
         TypeParam typeParam = typeMapper.mapToTypeParam(dto);
         typeParam.setStatus(PersStatus.DELETED);
         typeParam = typeParamRepo.save(typeParam);
-        logger.logg(TypeActions.REMOVE_SUB_TYPE, null, typeParam, TypeTables.TYPE_PARAM, null);
-
     }
 
     @Override

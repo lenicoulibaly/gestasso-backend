@@ -1,6 +1,5 @@
 package rigeldevsolutions.gestasso.sharedmodule.exceptions;
 
-import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import rigeldevsolutions.gestasso.modulelog.controller.service.ILogService;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -25,7 +23,6 @@ import java.util.stream.Collectors;
 @RestControllerAdvice @RequiredArgsConstructor
 public class AppExceptionHandler
 {
-    private final ILogService logService;
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public List<String> handleMethodArgumentNotValidException(MethodArgumentNotValidException err)
@@ -64,13 +61,6 @@ public class AppExceptionHandler
     }
 
     @ExceptionHandler()
-    @ResponseStatus(HttpStatus.FORBIDDEN)
-    public String handleJwtExpirationException(ExpiredJwtException exception)
-    {
-        return "EXPIRED_TOKEN";
-    }
-
-    @ExceptionHandler()
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public void handleAuthException(Exception exception) throws UnknownHostException {
         StringWriter sw = new StringWriter();
@@ -78,8 +68,7 @@ public class AppExceptionHandler
         exception.printStackTrace(pw);
         String stacktrace = sw.toString();
         exception.printStackTrace();
-        logService.saveLogError(exception.getMessage(), stacktrace, null);
-
+        //logService.saveLogError(exception.getMessage(), stacktrace, null);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
